@@ -9,5 +9,5 @@ app.use(router);
 
 
 app.listen(port, () => {
-    console.log(port);
+    console.log("ook");
 })
