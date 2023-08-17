@@ -10,5 +10,5 @@ app.use(router);
 
 app.listen(port, () => {
     console.log(port);
-    console.log("hello bvm bhavesh tanawala vihar")
+    console.log("bvm bhavesh tanawala vihar")
 })
