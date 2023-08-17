@@ -17,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            {console.log("vedant")}
+            {console.log("vedant change 1")}
           </Routes>
         </Router>
       </context.Provider>
