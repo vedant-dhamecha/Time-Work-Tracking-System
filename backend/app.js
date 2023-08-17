@@ -10,5 +10,9 @@ app.use(router);
 
 app.listen(port, () => {
     console.log(port);
+<<<<<<< HEAD
     console.log("vedant")
+=======
+    console.log("hello bvm bhavesh tanawala")
+>>>>>>> e97e9b64b093b52638c54dad14eceb06120a5bb3
 })
