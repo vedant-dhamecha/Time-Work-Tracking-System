@@ -18,6 +18,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {console.log("vedant")}
+            {console.log("kush")}
           </Routes>
         </Router>
       </context.Provider>
