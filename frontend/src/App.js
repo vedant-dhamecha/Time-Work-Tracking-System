@@ -6,7 +6,6 @@ import Dashboard from './components/Dashboard';
 import Navbar from "./components/Navigationbar";
 import Home from "./components/Home";
 
-
 function App() {
   const [nav, setNav] = useState(true);
 
@@ -18,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
-
+            {console.log("vedant")}
           </Routes>
         </Router>
       </context.Provider>
