@@ -10,7 +10,7 @@ const Employee = require("../modules/Employee");
 router.post("/login", async (req, res) => {
 
   const { uid, password, person } = req.body;
-
+ 
   if (person === "HR") {
     // const {email,password,person} = req.body;
     const hr = await Hr.findOne({ id: uid });
@@ -32,12 +32,10 @@ router.post("/login", async (req, res) => {
     }
   }
   else if (person === "employee") {
-    // const {email,password,person} = req.body;
     const emp = await Employee.findOne({ id: uid });
     try {
 
       if (emp) {
-        console.log('emp :>> ', emp);
         if (password === emp.password) {
           res.status(201).json({ success: "Employee login successful" });
         } else {
