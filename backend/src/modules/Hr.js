@@ -12,33 +12,33 @@ const hrSchema = mongoose.Schema({
     },
     id: {
         type: String,
-        // required: true,
+        required: true,
         unique: true
     },
     gender: {
         type: String,
-        // required: true,
+        required: true,
     },
     password: {
         type: String,
-        // required: true,
+        required: true,
     },
     dob: {
         type: String,
-        // required: true,
+        required: true,
     },
     mobile: {
         type: Number,
-        // required: true,
+        required: true,
         unique: true
     },
     address: {
         type: String,
-        // required: true,
+        required: true,
     },
     joiningDate: {
         type: String,
-        // required: true,
+        required: true,
     },
 })
 
