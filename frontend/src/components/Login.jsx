@@ -17,8 +17,9 @@ export default function Login() {
     const [password, setPassword] = useState('')
     // const [msg, setMsg] = useState('')
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = () => { }
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
 
         const res = await fetch('http://localhost:3218/login', {
             method: 'POST',
