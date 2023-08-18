@@ -17,6 +17,7 @@ export default function Login() {
     const [password, setPassword] = useState('')
     // const [msg, setMsg] = useState('')
 
+    const handleLogin = () => { }
     // const handleLogin = async (e) => {
     //     e.preventDefault();
 
