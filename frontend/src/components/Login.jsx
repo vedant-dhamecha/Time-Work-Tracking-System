@@ -17,41 +17,31 @@ export default function Login() {
     const [password, setPassword] = useState('')
     // const [msg, setMsg] = useState('')
 
-    const handleLogin = () => { }
-    // const handleLogin = async (e) => {
-    //     e.preventDefault();
+    // const handleLogin = () => { }
+    const handleLogin = async (e) => {
+        e.preventDefault();
 
-    //     const res = await fetch('http://localhost:4100/login', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         credentials: 'include',
-    //         body: JSON.stringify({ uid, password, person })
-    //     })
+        const res = await fetch('http://localhost:4100/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ uid, password, person })
+        })
 
-    //     const data = await res.json();
-    //     console.log('data in login :>> ', data);
+        const data = await res.json();
+        console.log('data in login :>> ', data);
 
-    //     if (data?.err) {
-    //         window.alert(data.err)
-    //     }
-    //     else if (data?.success) {
-    //         if (person === "employee") {
-    //             window.alert(data.success)
-    //             navigate('/dashboard')
+        if (data?.error) {
+            window.alert(data.error)
+        }
+        else if (data?.success) {
+            window.alert(data.success)
+            navigate('/dashboard')
+        }
 
-    //         }
-    //         else if (person === "HR") {
-    //             window.alert(data.success)
-    //             navigate('/dashboard')
-    //         }
-    //         else if (person === "manager") {
-    //             window.alert(data.success)
-    //             navigate('/dashboard')
-    //         }
-    //     }
-    // }
+    }
     return (
         <>
             <main className='padding'>

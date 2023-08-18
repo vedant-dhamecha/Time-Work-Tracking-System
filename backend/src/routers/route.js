@@ -20,11 +20,10 @@ router.post("/login", async (req, res) => {
         console.log('hr :>> ', hr);
         if (password === hr.password) {
           res.status(201).json({ success: "HR login successful" });
-        } else {
-          new Error("Invalid credentials");
         }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of HR" });
+        else {
+          res.status(401).json({ error: "Invalid credentials of HR" });
+        }
       }
 
     } catch (error) {
@@ -33,18 +32,17 @@ router.post("/login", async (req, res) => {
   }
   else if (person === "employee") {
     // const {email,password,person} = req.body;
-    const emp = await Employee.findOne({ id: uid });
     try {
+      const emp = await Employee.findOne({ id: uid });
 
       if (emp) {
         console.log('emp :>> ', emp);
         if (password === emp.password) {
           res.status(201).json({ success: "Employee login successful" });
-        } else {
-          new Error("Invalid credentials");
         }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of Employee" });
+        else {
+          res.status(401).json({ error: "Invalid credentials of Employee" });
+        }
       }
 
     } catch (error) {
@@ -60,28 +58,26 @@ router.post("/login", async (req, res) => {
         console.log('manager :>> ', manager);
         if (password === manager.password) {
           res.status(201).json({ success: "Manager login successful" });
-        } else {
-          new Error("Invalid credentials");
         }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of Manager" });
+        else {
+          res.status(401).json({ error: "Invalid credentials of Manager" });
+        }
       }
-
     } catch (error) {
       console.log("err:", error);
     }
   }
-  else if (req.body.person === "addEmployee") {
-    // const {username,id,email,password,person} = req.body;
+  // else if (req.body.person === "addEmployee") {
+  //   // const {username,id,email,password,person} = req.body;
 
-    try {
-      const data = new Employee(req.body);
-      await data.save();
-      res.send("ok")
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //   try {
+  //     const data = new Employee(req.body);
+  //     await data.save();
+  //     res.send("ok")
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
 });
 module.exports = router;

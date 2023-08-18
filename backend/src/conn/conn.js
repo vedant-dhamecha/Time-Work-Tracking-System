@@ -7,3 +7,4 @@ mongoose.connect(db).then(() => {
 }).catch((error) => {
     console.log(error);
 })
+

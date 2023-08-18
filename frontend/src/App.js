@@ -9,10 +9,10 @@ import Login from "./components/Login";
 
 function App() {
   const [nav, setNav] = useState(true);
-
+  const [user, setUser] = useState({ name: null, id: null });
   return (
     <>
-      <context.Provider value={{ nav, setNav }}>
+      <context.Provider value={{ nav, setNav, user, setUser }}>
         <Router>
           {nav && <Navbar />}
           <Routes>
