@@ -1,14 +1,47 @@
 const mongoose = require("mongoose");
 
-const hrData = mongoose.Schema({
-    email:{
-        type: String
+const hrSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
     },
-    password:{
-        type: String
-    }
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    id: {
+        type: String,
+        // required: true,
+        unique: true
+    },
+    gender: {
+        type: String,
+        // required: true,
+    },
+    password: {
+        type: String,
+        // required: true,
+    },
+    dob: {
+        type: String,
+        // required: true,
+    },
+    mobile: {
+        type: Number,
+        // required: true,
+        unique: true
+    },
+    address: {
+        type: String,
+        // required: true,
+    },
+    joiningDate: {
+        type: String,
+        // required: true,
+    },
 })
 
 
-const hr = new mongoose.model("hr",hrData);
+const hr = new mongoose.model("hr", hrSchema);
 module.exports = hr;

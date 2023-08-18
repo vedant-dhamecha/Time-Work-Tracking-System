@@ -38,7 +38,7 @@ export default function Dashboard() {
                             justifyContent: 'center'
                         }}
                     >
-                        <img src={logo} alt="logo" className='logo' style={{ height: '14vh', width: '14.5vh', padding: '2vh' }} />
+                        <img src={logo} alt="logo" style={{ height: '14vh', width: '14.5vh', padding: '2vh' }} />
                     </div>
                     <Menu
                         theme="dark"
