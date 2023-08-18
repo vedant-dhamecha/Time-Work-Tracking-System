@@ -1,6 +1,10 @@
 const express = require("express");
 const app = express();
 const router = new express.Router();
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 //importing schemas
 const Hr = require("../modules/Hr");
@@ -9,20 +13,27 @@ const Employee = require("../modules/Employee");
 
 router.post("/login", async (req, res) => {
 
-  const { uid, password, person } = req.body;
+  const { id, password, person } = req.body;
 
   if (person === "HR") {
-    // const {email,password,person} = req.body;
-    const hr = await Hr.findOne({ id: uid });
+    console.log(id);
+    console.log(password);
+    const hr = await Hr.findOne({ id: id });
     try {
 
       if (hr) {
-        console.log('hr :>> ', hr);
-        if (password === hr.password) {
-          res.status(201).json({ success: "HR login successful" });
-        }
-        else {
-          res.status(401).json({ error: "Invalid credentials of HR" });
+        const passwordHr = await bcrypt.compare(password, hr.password);
+        if (passwordHr) {
+          const token = await hr.generateAuthToken();
+          res.cookie("hrToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'hr', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.status(201).json({ name: hr.name, id: hr.id, success: "HR login successful" });
+        } else {
+          res.status(401).json({ error: "Invalid credentials of Hr" });
         }
       }
 
@@ -31,16 +42,24 @@ router.post("/login", async (req, res) => {
     }
   }
   else if (person === "employee") {
-    // const {email,password,person} = req.body;
     try {
-      const emp = await Employee.findOne({ id: uid });
+      const emp = await Employee.findOne({ id });
 
       if (emp) {
         console.log('emp :>> ', emp);
-        if (password === emp.password) {
-          res.status(201).json({ success: "Employee login successful" });
-        }
-        else {
+        const passwordEmp = await bcrypt.compare(password, emp.password);
+
+        if (passwordEmp) {
+          const token = await emp.generateAuthToken();
+          console.log('token in route :>> ', token);
+          res.cookie("employeeToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'employee', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.status(201).json({ name: emp.name, id: emp.id, success: "Employee login successful" });
+        } else {
           res.status(401).json({ error: "Invalid credentials of Employee" });
         }
       }
@@ -50,34 +69,102 @@ router.post("/login", async (req, res) => {
     }
   }
   else if (person === "manager") {
-    // const {email,password,person} = req.body;
-    const manager = await Manager.findOne({ id: uid });
     try {
+      const manager = await Manager.findOne({ id });
 
       if (manager) {
-        console.log('manager :>> ', manager);
-        if (password === manager.password) {
-          res.status(201).json({ success: "Manager login successful" });
-        }
-        else {
-          res.status(401).json({ error: "Invalid credentials of Manager" });
+        const passwordManager = await bcrypt.compare(password, manager.password);
+        if (passwordManager) {
+          const token = await manager.generateAuthToken();
+          res.cookie("managerToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'manager', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+
+          return res.status(201).json({ name: manager.name, id: manager.id, success: "Manager login successful" });
+        } else {
+          return res.status(401).json({ error: "Invalid credentials of Manager" });
         }
       }
     } catch (error) {
       console.log("err:", error);
     }
   }
-  // else if (req.body.person === "addEmployee") {
-  //   // const {username,id,email,password,person} = req.body;
-
-  //   try {
-  //     const data = new Employee(req.body);
-  //     await data.save();
-  //     res.send("ok")
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
 });
+
+router.get('/logout', (req, res) => {
+  console.log('req.cookies :>> ', req.cookies);
+  if (req.cookies.person === 'employee') {
+    res.clearCookie('employeeToken');
+    res.clearCookie('person')
+  }
+  else if (req.cookies.person === 'manager') {
+    res.clearCookie('managerToken');
+    res.clearCookie('person')
+  }
+  else if (req.cookies.person === 'hr') {
+    res.clearCookie('hrToken');
+    res.clearCookie('person')
+  }
+
+  return res.json({ loggedOut: req.cookies.person + " logged out" })
+})
+
+router.post("/register", async (req, res) => {
+  const { id, password, person } = req.body;
+
+  if (req.body.person === "addHr") {
+    const findId = await Hr.findOne({ id });
+    try {
+
+      if (!findId) {
+        const data = new Hr(req.body);
+        await data.save();
+        res.status(201).json({ success: "Hr Signup successful" });
+      } else {
+        res.status(401).json({ error: "Signup fail for Hr" });
+      }
+
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ error: "Signup fail for Hr" });
+    }
+  }
+  else if (req.body.person === "addManager") {
+    try {
+      const findId = await Manager.findOne({ id: id });
+
+      if (!findId) {
+        const data = new Manager(req.body);
+        await data.save();
+        res.status(201).json({ success: "Manager Signup successful" });
+      } else {
+        res.status(401).json({ error: "Signup fail for Manager" });
+      }
+
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ error: "Signup fail for Manager" });
+    }
+  }
+  else if (req.body.person === "addEmployee") {
+    try {
+      const findId = await Employee.findOne({ id: id });
+
+      if (!findId) {
+        const data = new Employee(req.body);
+        await data.save();
+        res.status(201).json({ success: "Employee Signup successful" });
+      } else {
+        res.status(401).json({ error: "Signup fail for Employee" });
+      }
+
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ error: "Signup fail for Employee" });
+    }
+  }
+})
 module.exports = router;

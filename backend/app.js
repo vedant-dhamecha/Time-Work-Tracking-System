@@ -8,9 +8,12 @@ app.use(cors({
 }));
 
 require("dotenv").config();
-const port = process.env.PORT || 4100;
+const port = process.env.PORT || 3218;
+
+const cookieParser = require('cookie-parser');
 
 app.use(express.json());
+app.use(cookieParser());
 
 require("./src/conn/conn");
 const router = require("./src/routers/route");

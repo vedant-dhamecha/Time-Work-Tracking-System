@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Form, Input } from 'antd';
 import { Layout, Menu, theme, message, Result, Spin, Alert } from 'antd';
@@ -8,26 +8,27 @@ import managerImg from '../assets/manager.png'
 import empImg from '../assets/emp.png'
 import hrImg from '../assets/hr.png'
 import logo from '../assets/logo.png'
+import context from '../Context/context';
 
 export default function Login() {
     const params = useParams();
     const { person } = params;
     const navigate = useNavigate()
-    const [uid, setUid] = useState('')
+    const [id, setId] = useState('')
     const [password, setPassword] = useState('')
     // const [msg, setMsg] = useState('')
 
-    // const handleLogin = () => { }
+    const { setLogged, user, setUser } = useContext(context)
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        const res = await fetch('http://localhost:4100/login', {
+        const res = await fetch('http://localhost:3218/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ uid, password, person })
+            body: JSON.stringify({ id, password, person })
         })
 
         const data = await res.json();
@@ -37,6 +38,8 @@ export default function Login() {
             window.alert(data.error)
         }
         else if (data?.success) {
+            setLogged(true)
+            setUser({ name: data.name, id: data.id });
             window.alert(data.success)
             navigate('/dashboard')
         }
@@ -67,7 +70,7 @@ export default function Login() {
                                             },
                                         ]}
                                     >
-                                        <Input onChange={(e) => setUid(e.target.value)} />
+                                        <Input onChange={(e) => setId(e.target.value)} />
                                     </Form.Item>
 
                                     <Form.Item
