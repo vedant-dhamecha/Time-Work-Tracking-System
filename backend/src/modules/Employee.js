@@ -8,41 +8,41 @@ const employeeSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
-        // unique: true
+        unique: true
     },
     gender: {
         type: String,
-        // required: true,
+        required: true,
     },
     id: {
         type: String,
-        // required: true,
-        // unique: true
+        required: true,
+        unique: true
     },
-    // designation: {
-    //     type: String,
-    //     required: true,
-    // },
+    designation: {
+        type: String,
+        required: true,
+    },
     password: {
         type: String,
         required: true,
     },
     dob: {
         type: String,
-        // required: true,
+        required: true,
     },
     mobile: {
         type: Number,
-        // required: true,
-        // unique: true
+        required: true,
+        unique: true
     },
     address: {
         type: String,
-        // required: true,
+        required: true,
     },
     joiningDate: {
         type: String,
-        // required: true,
+        required: true,
     },
 
 })
