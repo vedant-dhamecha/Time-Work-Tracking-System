@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 import {
     Collapse,
     Navbar,
@@ -14,41 +16,57 @@ import {
     NavbarText,
 } from 'reactstrap';
 import logo from '../assets/logo.png'
+import '../styles/navbar.css'
+import context from '../Context/context';
 
 
 export default function Navigationbar() {
     const [isOpen, setIsOpen] = useState(false);
-
+    const { logged } = useContext(context)
     const toggle = () => setIsOpen(!isOpen);
     return (
         <>
             <div>
-                <Navbar color="dark" dark expand="lg" fixed='top'>
-                    <NavbarBrand href="/"><img src={logo} alt="" style={{ height: '10vh', width: '10.6vh', margin: '0.5vh' }} /></NavbarBrand>
+                <Navbar color="dark" dark expand="lg" sticky='top' className="sticky-navbar">
+                    <NavbarBrand href="/"><img src={logo} alt="" className='logo' /></NavbarBrand>
                     <NavbarToggler onClick={toggle} />
                     <Collapse isOpen={isOpen} navbar>
-                        <Nav className="me-auto" navbar>
+                        <Nav className="me-auto menu" navbar >
                             <NavItem>
-                                <Link href="/" class="nav-link" role="button">Home</Link>
+                                <Link to="/" class="nav-link menuitem" role="button">Home</Link>
                             </NavItem>
-                            <NavItem>
-                                <Link to="/dashboard" class="nav-link" role="button">
-                                    Dashboard
-                                </Link>
-                            </NavItem>
-                            <UncontrolledDropdown nav inNavbar>
-                                <DropdownToggle nav caret>
-                                    Login
-                                </DropdownToggle>
-                                <DropdownMenu right>
-                                    <DropdownItem>Manager</DropdownItem>
-                                    <DropdownItem>Employee</DropdownItem>
-                                    <DropdownItem divider />
-                                    <DropdownItem>HR</DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
+                            {!logged &&
+                                <>
+                                    <UncontrolledDropdown nav inNavbar >
+                                        <DropdownToggle nav caret className='menuitem'>Login</DropdownToggle>
+                                        <DropdownMenu className='dropmenu'>
+                                            <Link class="dropdown-item" to='login/manager'>Manager</Link>
+                                            <Link class="dropdown-item" to='login/employee'>Employee</Link>
+                                            <DropdownItem divider />
+                                            <Link class="dropdown-item" to='login/HR'>HR</Link>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                </>
+                            }
+                            {logged &&
+                                <>
+
+                                    <NavItem>
+                                        <Link to="/dashboard" class="nav-link menuitem" role="button">Dashboard</Link>
+                                    </NavItem>
+                                    <UncontrolledDropdown nav inNavbar >
+                                        <DropdownToggle nav caret className='menuitem'>{Cookies.get('person')}</DropdownToggle>
+                                        <DropdownMenu className='dropmenu'>
+                                            <Link class="dropdown-item" to='/logout'>Logout</Link>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                </>
+
+                            }
                         </Nav>
-                        <NavbarText>Simple Text</NavbarText>
+                        <NavbarText>
+
+                        </NavbarText>
                     </Collapse>
                 </Navbar>
             </div>

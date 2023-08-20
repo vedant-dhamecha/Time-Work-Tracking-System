@@ -1,0 +1,33 @@
+.menu {
+  /* border: 2px solid white; */
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  font-size: large;
+  padding-right: 5vh;
+}
+.menuitem {
+  /* border: 2px solid red; */
+  margin-right: 5vh;
+}
+.dropdown-menu {
+  min-width: fit-content;
+  border: 1px solid gray;
+}
+.logo {
+  height: 10vh;
+  width: 10.6vh;
+  margin: 0.5vh;
+}
+.sticky-navbar {
+  position: sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  /* border: 2px solid red; */
+}
+@media (min-width: 1200px) {
+  .logo {
+    margin-left: 6vh;
+  }
+}
