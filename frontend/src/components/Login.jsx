@@ -19,6 +19,7 @@ export default function Login() {
     // const [msg, setMsg] = useState('')
 
     const { setLogged, user, setUser } = useContext(context)
+    
     const handleLogin = async (e) => {
         e.preventDefault();
 
