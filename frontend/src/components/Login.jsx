@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Form, Input } from 'antd';
 import { Layout, Menu, theme, message, Result, Spin, Alert } from 'antd';
@@ -8,6 +8,7 @@ import managerImg from '../assets/manager.png'
 import empImg from '../assets/emp.png'
 import hrImg from '../assets/hr.png'
 import logo from '../assets/logo.png'
+import context from '../Context/context';
 
 export default function Login() {
     const params = useParams();
@@ -17,6 +18,9 @@ export default function Login() {
     const [password, setPassword] = useState('')
     // const [msg, setMsg] = useState('')
 
+    const { setLogged, user, setUser } = useContext(context)
+    const handleLogin = async (e) => {
+        e.preventDefault();
     // const handleLogin = () => { }
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -33,24 +37,16 @@ export default function Login() {
         const data = await res.json();
         console.log('data in login :>> ', data);
 
-        if (res.status===401) {
+        if (data?.error) {
             window.alert(data.error)
         }
-        else if (res.status===201) {
-            if (person === "employee") {
-                window.alert(data.success)
-                navigate('/dashboard')
-
-            }
-            else if (person === "HR") {
-                window.alert(data.success)
-                navigate('/dashboard')
-            }
-            else if (person === "manager") {
-                window.alert(data.success)
-                navigate('/dashboard')
-            }
+        else if (data?.success) {
+            setLogged(true)
+            setUser({ name: data.name, id: data.id });
+            window.alert(data.success)
+            navigate('/dashboard')
         }
+
     }
     return (
         <>
@@ -120,5 +116,5 @@ export default function Login() {
                 </div>
             </main>
         </>
-    )
+    )}
 }

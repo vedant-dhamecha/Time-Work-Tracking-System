@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 import {
     Collapse,
     Navbar,
@@ -15,11 +17,12 @@ import {
 } from 'reactstrap';
 import logo from '../assets/logo.png'
 import '../styles/navbar.css'
+import context from '../Context/context';
 
 
 export default function Navigationbar() {
     const [isOpen, setIsOpen] = useState(false);
-
+    const { logged } = useContext(context)
     const toggle = () => setIsOpen(!isOpen);
     return (
         <>
@@ -32,18 +35,34 @@ export default function Navigationbar() {
                             <NavItem>
                                 <Link to="/" class="nav-link menuitem" role="button">Home</Link>
                             </NavItem>
-                            <NavItem>
-                                <Link to="/dashboard" class="nav-link menuitem" role="button">Dashboard</Link>
-                            </NavItem>
-                            <UncontrolledDropdown nav inNavbar >
-                                <DropdownToggle nav caret className='menuitem'>Login</DropdownToggle>
-                                <DropdownMenu className='dropmenu'>
-                                    <Link class="dropdown-item" to='login/manager'>Manager</Link>
-                                    <Link class="dropdown-item" to='login/employee'>Employee</Link>
-                                    <DropdownItem divider />
-                                    <Link class="dropdown-item" to='login/HR'>HR</Link>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
+                            {!logged &&
+                                <>
+                                    <UncontrolledDropdown nav inNavbar >
+                                        <DropdownToggle nav caret className='menuitem'>Login</DropdownToggle>
+                                        <DropdownMenu className='dropmenu'>
+                                            <Link class="dropdown-item" to='login/manager'>Manager</Link>
+                                            <Link class="dropdown-item" to='login/employee'>Employee</Link>
+                                            <DropdownItem divider />
+                                            <Link class="dropdown-item" to='login/HR'>HR</Link>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                </>
+                            }
+                            {logged &&
+                                <>
+
+                                    <NavItem>
+                                        <Link to="/dashboard" class="nav-link menuitem" role="button">Dashboard</Link>
+                                    </NavItem>
+                                    <UncontrolledDropdown nav inNavbar >
+                                        <DropdownToggle nav caret className='menuitem'>{Cookies.get('person')}</DropdownToggle>
+                                        <DropdownMenu className='dropmenu'>
+                                            <Link class="dropdown-item" to='/logout'>Logout</Link>
+                                        </DropdownMenu>
+                                    </UncontrolledDropdown>
+                                </>
+
+                            }
                         </Nav>
                         <NavbarText>
 

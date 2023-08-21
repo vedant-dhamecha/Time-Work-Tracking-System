@@ -1,7 +1,10 @@
 const express = require("express");
 const app = express();
 const router = new express.Router();
-const bcrypt = require("bcryptjs");
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 //importing schemas
 const Hr = require("../modules/Hr");
@@ -11,22 +14,27 @@ const Employee = require("../modules/Employee");
 router.post("/login", async (req, res) => {
 
   const { id, password, person } = req.body;
- 
+
   if (person === "HR") {
     console.log(id);
     console.log(password);
-    const hr = await Hr.findOne({ id:id });
+    const hr = await Hr.findOne({ id: id });
     try {
 
       if (hr) {
-        const passwordHr = await bcrypt.compare(password,hr.password);
+        const passwordHr = await bcrypt.compare(password, hr.password);
         if (passwordHr) {
-          res.status(201).json({ success: "HR login successful" });
+          const token = await hr.generateAuthToken();
+          res.cookie("hrToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'hr', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.status(201).json({ name: hr.name, id: hr.id, success: "HR login successful" });
         } else {
           res.status(401).json({ error: "Invalid credentials of Hr" });
         }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of HR" });
       }
 
     } catch (error) {
@@ -34,18 +42,26 @@ router.post("/login", async (req, res) => {
     }
   }
   else if (person === "employee") {
-    const emp = await Employee.findOne({ id:id });
     try {
+      const emp = await Employee.findOne({ id });
 
       if (emp) {
-        const passwordEmp = await bcrypt.compare(password,emp.password);
+        console.log('emp :>> ', emp);
+        const passwordEmp = await bcrypt.compare(password, emp.password);
+
         if (passwordEmp) {
-          res.status(201).json({ success: "Employee login successful" });
+          const token = await emp.generateAuthToken();
+          console.log('token in route :>> ', token);
+          res.cookie("employeeToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'employee', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.status(201).json({ name: emp.name, id: emp.id, success: "Employee login successful" });
         } else {
-        res.status(401).json({ error: "Invalid credentials of Employee" });
+          res.status(401).json({ error: "Invalid credentials of Employee" });
         }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of Employee" });
       }
 
     } catch (error) {
@@ -53,31 +69,54 @@ router.post("/login", async (req, res) => {
     }
   }
   else if (person === "manager") {
-    const manager = await Manager.findOne({ id:id });
     try {
+      const manager = await Manager.findOne({ id });
 
       if (manager) {
-        const passwordManager = await bcrypt.compare(password,manager.password);
+        const passwordManager = await bcrypt.compare(password, manager.password);
         if (passwordManager) {
-          res.status(201).json({ success: "Manager login successful" });
-        } else {
-        res.status(401).json({ error: "Invalid credentials of Manager" });
-        }
-      } else {
-        res.status(401).json({ error: "Invalid credentials of Manager" });
-      }
+          const token = await manager.generateAuthToken();
+          res.cookie("managerToken", token, {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
+          res.cookie('person', 'manager', {
+            expires: new Date(Date.now() + 3600 * 24 * 365),
+          })
 
+          return res.status(201).json({ name: manager.name, id: manager.id, success: "Manager login successful" });
+        } else {
+          return res.status(401).json({ error: "Invalid credentials of Manager" });
+        }
+      }
     } catch (error) {
       console.log("err:", error);
     }
   }
 });
 
-router.post("/register",async(req,res)=>{
+router.get('/logout', (req, res) => {
+  console.log('req.cookies :>> ', req.cookies);
+  if (req.cookies.person === 'employee') {
+    res.clearCookie('employeeToken');
+    res.clearCookie('person')
+  }
+  else if (req.cookies.person === 'manager') {
+    res.clearCookie('managerToken');
+    res.clearCookie('person')
+  }
+  else if (req.cookies.person === 'hr') {
+    res.clearCookie('hrToken');
+    res.clearCookie('person')
+  }
+
+  return res.json({ loggedOut: req.cookies.person + " logged out" })
+})
+
+router.post("/register", async (req, res) => {
   const { id, password, person } = req.body;
 
   if (req.body.person === "addHr") {
-    const findId = await Hr.findOne({id:id});
+    const findId = await Hr.findOne({ id });
     try {
 
       if (!findId) {
@@ -95,7 +134,7 @@ router.post("/register",async(req,res)=>{
   }
   else if (req.body.person === "addManager") {
     try {
-      const findId = await Manager.findOne({id:id});
+      const findId = await Manager.findOne({ id: id });
 
       if (!findId) {
         const data = new Manager(req.body);
@@ -112,7 +151,7 @@ router.post("/register",async(req,res)=>{
   }
   else if (req.body.person === "addEmployee") {
     try {
-      const findId = await Employee.findOne({id:id});
+      const findId = await Employee.findOne({ id: id });
 
       if (!findId) {
         const data = new Employee(req.body);

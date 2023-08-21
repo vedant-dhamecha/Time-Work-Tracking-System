@@ -1,0 +1,39 @@
+/* register.css */
+.registration-form {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.registration-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ant-form-item {
+    margin-bottom: 15px;
+}
+
+.ant-form-item-label label {
+    font-weight: bold;
+    color: #555;
+}
+
+.ant-input,
+.ant-input-password {
+    border-radius: 4px;
+}
+
+.ant-btn-primary {
+    background-color: #1890ff;
+    border: none;
+}
+
+.ant-btn-primary:hover {
+    background-color: #096dd9;
+}
+

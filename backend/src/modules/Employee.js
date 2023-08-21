@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
 
 const employeeSchema = mongoose.Schema({
     name: {
@@ -47,12 +48,22 @@ const employeeSchema = mongoose.Schema({
     }
 })
 
-employeeSchema.pre("save",async function(next){
+employeeSchema.pre("save", async function (next) {
     if (this.isModified("password")) {
-        this.password = await bcrypt.hash(this.password,10);
+        this.password = await bcrypt.hash(this.password, 10);
         next();
     }
 })
 
+employeeSchema.methods.generateAuthToken = async function () {
+    try {
+        const token = jwt.sign({ _id: this._id }, 'kushangviharvedanttimetrackigsoftware');
+        console.log('token :>> ', token);
+
+        return token;
+    } catch (err) {
+        console.log('err in token :>> ', err);
+    }
+}
 const employee = new mongoose.model("employee", employeeSchema);
 module.exports = employee;
