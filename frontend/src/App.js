@@ -9,6 +9,7 @@ import Navbar from "./components/Navigationbar";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
+import Register from "./components/Register";
 
 function App() {
   const [nav, setNav] = useState(true);
@@ -29,7 +30,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
-
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Router>
       </context.Provider>
