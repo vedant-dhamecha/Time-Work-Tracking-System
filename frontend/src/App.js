@@ -15,6 +15,7 @@ function App() {
   const [nav, setNav] = useState(true);
   const [user, setUser] = useState({ name: null, id: null });
   const [logged, setLogged] = useState(false);
+  const [load, setLoad] = useState(false)
 
   useEffect(() => {
     if (Cookies.get('person')) { setLogged(true) } else { setLogged(false) }
@@ -22,7 +23,7 @@ function App() {
 
   return (
     <>
-      <context.Provider value={{ nav, setNav, user, setUser, logged, setLogged }}>
+      <context.Provider value={{ nav, setNav, user, setUser, logged, setLogged, load, setLoad }}>
         <Router>
           {nav && <Navbar />}
           <Routes>

@@ -11,6 +11,7 @@ import { Layout, Menu, Button, theme } from 'antd';
 import '../styles/dashboard.css'
 import logo from '../assets/logo.png'
 import context from '../Context/context';
+import Register from './Register';
 const { Header, Sider, Content, Footer } = Layout;
 
 
@@ -81,15 +82,8 @@ export default function Dashboard() {
                     <Header style={{ padding: 0, background: colorBgContainer }}>
 
                     </Header>
-                    <Content
-                        style={{
-                            margin: '24px 16px',
-                            padding: 24,
-                            minHeight: 280,
-                            background: colorBgContainer,
-                        }}
-                    >
-                        Content
+                    <Content className='content' style={{ background: colorBgContainer, }}>
+                        <Register />
                     </Content>
 
                     <Footer className='footer'>
