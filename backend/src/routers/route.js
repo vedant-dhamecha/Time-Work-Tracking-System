@@ -35,6 +35,8 @@ router.post("/login", async (req, res) => {
         } else {
           res.status(401).json({ error: "Invalid credentials of Hr" });
         }
+      } else {
+        res.status(401).json({ error: "HR does not exist" });
       }
 
     } catch (error) {
@@ -62,6 +64,8 @@ router.post("/login", async (req, res) => {
         } else {
           res.status(401).json({ error: "Invalid credentials of Employee" });
         }
+      } else {
+        res.status(401).json({ error: "Employee does not exist" });
       }
 
     } catch (error) {
@@ -87,6 +91,8 @@ router.post("/login", async (req, res) => {
         } else {
           return res.status(401).json({ error: "Invalid credentials of Manager" });
         }
+      } else {
+        res.status(401).json({ error: "Manager does not exist" });
       }
     } catch (error) {
       console.log("err:", error);
@@ -113,58 +119,40 @@ router.get('/logout', (req, res) => {
 })
 
 router.post("/register", async (req, res) => {
-  const { id, password, person } = req.body;
+  const { name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+  console.log(req.body)
+  try {
+    if (registerFor === 'manager') {
+      // console.log("hi1")
+      const findId = await Manager.findOne({ id });
+      const findMobile = await Manager.findOne({ mobile });
+      const findEmail = await Manager.findOne({ email });
 
-  if (req.body.person === "addHr") {
-    const findId = await Hr.findOne({ id });
-    try {
-
-      if (!findId) {
-        const data = new Hr(req.body);
-        await data.save();
-        res.status(201).json({ success: "Hr Signup successful" });
-      } else {
-        res.status(401).json({ error: "Signup fail for Hr" });
+      if (findId || findMobile || findEmail) {
+        return res.status(422).json({ error: "Manager already exist" })
       }
 
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ error: "Signup fail for Hr" });
+      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address });
+      await data.save();
+      return res.status(201).json({ success: "Manager successfully registered" });
     }
-  }
-  else if (req.body.person === "addManager") {
-    try {
-      const findId = await Manager.findOne({ id: id });
+    else if (registerFor === "employee") {
+      const findId = await Employee.findOne({ id });
+      const findMobile = await Employee.findOne({ mobile });
+      const findEmail = await Employee.findOne({ email });
 
-      if (!findId) {
-        const data = new Manager(req.body);
-        await data.save();
-        res.status(201).json({ success: "Manager Signup successful" });
-      } else {
-        res.status(401).json({ error: "Signup fail for Manager" });
+      if (findId || findMobile || findEmail) {
+        return res.status(422).json({ error: "Employee already exist" })
       }
 
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ error: "Signup fail for Manager" });
-    }
-  }
-  else if (req.body.person === "addEmployee") {
-    try {
-      const findId = await Employee.findOne({ id: id });
+      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate });
+      await data.save();
+      res.status(201).json({ success: "Employee successfully registered" });
 
-      if (!findId) {
-        const data = new Employee(req.body);
-        await data.save();
-        res.status(201).json({ success: "Employee Signup successful" });
-      } else {
-        res.status(401).json({ error: "Signup fail for Employee" });
-      }
-
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ error: "Signup fail for Employee" });
     }
+  } catch (error) {
+    console.log("error in register : ", error);
+    return res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
 module.exports = router;

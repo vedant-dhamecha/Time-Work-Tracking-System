@@ -1,6 +1,12 @@
 .footer {
   text-align: center;
 }
+.content {
+  margin-top: 24px;
+  /* margin-left: 16px; */
+  min-height: 280;
+  padding: 24;
+}
 .ant-layout-sider-zero-width-trigger {
   margin-top: -50px;
   margin-left: 20px;

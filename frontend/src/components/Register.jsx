@@ -1,28 +1,20 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { UserOutlined, SettingOutlined } from "@ant-design/icons";
+import React, { useState, useContext, useEffect } from "react";
+import { UserOutlined, PhoneFilled, PlusOutlined } from "@ant-design/icons";
 import {
-  AutoComplete,
+  DatePicker, Space, Spin, notification,
   Button,
-  Cascader,
-  Checkbox,
-  Col,
   Form,
   Input,
-  InputNumber,
-  Row,
   Select,
-  Radio,
+  Radio, Modal, Upload, Popconfirm
 } from "antd";
-import { Menu, Dropdown, message } from "antd";
-import { user } from "@ant-design/icons";
-import { DatePicker, Space } from "antd";
 
 import "../styles/register.css";
+import context from '../Context/context';
 import logo from "../assets/logo.png";
+import Cookies from "js-cookie";
 
 const { Option } = Select;
-
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -34,285 +26,280 @@ const formItemLayout = {
   },
 };
 
-const plainOptions = ["Male", "Female", "Other"];
+// const getBase64 = (file) =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
+
+
 
 export default function Register() {
-  const [form] = Form.useForm();
-  const params = useParams();
-  const { person } = params;
-  const navigate = useNavigate();
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    // Perform registration logic here
-    // Send registration data to the server
-    // Assuming successful registration, redirect to login page
-    navigate("/login"); // Redirect to the login page
+  const { load, setLoad } = useContext(context);
+  const [joiningDate, setJoiningDate] = useState()
+  const [bday, setBday] = useState()
+  const [msg, setMsg] = useState(null);
+  const [msgTitle, setMsgTitle] = useState(null);
+  const person = Cookies.get('person')
+  const registerFor = person === 'manager' ? "employee" : person === 'hr' ? "manager" : "";
+
+  //------------ Image upload -----------------------
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [imgValue, setImgValue] = useState();
+  // const [imageCount, setImageCount] = useState(0);
+  const [fileList, setFileList] = useState([]);
+
+  const handleCancel = () => setPreviewOpen(false);
+
+  const handlePreview = async (file) => {
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
   };
 
-  const onFinish = async (values) => {
+  const handleChange = async (e) => {
+    console.log('file :>> ', e);
+    setFileList(e.fileList)
+    // console.log('e.file :>> ', e.file);
+    if (!e.file.url && !e.file.preview) {
+      e.file.preview = await getBase64(e.file.originFileObj);
+    }
+    // console.log('e.file.preview :>> ', e.file.preview);
+    setImgValue(e.file.preview);
+    // console.log('imgValue :>> ', imgValue);
+  };
+
+  const upload = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload Profile Picture
+      </div>
+    </div>
+  );
+
+  // useEffect(() => {
+  //   if (imgValue) {
+  //     console.log('imgValue in useeffect :>> ', imgValue);
+  //   }
+  // }, [imgValue]);
+
+  //----------------------------------------------------
+
+  const formRef = React.useRef(null);
+  const handleFinish = async (values) => {
+    setLoad(true)
     console.log("Form values:", values);
+    console.log('registerFor :>> ', registerFor);
+    const dob = bday;
+    const { name, id, email, password, mobile, gender, address } = values;
+    const designation = registerFor === 'employee' ? values.designation : ''
 
-    // Perform registration logic here
-    // Send registration data to the server
+    const res = await fetch("http://localhost:3218/register", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue })
+    })
 
-    // Assuming successful registration, redirect to login page
-    navigate("/login"); // Redirect to the login page
+    const data = await res.json();
+    console.log('data :>> ', data);
+    console.log('data.error :>> ', data.error);
+
+
+    setLoad(false)
+
+    if (data?.success) {
+      setMsgTitle("Registration Successful")
+      setMsg(data?.success)
+      openNotificationWithIcon('success');
+      formRef.current?.resetFields();
+    }
+    else if (data?.error) {
+      setMsgTitle("Registration failed");
+      setMsg(data?.error)
+      // openNotificationWithIcon('error');
+    }
+    console.log('msg :>> ', msg);
+    console.log('msgTitle :>> ', msgTitle);
   };
 
-  function handleMenuClick(e) {
-    message.info("Click on menu item.");
-    console.log("click", e);
-  }
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">
-        <user />
-        Employee
-      </Menu.Item>
-      <Menu.Item key="2">
-        <user />
-        Manager
-      </Menu.Item>
-    </Menu>
-  );
-
-  function getItem(label, key, icon, children, type) {
-    return {
-      key,
-      icon,
-      children,
-      label,
-      type,
-    };
-  }
-  const items = [
-    getItem("Navigation Three", "sub4", <SettingOutlined />, [
-      getItem("Option 9", "9"),
-      getItem("Option 10", "10"),
-      getItem("Option 11", "11"),
-      getItem("Option 12", "12"),
-    ]),
-  ];
-  const onClick = (e) => {
-    console.log("click", e);
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type) => {
+    console.log("hiii")
+    api[type]({
+      message: msgTitle,
+      description: msg,
+    });
   };
-
-  const [value1, setValue1] = useState("Male");
-  const onChange1 = ({ target: { value } }) => {
-    console.log("radio1 checked", value);
-    setValue1(value);
-  };
-
-  const onChange = (date, dateString) => {
-    console.log(date, dateString);
-  };
-
-  const prefixSelector = (
-    <Select style={{ width: 70 }}>
-      <Option value="86">+91</Option>
-      <Option value="87">+92</Option>
-      <Option value="87">+01</Option>
-      <Option value="87">+07</Option>
-    </Select>
-  );
+  useEffect(() => {
+    if (msgTitle) {
+      if (msgTitle == "Registration Successful") {
+        openNotificationWithIcon('success');
+      }
+      else {
+        openNotificationWithIcon('error');
+      }
+    }
+    // if (fileList) {
+    //   setImgValue()
+    // }
+  }, [msgTitle, msg]);
 
   return (
     <>
-      <br></br>
-      <main className="padding">
-        <div class="box">
-          <div class="inner-box">
-            <div className="left" >
-              <div class="header">
-                <div>
-                  <h2>Welcome</h2>
-                  <h5>Register as Employee/Manager</h5>
-                </div>
-                <img src={logo} alt="logo" className="logo" />
-              </div>
-              <br></br>
-              <Form
-                {...formItemLayout}
-                form={form}
-                name="register"
-                onFinish={onFinish}
-                style={{ maxWidth: 600, justifyContent: "center"}}
-                scrollToFirstError
+      {contextHolder}
+      <div className="registerContainer" >
+        <div><h3 align="center">{person === 'manager' ? "Employee " : person === 'hr' ? "Manager " : ""}Registration</h3></div>
+        <div className="formContainer">
+          <br />
+          <Form {...formItemLayout} ref={formRef} name="register" onFinish={handleFinish} scrollToFirstError>
+
+            <Upload
+              listType="picture-circle"
+              fileList={fileList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              className="profilePic"
+            >
+              {fileList.length > 0 ? null : upload}
+            </Upload>
+            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+              <img
+                alt="example"
+                style={{
+                  width: '100%',
+                }}
+                src={previewImage}
+              />
+            </Modal>
+            <Form.Item name="name" label="Name" rules={[{ required: true, },]}>
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="id" label="User ID" rules={[{ required: true, },]}>
+              <Input />
+            </Form.Item>
+
+            {person === 'manager' &&
+              <Form.Item name="designation" label="Designation" rules={[{ required: true, },]}>
+                <Select style={{ width: "100%" }} placeholder="Select User Type">
+                  <Option value="Employee"><UserOutlined /> Employee</Option>
+                  <Option value="Manager"><UserOutlined /> Manager</Option>
+                </Select>
+              </Form.Item>}
+
+            <Form.Item name="gender" label="Gender" rules={[{ required: true, },]}>
+              <Radio.Group name="radiogroup" defaultValue={1}>
+                <Radio value='male'>Male</Radio>
+                <Radio value='female'>Female</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            {load &&
+              <Spin tip="Submitting..." size="large" >
+                <div className="content" />
+              </Spin>
+            }
+
+            <Form.Item name="dob" label="Date of Birth"  >
+              <Space direction="vertical" >
+                <DatePicker onChange={(e, date) => { setBday(date) }} />
+              </Space>
+            </Form.Item>
+
+            <Form.Item name="mobile" label="Phone Number" rules={[{ required: true }]} >
+              <Input addonBefore={<PhoneFilled />} />
+            </Form.Item>
+
+            <Form.Item name="address" label="Address" rules={[{ required: true }]} >
+              <Input.TextArea
+                placeholder="Enter address "
+                autoSize={{ minRows: 4, maxRows: 6, }}
+              />
+            </Form.Item>
+
+            <Form.Item name="joiningDate" label="Joining Date"  >
+              <Space direction="vertical">
+                <DatePicker onChange={(e, date) => { setJoiningDate(date) }} />
+              </Space>
+            </Form.Item>
+
+            <Form.Item name="email" label="E-mail"
+              rules={[
+                {
+                  type: "email",
+                  message: "The input is not valid E-mail!",
+                },
+                { required: true }
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item name="password" label="Password"
+              rules={[
+                { required: true },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+                  message: "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+                },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item name="confirmPassword" label="Confirm Password" dependencies={["password"]}
+              rules={[
+                { required: true, },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Passwords do not match!");
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item style={{ textAlign: "center" }} className="submit">
+              <Popconfirm
+                title="Are you sure to Submit"
+                description="Recheck the details once before submitting"
+                onConfirm={handleFinish}
+                okText="submit"
+                cancelText="cancel"
               >
-                <Form.Item
-                  name="Name"
-                  label="Name"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
+                <Button type="primary" htmlType="submit" >
+                  Sign up
+                </Button>
+              </Popconfirm>
+            </Form.Item>
 
-                <Form.Item
-                  name="Designation"
-                  label="Designation"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Select
-                    style={{ width: "100%" }}
-                    placeholder="Select User Type"
-                  >
-                    <Option value="Employee">
-                      <UserOutlined /> Employee
-                    </Option>
-                    <Option value="Manager">
-                      <UserOutlined /> Manager
-                    </Option>
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
-                  name="Gender"
-                  label="Gender"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Radio.Group
-                    options={plainOptions}
-                    onChange={onChange1}
-                    value={value1}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="Dob"
-                  label="Date of Birth"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Space direction="vertical">
-                    <DatePicker onChange={onChange} />
-                  </Space>
-                </Form.Item>
-
-                <Form.Item name="address" label="Address">
-                  <Input.TextArea
-                    placeholder="Enter address (Street, City, State, Postal Code)"
-                    autoSize={{ minRows: 4, maxRows: 6 }}
-                  />
-                </Form.Item>
-
-                <Form.Item label="Phone Number">
-                  <Input
-                    addonBefore={prefixSelector}
-                    style={{ width: "100%" }}
-                    name="phone" // Added name attribute
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your phone number!",
-                      },
-                    ]}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  name="Joining Date"
-                  label="Joining Date"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Space direction="vertical">
-                    <DatePicker onChange={onChange} />
-                  </Space>
-                </Form.Item>
-
-                <Form.Item
-                  name="email"
-                  label="E-mail"
-                  rules={[
-                    {
-                      type: "email",
-                      message: "The input is not valid E-mail!",
-                    },
-                    {
-                      required: true,
-                      message: "Please input your E-mail!",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name="password"
-                  label="Password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input your password!",
-                    },
-                    {
-                      min: 8,
-                      message: "Password must be at least 8 characters long.",
-                    },
-                    {
-                      pattern:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-                      message:
-                        "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
-                    },
-                  ]}
-                >
-                  <Input.Password />
-                </Form.Item>
-
-                <Form.Item
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  dependencies={["password"]}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please confirm your password!",
-                    },
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (!value || getFieldValue("password") === value) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject("Passwords do not match!");
-                      },
-                    }),
-                  ]}
-                >
-                  <Input.Password />
-                </Form.Item>
-                <Form.Item style={{ textAlign: "center" }}>
-                  <Button type="primary" htmlType="submit">
-                    Sign Up
-                  </Button>
-                </Form.Item>
-              </Form>
-            </div>
-          </div>
+          </Form>
         </div>
-      </main>
+      </div>
     </>
   );
+}
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => { resolve(reader.result) };
+    reader.onerror = (error) => { reject(error); }
+  })
 }
