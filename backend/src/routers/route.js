@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const nodemailer = require("nodemailer");
 
 //importing schemas
 const Hr = require("../modules/Hr");
@@ -165,6 +166,45 @@ router.post("/register", async (req, res) => {
       console.log(error);
       res.status(401).json({ error: "Signup fail for Employee" });
     }
+  }
+})
+
+router.get("/sendMail",async(req,res)=>{
+  const{email,link} = req.body;
+
+  try {
+    const userExistence = await Employee.findOne({email:email});
+    if (userExistence) {
+      const password = userExistence.password;
+      const idd = userExistence.id;
+        //sending mail
+        let mailTransporter = nodemailer.createTransport({
+          service:"gmail",
+          auth:{
+            user:"asur0000000@gmail.com",
+            pass: "kctlxsfiokgpendr"
+          }
+        })
+        let details = {
+          from: "asur000000@gmail.com",
+          to:"viharp2002@gmail.com",
+          subject:"Welcome to Artecho Solution",
+          text:`Your ID: ${idd}
+          Your password: ${password}`
+        }
+
+        mailTransporter.sendMail(details,(err)=>{
+          if (err) {
+            console.log(err);
+          }else{
+            console.log("Email is sent successfully");
+            res.send("Successfully sent mail");
+          }
+        })
+    }else{
+      res.status(401).json({ error: "No mail found" });    }
+  } catch (error) {
+    console.log(error);
   }
 })
 module.exports = router;

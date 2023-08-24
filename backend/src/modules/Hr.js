@@ -41,6 +41,9 @@ const hrSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    profilePic:{
+        type:String
+    }
 })
 
 hrSchema.pre("save", async function (next) {
