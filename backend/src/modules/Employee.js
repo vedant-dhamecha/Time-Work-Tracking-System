@@ -46,7 +46,7 @@ const employeeSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    profilePic:{
+    imgValue:{
         type:String
     }
 })

@@ -133,7 +133,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Manager already exist" })
       }
 
-      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address });
+      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address,imgValue });
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
     }
@@ -146,7 +146,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Employee already exist" })
       }
 
-      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate });
+      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate,imgValue });
       await data.save();
       res.status(201).json({ success: "Employee successfully registered" });
 
