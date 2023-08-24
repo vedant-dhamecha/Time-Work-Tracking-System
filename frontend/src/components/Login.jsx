@@ -1,8 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Form, Input } from 'antd';
-import { Layout, Menu, theme, message, Result, Spin, Alert } from 'antd';
-
+import { Button, Form, Input, Modal, message } from 'antd';
 import '../styles/login.css'
 import managerImg from '../assets/manager.png'
 import empImg from '../assets/emp.png'
@@ -16,10 +14,57 @@ export default function Login() {
     const navigate = useNavigate()
     const [id, setId] = useState('')
     const [password, setPassword] = useState('')
-    // const [msg, setMsg] = useState('')
 
     const { setLogged, user, setUser } = useContext(context)
-    
+    const [messageApi, contextHolder] = message.useMessage();
+    const key = 'updatable';
+    const openMessage = (s) => {
+        console.log('s :>> ', s);
+        messageApi.open({
+            key,
+            type: 'loading',
+            content: 'Sending...',
+        });
+        setTimeout(() => {
+            messageApi.open({
+                key,
+                type: 'success',
+                content: s,
+                duration: 3,
+            });
+        }, 2000);
+    };
+
+    //-------------modal-----------------------------
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [email, setEmail] = useState('')
+    const showModal = () => { setIsModalOpen(true); };
+    const handleCancel = () => { setIsModalOpen(false); };
+
+    const handleOk = async (e) => {
+        setIsModalOpen(false);
+
+        // openMessage("hii")
+        // const res = await fetch('http://localhost:3218/sendEmail', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     credentials: 'include',
+        //     body: JSON.stringify({ email })
+        // })
+        // const data = await res.json();
+
+        // if (data?.error) {
+        //     openMessage(data?.error)
+        // }
+        // else if (data?.success) {
+        //     openMessage(data?.success)
+        // }
+
+    };
+
+    //-----------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault();
 
@@ -48,6 +93,7 @@ export default function Login() {
     }
     return (
         <>
+            {contextHolder}
             <main className='padding'>
                 <div class="box">
                     <div class="inner-box">
@@ -64,12 +110,7 @@ export default function Login() {
                                     <Form.Item
                                         label={person + " ID"}
                                         name="userID"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please input your user ID!',
-                                            },
-                                        ]}
+                                        rules={[{ required: true, },]}
                                     >
                                         <Input onChange={(e) => setId(e.target.value)} />
                                     </Form.Item>
@@ -77,27 +118,31 @@ export default function Login() {
                                     <Form.Item
                                         label="Password"
                                         name="password"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Please input your password!',
-                                            },
-                                        ]}
+                                        rules={[{ required: true, },]}
                                     >
                                         <Input.Password onChange={(e) => setPassword(e.target.value)} />
                                     </Form.Item>
 
 
-                                    <Form.Item wrapper Col={{ offset: 8, span: 16, }}>
+                                    <Form.Item wrapper Col={{ offset: 8, span: 16, }} >
                                         <Button type="primary" htmlType='submit' onClick={handleLogin}>
                                             Submit
                                         </Button>
                                     </Form.Item>
                                 </Form>
-                                {/* <p class="text">
+                                <p class="text">
                                     Forgotten your password or you login datails?
-                                    <a href="#"><br />Get help</a> signing in
-                                </p> */}
+                                    <a href="#" onClick={showModal}><br />Get help</a> for signing in
+                                </p>
+                                <Modal title="Enter your Registered email to get the credentials" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                                    <br />
+                                    <Form.Item
+                                        label="Email"
+                                        name="email"
+                                        rules={[{ required: true },]}>
+                                        <Input onChange={(e) => setEmail(e.target.value)} />
+                                    </Form.Item>
+                                </Modal>
                             </div>
                         </div>
 
@@ -112,7 +157,7 @@ export default function Login() {
 
                     </div>
                 </div>
-            </main>
+            </main >
         </>
     )
 }
