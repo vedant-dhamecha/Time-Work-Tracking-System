@@ -45,22 +45,22 @@ export default function Login() {
         setIsModalOpen(false);
 
         // openMessage("hii")
-        // const res = await fetch('http://localhost:3218/sendEmail', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     credentials: 'include',
-        //     body: JSON.stringify({ email })
-        // })
-        // const data = await res.json();
+        const res = await fetch('http://localhost:3218/sendEmail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email })
+        })
+        const data = await res.json();
 
-        // if (data?.error) {
-        //     openMessage(data?.error)
-        // }
-        // else if (data?.success) {
-        //     openMessage(data?.success)
-        // }
+        if (data?.error) {
+            openMessage(data?.error)
+        }
+        else if (data?.success) {
+            openMessage(data?.success)
+        }
 
     };
 

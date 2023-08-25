@@ -153,18 +153,17 @@ router.post("/register", async (req, res) => {
     }
   } catch (error) {
     console.log("error in register : ", error);
-    return res.status(422).json({ error: "Fill the details appropriately" })
+     res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
-
-router.get("/sendMail",async(req,res)=>{
-  const{email,link} = req.body;
-
+ 
+router.post("/sendEmail",async(req,res)=>{
+const{email} = req.body;
   try {
     const userExistence = await Employee.findOne({email:email});
+    const idd = String(userExistence._id)
     if (userExistence) {
-      const password = userExistence.password;
-      const idd = userExistence.id;
+    
         //sending mail
         let mailTransporter = nodemailer.createTransport({
           service:"gmail",
@@ -175,10 +174,9 @@ router.get("/sendMail",async(req,res)=>{
         })
         let details = {
           from: "asur000000@gmail.com",
-          to:"viharp2002@gmail.com",
-          subject:"Welcome to Artecho Solution",
-          text:`Your ID: ${idd}
-          Your password: ${password}`
+          to:req.body.email,
+          subject:"Welcome to Artecho Solution: Reset your password through this link",
+          text:`http://localhost:3000/resetPassword/${idd}`
         }
 
         mailTransporter.sendMail(details,(err)=>{
@@ -194,5 +192,26 @@ router.get("/sendMail",async(req,res)=>{
   } catch (error) {
     console.log(error);
   }
+})
+
+router.post("/resetPassword/:idd",async function(req,res){
+  const{password,confirmPassword} = req.body;
+  const{idd} = req.params;  
+  try {
+    if (password!==confirmPassword) {
+      res.status(401).json({error:"Passwords are not matching"});
+    } else {
+      bcrypt.hash(password,10)
+      .then(hash => {
+        Employee.findByIdAndUpdate({_id:idd},{password: hash})
+        .then(u => res.status(201).json({success:"done"}))
+        .catch(err => res.status(401).json({error:"d"}))
+      })
+      .catch(err => res.status(401).json({error:"dd"})) 
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({message:error})
+  } 
 })
 module.exports = router;
