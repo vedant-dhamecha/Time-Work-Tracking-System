@@ -116,13 +116,12 @@ export default function Register() {
     console.log('data :>> ', data);
     console.log('data.error :>> ', data.error);
 
-
     setLoad(false)
 
     if (data?.success) {
       setMsgTitle("Registration Successful")
       setMsg(data?.success)
-      openNotificationWithIcon('success');
+      // openNotificationWithIcon('success');
       formRef.current?.resetFields();
     }
     else if (data?.error) {
@@ -146,10 +145,13 @@ export default function Register() {
     if (msgTitle) {
       if (msgTitle == "Registration Successful") {
         openNotificationWithIcon('success');
+
       }
       else {
         openNotificationWithIcon('error');
       }
+      setMsgTitle('')
+      setMsg('')
     }
     // if (fileList) {
     //   setImgValue()
@@ -276,17 +278,10 @@ export default function Register() {
             </Form.Item>
 
             <Form.Item style={{ textAlign: "center" }} className="submit">
-              <Popconfirm
-                title="Are you sure to Submit"
-                description="Recheck the details once before submitting"
-                onConfirm={handleFinish}
-                okText="submit"
-                cancelText="cancel"
-              >
-                <Button type="primary" htmlType="submit" >
-                  Sign up
-                </Button>
-              </Popconfirm>
+
+              <Button type="primary" htmlType="submit" >
+                Sign up
+              </Button>
             </Form.Item>
 
           </Form>
