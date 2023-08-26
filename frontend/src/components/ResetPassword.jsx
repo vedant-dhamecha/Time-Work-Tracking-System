@@ -46,7 +46,18 @@ export default function ResetPassword() {
         <Form.Item
             label="Confirm Passsword"
             name="Confirm Password"
-            rules={[{ required: true },]}>
+            rules={[
+                { required: true, },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("New Password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Passwords do not match!");
+                  },
+                }),
+              ]}
+            >
             <Input.Password onChange={(e) => setConfirmPassword(e.target.value)}/>
         </Form.Item>
 
