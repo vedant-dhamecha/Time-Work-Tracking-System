@@ -42,6 +42,9 @@ const hrSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    imgValue:{
+        type:String
+    }
 })
 
 hrSchema.pre("save", async function (next) {

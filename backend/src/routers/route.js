@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const nodemailer = require("nodemailer");
 
 //importing schemas
 const Hr = require("../modules/Hr");
@@ -132,7 +133,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Manager already exist" })
       }
 
-      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address });
+      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address,imgValue });
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
     }
@@ -145,14 +146,72 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Employee already exist" })
       }
 
-      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate });
+      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate,imgValue });
       await data.save();
       res.status(201).json({ success: "Employee successfully registered" });
 
     }
   } catch (error) {
     console.log("error in register : ", error);
-    return res.status(422).json({ error: "Fill the details appropriately" })
+     res.status(422).json({ error: "Fill the details appropriately" })
   }
+})
+ 
+router.post("/sendEmail",async(req,res)=>{
+const{email} = req.body;
+  try {
+    const userExistence = await Employee.findOne({email:email});
+    const idd = String(userExistence._id)
+    if (userExistence) {
+    
+        //sending mail
+        let mailTransporter = nodemailer.createTransport({
+          service:"gmail",
+          auth:{
+            user:"asur0000000@gmail.com",
+            pass: "kctlxsfiokgpendr"
+          }
+        })
+        let details = {
+          from: "asur000000@gmail.com",
+          to:req.body.email,
+          subject:"Welcome to Artecho Solution: Reset your password through this link",
+          text:`http://localhost:3000/resetPassword/${idd}`
+        }
+
+        mailTransporter.sendMail(details,(err)=>{
+          if (err) {
+            console.log(err);
+          }else{
+            console.log("Email is sent successfully");
+            res.send("Successfully sent mail");
+          }
+        })
+    }else{
+      res.status(401).json({ error: "No mail found" });    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+router.post("/resetPassword/:idd",async function(req,res){
+  const{password,confirmPassword} = req.body;
+  const{idd} = req.params;  
+  try {
+    if (password!==confirmPassword) {
+      res.status(401).json({error:"Passwords are not matching"});
+    } else {
+      bcrypt.hash(password,10)
+      .then(hash => {
+        Employee.findByIdAndUpdate({_id:idd},{password: hash})
+        .then(u => res.status(201).json({success:"done"}))
+        .catch(err => res.status(401).json({error:"d"}))
+      })
+      .catch(err => res.status(401).json({error:"dd"})) 
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({message:error})
+  } 
 })
 module.exports = router;

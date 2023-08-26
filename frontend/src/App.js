@@ -10,6 +10,7 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import Register from "./components/Register";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   const [nav, setNav] = useState(true);
@@ -32,6 +33,7 @@ function App() {
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/resetPassword/:idd" element={<ResetPassword />} />
           </Routes>
         </Router>
       </context.Provider>

@@ -42,6 +42,9 @@ const managerSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    imgValue:{
+        type:String
+    }
 })
 
 managerSchema.pre("save", async function (next) {

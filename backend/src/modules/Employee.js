@@ -45,6 +45,9 @@ const employeeSchema = mongoose.Schema({
     joiningDate: {
         type: String,
         required: true,
+    },
+    imgValue:{
+        type:String
     }
 })
 
