@@ -160,9 +160,12 @@ router.post("/register", async (req, res) => {
 router.post("/sendEmail",async(req,res)=>{
 const{email} = req.body;
   try {
-    const userExistence = await Employee.findOne({email:email});
-    const idd = String(userExistence._id)
-    if (userExistence) {
+    const user = await Employee.findOne({email:email});
+    if (!user) {    
+      return res.status(401).json({ error: "No mail found" });    
+      
+    }else{
+      const uid = String(user._id)
     
         //sending mail
         let mailTransporter = nodemailer.createTransport({
@@ -176,7 +179,7 @@ const{email} = req.body;
           from: "asur000000@gmail.com",
           to:req.body.email,
           subject:"Welcome to Artecho Solution: Reset your password through this link",
-          text:`http://localhost:3000/resetPassword/${idd}`
+          text:`http://localhost:3000/resetPassword/${uid}`
         }
 
         mailTransporter.sendMail(details,(err)=>{
@@ -184,11 +187,10 @@ const{email} = req.body;
             console.log(err);
           }else{
             console.log("Email is sent successfully");
-            res.send("Successfully sent mail");
+           return res.status(201).json({success:"Successfully sent mail"});
           }
         })
-    }else{
-      res.status(401).json({ error: "No mail found" });    }
+    }
   } catch (error) {
     console.log(error);
   }
@@ -213,5 +215,18 @@ router.post("/resetPassword/:idd",async function(req,res){
     console.log(error);
     res.status(401).json({message:error})
   } 
+})
+
+router.get("/image/:id",async(req,res)=>{
+  const{id} = req.params;
+   try {
+       const employee = await Employee.findById(id);
+       const image = employee.imgValue;
+       
+       res.status(201).json({image});       
+  } catch (error) {
+    console.log(error);
+    res.json({error:"error"})
+  }
 })
 module.exports = router;
