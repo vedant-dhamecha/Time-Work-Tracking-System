@@ -133,7 +133,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Manager already exist" })
       }
 
-      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address,imgValue });
+      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address, imgValue });
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
     }
@@ -146,87 +146,86 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Employee already exist" })
       }
 
-      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate,imgValue });
+      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, imgValue });
       await data.save();
       res.status(201).json({ success: "Employee successfully registered" });
 
     }
   } catch (error) {
     console.log("error in register : ", error);
-     res.status(422).json({ error: "Fill the details appropriately" })
-  }
-})
- 
-router.post("/sendEmail",async(req,res)=>{
-const{email} = req.body;
-  try {
-    const user = await Employee.findOne({email:email});
-    if (!user) {    
-      return res.status(401).json({ error: "No mail found" });    
-      
-    }else{
-      const uid = String(user._id)
-    
-        //sending mail
-        let mailTransporter = nodemailer.createTransport({
-          service:"gmail",
-          auth:{
-            user:"asur0000000@gmail.com",
-            pass: "kctlxsfiokgpendr"
-          }
-        })
-        let details = {
-          from: "asur000000@gmail.com",
-          to:req.body.email,
-          subject:"Welcome to Artecho Solution: Reset your password through this link",
-          text:`http://localhost:3000/resetPassword/${uid}`
-        }
-
-        mailTransporter.sendMail(details,(err)=>{
-          if (err) {
-            console.log(err);
-          }else{
-            console.log("Email is sent successfully");
-           return res.status(201).json({success:"Successfully sent mail"});
-          }
-        })
-    }
-  } catch (error) {
-    console.log(error);
+    res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
 
-router.post("/resetPassword/:idd",async function(req,res){
-  const{password,confirmPassword} = req.body;
-  const{idd} = req.params;  
+router.post("/sendEmail", async (req, res) => {
+  const { email } = req.body;
   try {
-    if (password!==confirmPassword) {
-      res.status(401).json({error:"Passwords are not matching"});
+    const user = await Employee.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: "Email is not registered with the system !" });
     } else {
-      bcrypt.hash(password,10)
-      .then(hash => {
-        Employee.findByIdAndUpdate({_id:idd},{password: hash})
-        .then(u => res.status(201).json({success:"done"}))
-        .catch(err => res.status(401).json({error:"d"}))
+      const uid = String(user._id)
+
+      //sending mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "asur0000000@gmail.com",
+          pass: "kctlxsfiokgpendr"
+        }
       })
-      .catch(err => res.status(401).json({error:"dd"})) 
+      let details = {
+        from: "asur000000@gmail.com",
+        to: req.body.email,
+        subject: "Welcome to Artecho Solution: Reset your password through this link",
+        text: `http://localhost:3000/resetPassword/${uid}`
+      }
+
+      mailTransporter.sendMail(details, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Email is sent successfully");
+          return res.status(201).json({ success: "Successfully sent mail" });
+        }
+      })
     }
   } catch (error) {
     console.log(error);
-    res.status(401).json({message:error})
-  } 
+  }
 })
 
-router.get("/image/:id",async(req,res)=>{
-  const{id} = req.params;
-   try {
-       const employee = await Employee.findById(id);
-       const image = employee.imgValue;
-       
-       res.status(201).json({image});       
+router.post("/resetPassword/:idd", async function (req, res) {
+  const { password, confirmPassword } = req.body;
+  const { idd } = req.params;
+  try {
+    if (password !== confirmPassword) {
+      res.status(401).json({ error: "Passwords are not matching" });
+    } else {
+      bcrypt.hash(password, 10)
+        .then(hash => {
+          Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
+            .then(u => res.status(201).json({ success: "done" }))
+            .catch(err => res.status(401).json({ error: "d" }))
+        })
+        .catch(err => res.status(401).json({ error: "dd" }))
+    }
   } catch (error) {
     console.log(error);
-    res.json({error:"error"})
+    res.status(401).json({ message: error })
+  }
+})
+
+router.get("/image/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const employee = await Employee.findById(id);
+    const image = employee.imgValue;
+
+    res.status(201).json({ image });
+  } catch (error) {
+    console.log(error);
+    res.json({ error: "error" })
   }
 })
 module.exports = router;
