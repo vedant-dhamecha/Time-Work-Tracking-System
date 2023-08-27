@@ -29,7 +29,6 @@ export default function Home() {
     // },[])
     return (
         <div>Home
-        {/* <img src={image}></img> */}
-        </div>
+         </div>
     )
 }

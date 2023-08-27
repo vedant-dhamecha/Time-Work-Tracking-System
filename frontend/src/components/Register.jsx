@@ -51,7 +51,7 @@ export default function Register() {
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [imgValue, setImgValue] = useState();
-  // const [imageCount, setImageCount] = useState(0);
+  const [imageSize, setImageSize] = useState(0);
   const [fileList, setFileList] = useState([]);
 
   const handleCancel = () => setPreviewOpen(false);
@@ -63,15 +63,14 @@ export default function Register() {
   };
 
   const handleChange = async (e) => {
-    console.log('file :>> ', e);
     setFileList(e.fileList)
-    // console.log('e.file :>> ', e.file);
+
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }
-    // console.log('e.file.preview :>> ', e.file.preview);
+     setImageSize(e.file.size);
     setImgValue(e.file.preview);
-    // console.log('imgValue :>> ', imgValue);
+    
   };
 
   const upload = (
@@ -98,12 +97,12 @@ export default function Register() {
   const formRef = React.useRef(null);
   const handleFinish = async (values) => {
     setLoad(true)
-    console.log("Form values:", values);
-    console.log('registerFor :>> ', registerFor);
+     
     const dob = bday;
     const { name, id, email, password, mobile, gender, address } = values;
-    const designation = registerFor === 'employee' ? values.designation : ''
 
+    const designation = registerFor === 'employee' ? values.designation : ''
+    
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {
@@ -113,16 +112,13 @@ export default function Register() {
     })
 
     const data = await res.json();
-    console.log('data :>> ', data);
-    console.log('data.error :>> ', data.error);
-
 
     setLoad(false)
 
     if (data?.success) {
       setMsgTitle("Registration Successful")
       setMsg(data?.success)
-      openNotificationWithIcon('success');
+      // openNotificationWithIcon('success');
       formRef.current?.resetFields();
     }
     else if (data?.error) {
@@ -130,13 +126,10 @@ export default function Register() {
       setMsg(data?.error)
       // openNotificationWithIcon('error');
     }
-    console.log('msg :>> ', msg);
-    console.log('msgTitle :>> ', msgTitle);
   };
 
   const [api, contextHolder] = notification.useNotification();
   const openNotificationWithIcon = (type) => {
-    console.log("hiii")
     api[type]({
       message: msgTitle,
       description: msg,
@@ -146,16 +139,26 @@ export default function Register() {
     if (msgTitle) {
       if (msgTitle == "Registration Successful") {
         openNotificationWithIcon('success');
+
       }
       else {
         openNotificationWithIcon('error');
       }
+      setMsgTitle('')
+      setMsg('')
     }
     // if (fileList) {
     //   setImgValue()
     // }
   }, [msgTitle, msg]);
 
+  //if image is larger than 50kb
+  useEffect(()=>{
+      if (imageSize>49597) {
+        setMsgTitle("Image size is too large")
+      setMsg("Image must be less than 50KB");
+      }
+  },[handleChange])
   return (
     <>
       {contextHolder}
@@ -276,17 +279,10 @@ export default function Register() {
             </Form.Item>
 
             <Form.Item style={{ textAlign: "center" }} className="submit">
-              <Popconfirm
-                title="Are you sure to Submit"
-                description="Recheck the details once before submitting"
-                onConfirm={handleFinish}
-                okText="submit"
-                cancelText="cancel"
-              >
-                <Button type="primary" htmlType="submit" >
-                  Sign up
-                </Button>
-              </Popconfirm>
+
+              <Button type="primary" htmlType="submit" >
+                Sign up
+              </Button>
             </Form.Item>
 
           </Form>

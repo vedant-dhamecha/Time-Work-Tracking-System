@@ -17,8 +17,6 @@ router.post("/login", async (req, res) => {
   const { id, password, person } = req.body;
 
   if (person === "HR") {
-    console.log(id);
-    console.log(password);
     const hr = await Hr.findOne({ id: id });
     try {
 
@@ -49,12 +47,10 @@ router.post("/login", async (req, res) => {
       const emp = await Employee.findOne({ id });
 
       if (emp) {
-        console.log('emp :>> ', emp);
         const passwordEmp = await bcrypt.compare(password, emp.password);
 
         if (passwordEmp) {
           const token = await emp.generateAuthToken();
-          console.log('token in route :>> ', token);
           res.cookie("employeeToken", token, {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
@@ -102,7 +98,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  console.log('req.cookies :>> ', req.cookies);
   if (req.cookies.person === 'employee') {
     res.clearCookie('employeeToken');
     res.clearCookie('person')
@@ -121,10 +116,10 @@ router.get('/logout', (req, res) => {
 
 router.post("/register", async (req, res) => {
   const { name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
-  console.log(req.body)
+  console.log(registerFor)
   try {
     if (registerFor === 'manager') {
-      // console.log("hi1")
+      
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
       const findEmail = await Manager.findOne({ email });
@@ -133,7 +128,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Manager already exist" })
       }
 
-      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address,imgValue });
+      const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address, imgValue });
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
     }
@@ -146,87 +141,107 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Employee already exist" })
       }
 
-      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate,imgValue });
+      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, imgValue });
       await data.save();
       res.status(201).json({ success: "Employee successfully registered" });
 
     }
   } catch (error) {
     console.log("error in register : ", error);
-     res.status(422).json({ error: "Fill the details appropriately" })
+    res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
- 
-router.post("/sendEmail",async(req,res)=>{
-const{email} = req.body;
-  try {
-    const user = await Employee.findOne({email:email});
-    if (!user) {    
-      return res.status(401).json({ error: "No mail found" });    
-      
-    }else{
-      const uid = String(user._id)
-    
-        //sending mail
-        let mailTransporter = nodemailer.createTransport({
-          service:"gmail",
-          auth:{
-            user:"asur0000000@gmail.com",
-            pass: "kctlxsfiokgpendr"
-          }
-        })
-        let details = {
-          from: "asur000000@gmail.com",
-          to:req.body.email,
-          subject:"Welcome to Artecho Solution: Reset your password through this link",
-          text:`http://localhost:3000/resetPassword/${uid}`
-        }
 
-        mailTransporter.sendMail(details,(err)=>{
-          if (err) {
-            console.log(err);
-          }else{
-            console.log("Email is sent successfully");
-           return res.status(201).json({success:"Successfully sent mail"});
-          }
-        })
+router.post("/sendEmail", async (req, res) => {
+  const { email,person } = req.body;
+  
+  try {
+    let user=null;
+    if (person==='employee') {
+       user = await Employee.findOne({ email });
+    } else if(person==="manager") {
+       user = await Manager.findOne({ email });
     }
-  } catch (error) {
-    console.log(error);
-  }
-})
+    else if(person==="HR"){
+       user = await Hr.findOne({ email });
+    }
 
-router.post("/resetPassword/:idd",async function(req,res){
-  const{password,confirmPassword} = req.body;
-  const{idd} = req.params;  
-  try {
-    if (password!==confirmPassword) {
-      res.status(401).json({error:"Passwords are not matching"});
+
+    if (!user) {
+      return res.status(401).json({ error: "Email is not registered with the system !" });
     } else {
-      bcrypt.hash(password,10)
-      .then(hash => {
-        Employee.findByIdAndUpdate({_id:idd},{password: hash})
-        .then(u => res.status(201).json({success:"done"}))
-        .catch(err => res.status(401).json({error:"d"}))
+      const uid = String(user._id)
+
+      //sending mail
+      let mailTransporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "asur0000000@gmail.com",
+          pass: "kctlxsfiokgpendr"
+        }
       })
-      .catch(err => res.status(401).json({error:"dd"})) 
+      let details = {
+        from: "asur000000@gmail.com",
+        to: req.body.email,
+        subject: "Welcome to Artecho Solution: Reset your password through this link",
+        text: `http://localhost:3000/resetPassword/${person}/${uid}`
+      }
+
+      mailTransporter.sendMail(details, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Email is sent successfully");
+          return res.status(201).json({ success: "Successfully sent mail" });
+        }
+      })
     }
   } catch (error) {
     console.log(error);
-    res.status(401).json({message:error})
-  } 
+  }
 })
 
-// router.post("/addProject",async(req,res)=>{
-//   const{title,desc,empId,startingDate,completedDate} = req.body;
+router.post("/resetPassword/:person/:idd", async function (req, res) {
+  const { password, confirmPassword } = req.body;
+  const { idd,person } = req.params;
 
-//   try {
-    
-//   } catch (error) {
-//     console.log(error);
-//     res.status(401).json({error:"Invalid"});
-//   }
-// });
+  try {
+    if (password !== confirmPassword) {
+      res.status(401).json({ error: "Passwords are not matching" });
+    } else {
+
+      if (person==='employee') {   
+          bcrypt.hash(password, 10)
+            .then(hash => {
+              Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
+                .then(u => res.status(201).json({ success: "done" }))
+                .catch(err => res.status(401).json({ error: err }))
+            })
+            .catch(err => res.status(401).json({ error: err }))
+      } else if(person==='manager') {
+          bcrypt.hash(password, 10)
+          .then(hash => {
+            Manager.findByIdAndUpdate({ _id: idd }, { password: hash })
+              .then(u => res.status(201).json({ success: "done" }))
+              .catch(err => res.status(401).json({ error: err }))
+          })
+          .catch(err => res.status(401).json({ error: err }))
+      }
+      else if(person==="HR"){
+        bcrypt.hash(password, 10)
+        .then(hash => {
+          Hr.findByIdAndUpdate({ _id: idd }, { password: hash })
+            .then(u => res.status(201).json({ success: "done" }))
+            .catch(err => res.status(401).json({ error: "error1" }))
+        })
+        .catch(err => res.status(401).json({ error: "error2" }))
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: error })
+  }
+})
 
 // router.get("/image/:id",async(req,res)=>{
 //   const{id} = req.params;

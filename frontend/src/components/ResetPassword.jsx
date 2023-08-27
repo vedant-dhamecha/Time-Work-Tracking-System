@@ -7,12 +7,12 @@ export default function ResetPassword() {
     const usNavigate = useNavigate();
     const[password,setPassword] = useState('');
     const[confirmPassword,setConfirmPassword] = useState('');
-    const{idd} = useParams();
+    const{idd,person} = useParams();
  
     const handlePassword = async(e)=>{
         e.preventDefault();
          try {
-            const res = await fetch(`http://localhost:3218/resetPassword/${idd}`,{
+            const res = await fetch(`http://localhost:3218/resetPassword/${person}/${idd}`,{
                 method:"post",
                 headers: {
                     'Content-Type': 'application/json'
