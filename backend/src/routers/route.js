@@ -217,16 +217,27 @@ router.post("/resetPassword/:idd",async function(req,res){
   } 
 })
 
-router.get("/image/:id",async(req,res)=>{
-  const{id} = req.params;
-   try {
-       const employee = await Employee.findById(id);
-       const image = employee.imgValue;
+// router.post("/addProject",async(req,res)=>{
+//   const{title,desc,empId,startingDate,completedDate} = req.body;
+
+//   try {
+    
+//   } catch (error) {
+//     console.log(error);
+//     res.status(401).json({error:"Invalid"});
+//   }
+// });
+
+// router.get("/image/:id",async(req,res)=>{
+//   const{id} = req.params;
+//    try {
+//        const employee = await Employee.findById(id);
+//        const image = employee.imgValue;
        
-       res.status(201).json({image});       
-  } catch (error) {
-    console.log(error);
-    res.json({error:"error"})
-  }
-})
+//        res.status(201).json({image});       
+//   } catch (error) {
+//     console.log(error);
+//     res.json({error:"error"})
+//   }
+// })
 module.exports = router;
