@@ -68,9 +68,9 @@ export default function Register() {
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }
-     setImageSize(e.file.size);
+    setImageSize(e.file.size);
     setImgValue(e.file.preview);
-    
+
   };
 
   const upload = (
@@ -97,12 +97,12 @@ export default function Register() {
   const formRef = React.useRef(null);
   const handleFinish = async (values) => {
     setLoad(true)
-     
+
     const dob = bday;
     const { name, id, email, password, mobile, gender, address } = values;
 
     const designation = registerFor === 'employee' ? values.designation : ''
-    
+
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {
@@ -139,7 +139,6 @@ export default function Register() {
     if (msgTitle) {
       if (msgTitle == "Registration Successful") {
         openNotificationWithIcon('success');
-
       }
       else {
         openNotificationWithIcon('error');
@@ -153,12 +152,12 @@ export default function Register() {
   }, [msgTitle, msg]);
 
   //if image is larger than 50kb
-  useEffect(()=>{
-      if (imageSize>49597) {
-        setMsgTitle("Image size is too large")
+  useEffect(() => {
+    if (imageSize > 49597) {
+      setMsgTitle("Image size is too large")
       setMsg("Image must be less than 50KB");
-      }
-  },[handleChange])
+    }
+  }, [imageSize])
   return (
     <>
       {contextHolder}
