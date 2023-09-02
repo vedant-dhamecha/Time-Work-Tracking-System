@@ -33,7 +33,7 @@ function App() {
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/resetPassword/:idd" element={<ResetPassword />} />
+            <Route path="/resetPassword/:person/:idd" element={<ResetPassword />} />
           </Routes>
         </Router>
       </context.Provider>

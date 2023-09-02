@@ -51,7 +51,7 @@ export default function Register() {
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [imgValue, setImgValue] = useState();
-  // const [imageCount, setImageCount] = useState(0);
+  const [imageSize, setImageSize] = useState(0);
   const [fileList, setFileList] = useState([]);
 
   const handleCancel = () => setPreviewOpen(false);
@@ -63,15 +63,14 @@ export default function Register() {
   };
 
   const handleChange = async (e) => {
-    console.log('file :>> ', e);
     setFileList(e.fileList)
-    // console.log('e.file :>> ', e.file);
+
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }
-    // console.log('e.file.preview :>> ', e.file.preview);
+     setImageSize(e.file.size);
     setImgValue(e.file.preview);
-    // console.log('imgValue :>> ', imgValue);
+    
   };
 
   const upload = (
@@ -98,12 +97,12 @@ export default function Register() {
   const formRef = React.useRef(null);
   const handleFinish = async (values) => {
     setLoad(true)
-    console.log("Form values:", values);
-    console.log('registerFor :>> ', registerFor);
+     
     const dob = bday;
     const { name, id, email, password, mobile, gender, address } = values;
-    const designation = registerFor === 'employee' ? values.designation : ''
 
+    const designation = registerFor === 'employee' ? values.designation : ''
+    
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {
@@ -113,8 +112,6 @@ export default function Register() {
     })
 
     const data = await res.json();
-    console.log('data :>> ', data);
-    console.log('data.error :>> ', data.error);
 
     setLoad(false)
 
@@ -129,13 +126,10 @@ export default function Register() {
       setMsg(data?.error)
       // openNotificationWithIcon('error');
     }
-    console.log('msg :>> ', msg);
-    console.log('msgTitle :>> ', msgTitle);
   };
 
   const [api, contextHolder] = notification.useNotification();
   const openNotificationWithIcon = (type) => {
-    console.log("hiii")
     api[type]({
       message: msgTitle,
       description: msg,
@@ -158,6 +152,13 @@ export default function Register() {
     // }
   }, [msgTitle, msg]);
 
+  //if image is larger than 50kb
+  useEffect(()=>{
+      if (imageSize>49597) {
+        setMsgTitle("Image size is too large")
+      setMsg("Image must be less than 50KB");
+      }
+  },[handleChange])
   return (
     <>
       {contextHolder}

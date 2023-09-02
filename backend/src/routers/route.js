@@ -17,8 +17,6 @@ router.post("/login", async (req, res) => {
   const { id, password, person } = req.body;
 
   if (person === "HR") {
-    console.log(id);
-    console.log(password);
     const hr = await Hr.findOne({ id: id });
     try {
 
@@ -49,12 +47,10 @@ router.post("/login", async (req, res) => {
       const emp = await Employee.findOne({ id });
 
       if (emp) {
-        console.log('emp :>> ', emp);
         const passwordEmp = await bcrypt.compare(password, emp.password);
 
         if (passwordEmp) {
           const token = await emp.generateAuthToken();
-          console.log('token in route :>> ', token);
           res.cookie("employeeToken", token, {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
@@ -102,7 +98,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  console.log('req.cookies :>> ', req.cookies);
   if (req.cookies.person === 'employee') {
     res.clearCookie('employeeToken');
     res.clearCookie('person')
@@ -121,10 +116,10 @@ router.get('/logout', (req, res) => {
 
 router.post("/register", async (req, res) => {
   const { name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
-  console.log(req.body)
+  console.log(registerFor)
   try {
     if (registerFor === 'manager') {
-      // console.log("hi1")
+      
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
       const findEmail = await Manager.findOne({ email });
@@ -158,9 +153,20 @@ router.post("/register", async (req, res) => {
 })
 
 router.post("/sendEmail", async (req, res) => {
-  const { email } = req.body;
+  const { email,person } = req.body;
+  
   try {
-    const user = await Employee.findOne({ email });
+    let user=null;
+    if (person==='employee') {
+       user = await Employee.findOne({ email });
+    } else if(person==="manager") {
+       user = await Manager.findOne({ email });
+    }
+    else if(person==="HR"){
+       user = await Hr.findOne({ email });
+    }
+
+
     if (!user) {
       return res.status(401).json({ error: "Email is not registered with the system !" });
     } else {
@@ -178,7 +184,7 @@ router.post("/sendEmail", async (req, res) => {
         from: "asur000000@gmail.com",
         to: req.body.email,
         subject: "Welcome to Artecho Solution: Reset your password through this link",
-        text: `http://localhost:3000/resetPassword/${uid}`
+        text: `http://localhost:3000/resetPassword/${person}/${uid}`
       }
 
       mailTransporter.sendMail(details, (err) => {
@@ -195,20 +201,41 @@ router.post("/sendEmail", async (req, res) => {
   }
 })
 
-router.post("/resetPassword/:idd", async function (req, res) {
+router.post("/resetPassword/:person/:idd", async function (req, res) {
   const { password, confirmPassword } = req.body;
-  const { idd } = req.params;
+  const { idd,person } = req.params;
+
   try {
     if (password !== confirmPassword) {
       res.status(401).json({ error: "Passwords are not matching" });
     } else {
-      bcrypt.hash(password, 10)
+
+      if (person==='employee') {   
+          bcrypt.hash(password, 10)
+            .then(hash => {
+              Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
+                .then(u => res.status(201).json({ success: "done" }))
+                .catch(err => res.status(401).json({ error: err }))
+            })
+            .catch(err => res.status(401).json({ error: err }))
+      } else if(person==='manager') {
+          bcrypt.hash(password, 10)
+          .then(hash => {
+            Manager.findByIdAndUpdate({ _id: idd }, { password: hash })
+              .then(u => res.status(201).json({ success: "done" }))
+              .catch(err => res.status(401).json({ error: err }))
+          })
+          .catch(err => res.status(401).json({ error: err }))
+      }
+      else if(person==="HR"){
+        bcrypt.hash(password, 10)
         .then(hash => {
-          Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
+          Hr.findByIdAndUpdate({ _id: idd }, { password: hash })
             .then(u => res.status(201).json({ success: "done" }))
-            .catch(err => res.status(401).json({ error: "d" }))
+            .catch(err => res.status(401).json({ error: "error1" }))
         })
-        .catch(err => res.status(401).json({ error: "dd" }))
+        .catch(err => res.status(401).json({ error: "error2" }))
+      }
     }
   } catch (error) {
     console.log(error);
@@ -216,16 +243,16 @@ router.post("/resetPassword/:idd", async function (req, res) {
   }
 })
 
-router.get("/image/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const employee = await Employee.findById(id);
-    const image = employee.imgValue;
-
-    res.status(201).json({ image });
-  } catch (error) {
-    console.log(error);
-    res.json({ error: "error" })
-  }
-})
+// router.get("/image/:id",async(req,res)=>{
+//   const{id} = req.params;
+//    try {
+//        const employee = await Employee.findById(id);
+//        const image = employee.imgValue;
+       
+//        res.status(201).json({image});       
+//   } catch (error) {
+//     console.log(error);
+//     res.json({error:"error"})
+//   }
+// })
 module.exports = router;
