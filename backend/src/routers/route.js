@@ -117,7 +117,7 @@ router.get('/logout', (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     console.log("hiii")
-    const { name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+    const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
     console.log("biii")
     console.log(registerFor)
     if (registerFor === 'manager') {

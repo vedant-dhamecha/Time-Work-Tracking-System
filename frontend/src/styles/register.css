@@ -10,8 +10,11 @@
 }
 .formContainer {
   /* border: 2px solid rgb(25, 0, 166); */
-  width: 50%;
+  border-radius: 2vh;
+  border: 1px solid rgb(219, 219, 219);
+  width: 120%;
   padding-right: 15vh;
+  padding-left: 2vh;
   margin-top: 3vh;
   margin-bottom: 3vh;
   background-color: rgba(241, 241, 241, 0.351);
@@ -44,6 +47,8 @@
 
 .ant-input,
 .ant-input-password {
+  border: 1px solid rgba(128, 128, 128, 0.511);
+  width: 100%;
   border-radius: 4px;
 }
 
@@ -64,10 +69,12 @@
 }
 @media (max-width: 530px) {
   .formContainer {
-    border: 0;
-    padding-left: 3vh;
+    border: 1px solid rgb(226, 226, 226);
+    /* padding-left: 3vh; */
     padding-right: 3vh;
-    width: 90%;
+    width: 110%;
+    margin-left: 0;
+    margin-right: 4vh;
   }
   .spinner {
     margin-top: 100%;

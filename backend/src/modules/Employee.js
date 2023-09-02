@@ -21,10 +21,6 @@ const employeeSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    designation: {
-        type: String,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
@@ -46,8 +42,8 @@ const employeeSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    imgValue:{
-        type:String
+    imgValue: {
+        type: String
     }
 })
 
