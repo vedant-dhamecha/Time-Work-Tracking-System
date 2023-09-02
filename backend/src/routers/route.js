@@ -116,19 +116,26 @@ router.get('/logout', (req, res) => {
 })
 
 router.post("/register", async (req, res) => {
-  const { name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
-  console.log(registerFor)
   try {
+    console.log("hiii")
+    const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+    console.log("biii")
+    console.log(registerFor)
     if (registerFor === 'manager') {
-      
+
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
       const findEmail = await Manager.findOne({ email });
 
-      if (findId || findMobile || findEmail) {
-        return res.status(422).json({ error: "Manager already exist" })
+      if (findId) {
+        return res.status(422).json({ error: "Manager ID already exist" })
       }
-
+      else if (findMobile) {
+        return res.status(422).json({ error: "Manager mobile already exist" })
+      }
+      else if (findEmail) {
+        return res.status(422).json({ error: "Manager email already exist" })
+      }
       const data = new Manager({ name, id, dob, email, password, mobile, gender, joiningDate, address, imgValue });
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
@@ -138,8 +145,14 @@ router.post("/register", async (req, res) => {
       const findMobile = await Employee.findOne({ mobile });
       const findEmail = await Employee.findOne({ email });
 
-      if (findId || findMobile || findEmail) {
-        return res.status(422).json({ error: "Employee already exist" })
+      if (findId) {
+        return res.status(422).json({ error: "Employee ID already exist" })
+      }
+      else if (findMobile) {
+        return res.status(422).json({ error: "Employee mobile already exist" })
+      }
+      else if (findEmail) {
+        return res.status(422).json({ error: "Employee email already exist" })
       }
 
       const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, imgValue });
@@ -154,17 +167,17 @@ router.post("/register", async (req, res) => {
 })
 
 router.post("/sendEmail", async (req, res) => {
-  const { email,person } = req.body;
-  
+  const { email, person } = req.body;
+
   try {
-    let user=null;
-    if (person==='employee') {
-       user = await Employee.findOne({ email });
-    } else if(person==="manager") {
-       user = await Manager.findOne({ email });
+    let user = null;
+    if (person === 'employee') {
+      user = await Employee.findOne({ email });
+    } else if (person === "manager") {
+      user = await Manager.findOne({ email });
     }
-    else if(person==="HR"){
-       user = await Hr.findOne({ email });
+    else if (person === "HR") {
+      user = await Hr.findOne({ email });
     }
 
 
@@ -204,23 +217,23 @@ router.post("/sendEmail", async (req, res) => {
 
 router.post("/resetPassword/:person/:idd", async function (req, res) {
   const { password, confirmPassword } = req.body;
-  const { idd,person } = req.params;
+  const { idd, person } = req.params;
 
   try {
     if (password !== confirmPassword) {
       res.status(401).json({ error: "Passwords are not matching" });
     } else {
 
-      if (person==='employee') {   
-          bcrypt.hash(password, 10)
-            .then(hash => {
-              Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
-                .then(u => res.status(201).json({ success: "done" }))
-                .catch(err => res.status(401).json({ error: err }))
-            })
-            .catch(err => res.status(401).json({ error: err }))
-      } else if(person==='manager') {
-          bcrypt.hash(password, 10)
+      if (person === 'employee') {
+        bcrypt.hash(password, 10)
+          .then(hash => {
+            Employee.findByIdAndUpdate({ _id: idd }, { password: hash })
+              .then(u => res.status(201).json({ success: "done" }))
+              .catch(err => res.status(401).json({ error: err }))
+          })
+          .catch(err => res.status(401).json({ error: err }))
+      } else if (person === 'manager') {
+        bcrypt.hash(password, 10)
           .then(hash => {
             Manager.findByIdAndUpdate({ _id: idd }, { password: hash })
               .then(u => res.status(201).json({ success: "done" }))
@@ -228,14 +241,14 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
           })
           .catch(err => res.status(401).json({ error: err }))
       }
-      else if(person==="HR"){
+      else if (person === "HR") {
         bcrypt.hash(password, 10)
-        .then(hash => {
-          Hr.findByIdAndUpdate({ _id: idd }, { password: hash })
-            .then(u => res.status(201).json({ success: "done" }))
-            .catch(err => res.status(401).json({ error: "error1" }))
-        })
-        .catch(err => res.status(401).json({ error: "error2" }))
+          .then(hash => {
+            Hr.findByIdAndUpdate({ _id: idd }, { password: hash })
+              .then(u => res.status(201).json({ success: "done" }))
+              .catch(err => res.status(401).json({ error: "error1" }))
+          })
+          .catch(err => res.status(401).json({ error: "error2" }))
       }
     }
   } catch (error) {
@@ -273,7 +286,7 @@ router.post("/addProject",async(req,res)=>{
 //    try {
 //        const employee = await Employee.findById(id);
 //        const image = employee.imgValue;
-       
+
 //        res.status(201).json({image});       
 //   } catch (error) {
 //     console.log(error);

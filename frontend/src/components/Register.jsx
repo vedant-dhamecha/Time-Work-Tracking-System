@@ -36,7 +36,7 @@ const formItemLayout = {
 
 
 
-export default function Register() {
+export default function Register({ registerFor }) {
 
   const { load, setLoad } = useContext(context);
   const [joiningDate, setJoiningDate] = useState()
@@ -44,7 +44,7 @@ export default function Register() {
   const [msg, setMsg] = useState(null);
   const [msgTitle, setMsgTitle] = useState(null);
   const person = Cookies.get('person')
-  const registerFor = person === 'manager' ? "employee" : person === 'hr' ? "manager" : "";
+  // const registerFor = person === 'manager' ? "employee" : person === 'hr' ? "manager" : "";
 
   //------------ Image upload -----------------------
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -68,9 +68,9 @@ export default function Register() {
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }
-     setImageSize(e.file.size);
+    setImageSize(e.file.size);
     setImgValue(e.file.preview);
-    
+
   };
 
   const upload = (
@@ -97,18 +97,18 @@ export default function Register() {
   const formRef = React.useRef(null);
   const handleFinish = async (values) => {
     setLoad(true)
-     
+
     const dob = bday;
     const { name, id, email, password, mobile, gender, address } = values;
 
-    const designation = registerFor === 'employee' ? values.designation : ''
-    
+    // const designation = registerFor === 'employee' ? values.designation : ''
+
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, registerFor, imgValue })
+      body: JSON.stringify({ name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue })
     })
 
     const data = await res.json();
@@ -139,7 +139,6 @@ export default function Register() {
     if (msgTitle) {
       if (msgTitle == "Registration Successful") {
         openNotificationWithIcon('success');
-
       }
       else {
         openNotificationWithIcon('error');
@@ -147,23 +146,23 @@ export default function Register() {
       setMsgTitle('')
       setMsg('')
     }
-    // if (fileList) {
-    //   setImgValue()
-    // }
+
   }, [msgTitle, msg]);
 
   //if image is larger than 50kb
-  useEffect(()=>{
-      if (imageSize>49597) {
-        setMsgTitle("Image size is too large")
+  useEffect(() => {
+    if (imageSize > 49597) {
+      setMsgTitle("Image size is too large")
       setMsg("Image must be less than 50KB");
-      }
-  },[handleChange])
+    }
+  }, [imageSize])
+  //
+
   return (
     <>
       {contextHolder}
       <div className="registerContainer" >
-        <div><h3 align="center">{person === 'manager' ? "Employee " : person === 'hr' ? "Manager " : ""}Registration</h3></div>
+        <div><h3 align="center">{registerFor} Registration</h3> </div>
         <div className="formContainer">
           <br />
           <Form {...formItemLayout} ref={formRef} name="register" onFinish={handleFinish} scrollToFirstError>
