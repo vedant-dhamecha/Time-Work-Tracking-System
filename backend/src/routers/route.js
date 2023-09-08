@@ -11,6 +11,7 @@ const nodemailer = require("nodemailer");
 const Hr = require("../modules/Hr");
 const Manager = require("../modules/ProjectManager");
 const Employee = require("../modules/Employee");
+const Project = require("../modules/Project");
 
 router.post("/login", async (req, res) => {
 
@@ -274,6 +275,30 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   } catch (error) {
     console.log(error);
     res.status(401).json({ message: error })
+  }
+})
+
+router.post("/addProject",async(req,res)=>{
+  const{title,desc,startDate,completionDate,employees} = req.body;
+
+  console.log(title)
+  console.log(desc);
+  console.log(startDate);
+  console.log(completionDate);
+  console.log(employees);
+
+  try {
+    if (!title || !desc || !startDate || !completionDate || employees.length===0) {
+      res.status(422).json({ error: "Fill all details" });
+      return;
+    }
+
+    const data = new Project(req.body);
+    await data.save();
+    return res.status(201).json({ success: "Project successfully added" });
+   } catch (error) {
+    console.log(error);
+    res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
 
