@@ -21,6 +21,7 @@ export default function Dashboard() {
     // const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate()
     const [sliderItem, setSliderItem] = useState('dashboard')
+    const [projectName, setProjectName] = useState('')
     const [registerFor, setRegisterFor] = useState('')
     const person = Cookies.get('person')
     const { nav, setNav } = useContext(context);
@@ -49,9 +50,9 @@ export default function Dashboard() {
                     <Menu
                         theme="dark"
                         mode="inline"
-                        defaultSelectedKeys={['3']}
+                        // defaultSelectedKeys={['']}
                         items={[
-                            {
+                            person !== 'employee' && {
                                 key: '1',
                                 icon: <AuditOutlined />,
                                 label: 'New Registrations',
@@ -63,7 +64,7 @@ export default function Dashboard() {
                                         label: 'Manager',
                                         onClick: () => {
                                             setSliderItem('registration')
-                                            setRegisterFor('Manager')
+                                            setRegisterFor('manager')
                                         }
                                     },
                                     person === 'manager' &&
@@ -73,13 +74,42 @@ export default function Dashboard() {
                                         label: 'Employee',
                                         onClick: () => {
                                             setSliderItem('registration')
-                                            setRegisterFor('Employee')
+                                            setRegisterFor('employee')
                                         }
                                     },
 
                                 ],
                             },
-                            {
+                            person === 'employee' && {
+                                key: '2',
+                                icon: <VideoCameraOutlined />,
+                                label: 'Projects',
+
+                                children: [
+
+                                    {
+                                        key: 'P1',
+                                        icon: <UserOutlined />,
+                                        label: 'P1',
+                                        onClick: () => {
+                                            setSliderItem('projects')
+                                            setProjectName('P1')
+                                        }
+                                    },
+
+                                    {
+                                        key: 'P2',
+                                        icon: <UserOutlined />,
+                                        label: 'P2',
+                                        onClick: () => {
+                                            setSliderItem('projects')
+                                            setProjectName('P2')
+                                        }
+                                    },
+
+                                ],
+                            },
+                            person !== 'employee' && {
                                 key: '2',
                                 icon: <VideoCameraOutlined />,
                                 label: 'Management',
@@ -88,7 +118,7 @@ export default function Dashboard() {
                                 }
                             },
                             {
-                                key: '3',
+                                key: 'profile',
                                 icon: <UserOutlined />,
                                 label: 'Profile',
                                 onClick: () => {
@@ -119,6 +149,7 @@ export default function Dashboard() {
                             {sliderItem === 'registration' && <Register registerFor={registerFor} />}
                             {sliderItem === 'profile' && <Profile />}
                             {sliderItem === 'management' && <h2>Management</h2>}
+                            {sliderItem === 'projects' && <h2>Project {projectName}</h2>}
                         </div>
                         {/* <Register /> */}
                     </Content>
@@ -128,8 +159,6 @@ export default function Dashboard() {
                     </Footer>
                 </Layout>
             </Layout>
-
-
         </>
     )
 }

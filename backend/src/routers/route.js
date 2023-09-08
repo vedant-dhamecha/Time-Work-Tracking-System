@@ -25,19 +25,19 @@ router.post("/login", async (req, res) => {
       if (hr) {
         const passwordHr = await bcrypt.compare(password, hr.password);
         if (passwordHr) {
-          const token = await hr.generateAuthToken();
-          res.cookie("hrToken", token, {
+          const email = hr.email;
+          res.cookie("hrEmail", email, {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
           res.cookie('person', 'hr', {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
-          res.status(201).json({ name: hr.name, id: hr.id, success: "HR login successful" });
+          return res.status(201).json({ name: hr.name, id: hr.id, success: "HR login successful" });
         } else {
-          res.status(401).json({ error: "Invalid credentials of Hr" });
+          return res.status(401).json({ error: "Invalid credentials of Hr" });
         }
       } else {
-        res.status(401).json({ error: "HR does not exist" });
+        return res.status(401).json({ error: "HR does not exist" });
       }
 
     } catch (error) {
@@ -52,8 +52,8 @@ router.post("/login", async (req, res) => {
         const passwordEmp = await bcrypt.compare(password, emp.password);
 
         if (passwordEmp) {
-          const token = await emp.generateAuthToken();
-          res.cookie("employeeToken", token, {
+          const email = emp.email;
+          res.cookie("employeeEmail", email, {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
           res.cookie('person', 'employee', {
@@ -78,8 +78,8 @@ router.post("/login", async (req, res) => {
       if (manager) {
         const passwordManager = await bcrypt.compare(password, manager.password);
         if (passwordManager) {
-          const token = await manager.generateAuthToken();
-          res.cookie("managerToken", token, {
+          const email = manager.email;
+          res.cookie("managerEmail", email, {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
           res.cookie('person', 'manager', {
@@ -156,7 +156,7 @@ router.post("/register", async (req, res) => {
         return res.status(422).json({ error: "Employee email already exist" })
       }
 
-      const data = new Employee({ name, id, dob, designation, email, password, mobile, gender, address, joiningDate, imgValue });
+      const data = new Employee({ name, id, dob, email, password, mobile, gender, address, joiningDate, imgValue });
       await data.save();
       res.status(201).json({ success: "Employee successfully registered" });
 
@@ -207,7 +207,7 @@ router.post("/sendEmail", async (req, res) => {
           console.log(err);
         } else {
           console.log("Email is sent successfully");
-          return res.status(201).json({ success: "Successfully sent mail" });
+          return res.status(201).json({ success: "Email is sent successfully" });
         }
       })
     }
@@ -216,6 +216,27 @@ router.post("/sendEmail", async (req, res) => {
   }
 })
 
+router.get('/getData', async (req, res) => {
+  try {
+    if (req.cookies.person === 'employee') {
+      const email = req.cookies.employeeEmail;
+      const emp = await Employee.findOne({ email })
+      res.send(emp);
+    }
+    else if (req.cookies.person === 'manager') {
+      const email = req.cookies.managerEmail;
+      const m = await Manager.findOne({ email })
+      res.send(m);
+    }
+    else if (req.cookies.person === 'HR') {
+      const email = req.cookies.hrEmail;
+      const h = await Police.findOne({ email })
+      res.send(h);
+    }
+  } catch (err) {
+    console.log('err in adminInfo auth :>> ', err);
+  }
+})
 router.post("/resetPassword/:person/:idd", async function (req, res) {
   const { password, confirmPassword } = req.body;
   const { idd, person } = req.params;

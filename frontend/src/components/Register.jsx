@@ -193,13 +193,13 @@ export default function Register({ registerFor }) {
               <Input />
             </Form.Item>
 
-            {person === 'manager' &&
+            {/* {person === 'manager' &&
               <Form.Item name="designation" label="Designation" rules={[{ required: true, },]}>
                 <Select style={{ width: "100%" }} placeholder="Select User Type">
                   <Option value="Employee"><UserOutlined /> Employee</Option>
                   <Option value="Manager"><UserOutlined /> Manager</Option>
                 </Select>
-              </Form.Item>}
+              </Form.Item>} */}
 
             <Form.Item name="gender" label="Gender" rules={[{ required: true, },]}>
               <Radio.Group name="radiogroup" defaultValue={1}>

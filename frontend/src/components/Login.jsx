@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Form, Input, Modal, message } from 'antd';
+import { Button, Form, Input, Modal, message, notification, Spin } from 'antd';
 import '../styles/login.css'
 import managerImg from '../assets/manager.png'
 import empImg from '../assets/emp.png'
@@ -14,9 +14,12 @@ export default function Login() {
     const navigate = useNavigate()
     const [id, setId] = useState('')
     const [password, setPassword] = useState('')
+    const [notiefication, setNotification] = useState(null);
+    const [notificationTitle, setNotificationTitle] = useState(null);
+    const { load, setLoad } = useContext(context);
 
     const { setLogged, user, setUser } = useContext(context)
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolderMessage] = message.useMessage();
     const key = 'updatable';
     const openMessage = (s) => {
         console.log('s :>> ', s);
@@ -28,11 +31,18 @@ export default function Login() {
         setTimeout(() => {
             messageApi.open({
                 key,
-                type: 'success',
+                type: s === 'Email is sent successfully' ? 'success' : 'error',
                 content: s,
                 duration: 3,
             });
         }, 2000);
+    };
+    const [api, contextHolderNotification] = notification.useNotification();
+    const openNotificationWithIcon = (type) => {
+        api[type]({
+            message: notificationTitle,
+            description: notiefication,
+        });
     };
 
     //-------------modal-----------------------------
@@ -67,7 +77,7 @@ export default function Login() {
     //-----------------------------------------------
     const handleLogin = async (e) => {
         e.preventDefault();
-
+        setLoad(true)
         const res = await fetch('http://localhost:3218/login', {
             method: 'POST',
             headers: {
@@ -79,23 +89,47 @@ export default function Login() {
 
         const data = await res.json();
         console.log('data in login :>> ', data);
-
+        setLoad(false)
         if (data?.error) {
-            window.alert(data.error)
+            // window.alert(data.error)
+            setNotificationTitle("Login failed");
+            setNotification(data?.error)
+            // openNotificationWithIcon('error');
         }
         else if (data?.success) {
             setLogged(true)
             setUser({ name: data.name, id: data.id });
-            window.alert(data.success)
+            setNotificationTitle("Login Successful")
+            setNotification(data?.success)
+
+            // window.alert(data.success)
             navigate('/dashboard')
         }
-
     }
+    useEffect(() => {
+        if (notificationTitle) {
+            if (notificationTitle == "Login Successful") {
+                openNotificationWithIcon('success');
+            }
+            else {
+                openNotificationWithIcon('error');
+            }
+            setNotificationTitle('')
+            setNotification('')
+        }
+
+    }, [notificationTitle, notiefication]);
     return (
         <>
-            {contextHolder}
+            {contextHolderMessage}
+            {contextHolderNotification}
             <main className='padding'>
                 <div class="box">
+                    {load &&
+                        <Spin tip="Logging in..." size="large" >
+                            <div className="content" />
+                        </Spin>
+                    }
                     <div class="inner-box">
                         <div className="left">
                             <div class="header">
