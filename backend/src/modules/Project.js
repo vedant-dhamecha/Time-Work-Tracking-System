@@ -1,25 +1,39 @@
 const mongoose = require("mongoose");
  
 const addProject = mongoose.Schema({
-    title: {
+    projectTitle: {
         type: String,
-        required: true,
+
     },
-    desc: {
-        type: String,
-        required: true
-    },
-    startDate: {
-        type: String,
-        required: true
-    },
-    completionDate: {
+    startingDate: {
         type: String,
     },
-    employees: {
-        type: Array,
-        required: true,
+    estimatedDate: {
+        type: String,
     },
+    employees: [
+        {
+            empId:{
+                type: String,
+             },
+            tasks:[
+                {
+                    title: {
+                        type: String,
+                    },
+                    desc: {
+                        type: String,
+                    },
+                    startDate: {
+                        type: String,
+                    },
+                    completionDate: {
+                        type: String,
+                    }
+                }
+            ]
+        }
+    ]
 })
 
 const project = new mongoose.model("project", addProject);

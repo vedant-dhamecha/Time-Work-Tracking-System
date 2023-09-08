@@ -12,6 +12,7 @@ const Hr = require("../modules/Hr");
 const Manager = require("../modules/ProjectManager");
 const Employee = require("../modules/Employee");
 const Project = require("../modules/Project");
+const Dummy = require("../modules/Dummy");
 
 router.post("/login", async (req, res) => {
 
@@ -117,11 +118,10 @@ router.get('/logout', (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    console.log("hiii")
-    const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
-    console.log("biii")
-    console.log(registerFor)
-    if (registerFor === 'manager') {
+     const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+    let designation = registerFor;
+
+     if (registerFor === 'manager') {
 
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
@@ -140,7 +140,8 @@ router.post("/register", async (req, res) => {
       await data.save();
       return res.status(201).json({ success: "Manager successfully registered" });
     }
-    else if (registerFor === "employee") {
+    else if (registerFor === "Employee") {
+      console.log(1)
       const findId = await Employee.findOne({ id });
       const findMobile = await Employee.findOne({ mobile });
       const findEmail = await Employee.findOne({ email });
@@ -257,17 +258,41 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 })
 
+
+let startTime=0;
+let stopTime=0;
+let timeDb=0;
+let totalTimee=0;
+let finalTime=0;
+router.post("/dummy",async(req,res)=>{
+   startTime = req.cookies.startTime;
+   res.json({message:"ok"});
+});
+
+router.post("/dummyTwo",async(req,res)=>{
+   try {
+     stopTime = req.body.time;
+
+     const timeD = await Dummy.find({empId:1});
+     timeDb = Number(timeD[0].workTime)
+
+     totalTimee = (stopTime-startTime )/1000;
+     finalTime = totalTimee + timeDb;
+ 
+    const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
+      res.json({message:"ok"}); 
+   } catch (error) {
+    console.log(error);
+    res.json({message:error});
+   }
+})
+
+
 router.post("/addProject",async(req,res)=>{
-  const{title,desc,startDate,completionDate,employees} = req.body;
-
-  console.log(title)
-  console.log(desc);
-  console.log(startDate);
-  console.log(completionDate);
-  console.log(employees);
-
+  const{projectTitle,startingDate,estimatedDate,employees} = req.body;
+ 
   try {
-    if (!title || !desc || !startDate || !completionDate || employees.length===0) {
+    if (!projectTitle || !startingDate || !estimatedDate || employees.length===0) {
       res.status(422).json({ error: "Fill all details" });
       return;
     }
