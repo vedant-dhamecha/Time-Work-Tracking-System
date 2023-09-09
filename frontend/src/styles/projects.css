@@ -1,13 +1,16 @@
-* {
-  /* width: 100%; */
-}
-.ant-menu-submenu {
-  /* width: 0; */
+.proj {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-right: 5vh;
 }
 .taskMenu {
   border: 2px solid red;
   width: 100%;
+  margin-top: 5vh;
 }
 .task {
   border: 2px solid blue;
+  min-height: 80vh;
+  margin-top: 4vh;
 }

@@ -13,7 +13,7 @@ const addProject = mongoose.Schema({
     },
     employees: [
         {
-            empId:{
+            empEmail:{
                 type: String,
              },
             tasks:[
@@ -29,7 +29,13 @@ const addProject = mongoose.Schema({
                     },
                     completionDate: {
                         type: String,
-                    }
+                    },
+                    workTime:{
+                        type: Number
+                      },
+                    breakTime:{
+                        type:Number
+                    }   
                 }
             ]
         }
