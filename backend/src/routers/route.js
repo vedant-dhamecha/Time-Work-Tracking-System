@@ -309,7 +309,6 @@ router.post("/dummyTwo", async (req, res) => {
     let finalTime = totalTimee + timeDb;
 
     const data = await Project.findOneAndUpdate({ "employees.tasks.title": taskTitle }, { $set: { workTime: finalTime } });
-    // const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
     res.json({ message: "ok" });
   } catch (error) {
     console.log(error);
