@@ -26,6 +26,7 @@ export default function Dummy() {
 
     const stop = async()=>{
         let time= (new Date()).getTime();
+        let taskTitle="task 1";
         
         try {
             const res = await fetch(`http://localhost:3218/dummyTwo`, {
@@ -35,7 +36,7 @@ export default function Dummy() {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                  time
+                  time,taskTitle
                 })
               })
           

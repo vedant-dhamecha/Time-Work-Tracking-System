@@ -237,6 +237,7 @@ router.get('/getData', async (req, res) => {
     console.log('err in adminInfo auth :>> ', err);
   }
 })
+
 router.post("/resetPassword/:person/:idd", async function (req, res) {
   const { password, confirmPassword } = req.body;
   const { idd, person } = req.params;
@@ -279,28 +280,47 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 })
 
+router.get('/getProject',async(req,res)=>{
+  const email = req.cookies.employeeEmail;
+     try {
+      
+       const data = await Project.find({"employees.empEmail":email});
+       
+       if (data.length===0) {
+          res.status(401).json({ message: "No projects assigned yet" })
+       } else {
+         res.json(data);
+       }
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ message: error })
+    }
+});
 
 let startTime=0;
-let stopTime=0;
-let timeDb=0;
-let totalTimee=0;
-let finalTime=0;
 router.post("/dummy",async(req,res)=>{
    startTime = req.cookies.startTime;
    res.json({message:"ok"});
 });
 
 router.post("/dummyTwo",async(req,res)=>{
+  const email = req.cookies.employeeEmail;
    try {
-     stopTime = req.body.time;
+     let stopTime = req.body.time;
+     let taskTitle = req.body.taskTitle;
 
-     const timeD = await Dummy.find({empId:1});
-     timeDb = Number(timeD[0].workTime)
+    //  const data = await Project.find({"employees.empEmail":email});
 
-     totalTimee = (stopTime-startTime )/1000;
-     finalTime = totalTimee + timeDb;
+
+     const timeD = await Project.find({"employees.empEmail":email});
+     console.log(timeD[0].employees.tasks)
+     let timeDb = Number(timeD[0].employees.tasks.workTime)
+
+     let totalTimee = (stopTime-startTime )/1000;
+     let finalTime = totalTimee + timeDb;
  
-    const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
+     const data = await Project.findOneAndUpdate({"employees.tasks.title":taskTitle},{$set: {workTime: finalTime}});
+    // const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
       res.json({message:"ok"}); 
    } catch (error) {
     console.log(error);
