@@ -327,6 +327,7 @@ router.post("/addProject", async (req, res) => {
     }
 
     const data = new Project(req.body);
+    console.log(data);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });
   } catch (error) {
