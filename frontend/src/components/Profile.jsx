@@ -50,7 +50,7 @@ export default function Profile() {
 
                     <Card className='infoCard mt-0 pt-0'>
                         <Meta
-                            avatar={<Avatar src="https://joesch.moe/api/v1/random" />}
+                            avatar={<Avatar src={personData.imgValue} />}
                             title={personData.name}
 
                         />
