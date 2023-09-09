@@ -33,7 +33,6 @@ export default function Login() {
                 key,
                 type: s === 'Email is sent successfully' ? 'success' : 'error',
                 content: s,
-                duration: 3,
             });
         }, 2000);
     };
@@ -61,7 +60,7 @@ export default function Login() {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ email, person })
+            body: JSON.stringify({ id, email, person })
         })
         const data = await res.json();
 

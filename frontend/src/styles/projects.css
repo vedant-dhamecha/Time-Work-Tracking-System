@@ -1,0 +1,13 @@
+* {
+  /* width: 100%; */
+}
+.ant-menu-submenu {
+  /* width: 0; */
+}
+.taskMenu {
+  border: 2px solid red;
+  width: 100%;
+}
+.task {
+  border: 2px solid blue;
+}

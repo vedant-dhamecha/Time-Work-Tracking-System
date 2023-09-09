@@ -118,10 +118,10 @@ router.get('/logout', (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-     const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+    const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
     let designation = registerFor;
 
-     if (registerFor === 'manager') {
+    if (registerFor === 'manager') {
 
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
@@ -168,48 +168,53 @@ router.post("/register", async (req, res) => {
 })
 
 router.post("/sendEmail", async (req, res) => {
-  const { email, person } = req.body;
+  const { id, email, person } = req.body;
 
   try {
     let user = null;
     if (person === 'employee') {
-      user = await Employee.findOne({ email });
+      user = await Employee.findOne({ id });
     } else if (person === "manager") {
-      user = await Manager.findOne({ email });
+      user = await Manager.findOne({ id });
     }
     else if (person === "HR") {
-      user = await Hr.findOne({ email });
+      user = await Hr.findOne({ id });
     }
 
 
     if (!user) {
-      return res.status(401).json({ error: "Email is not registered with the system !" });
+      return res.status(401).json({ error: "User does not exists !" });
     } else {
-      const uid = String(user._id)
+      if (user.email === email) {
+        const uid = String(user._id)
 
-      //sending mail
-      let mailTransporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: "asur0000000@gmail.com",
-          pass: "kctlxsfiokgpendr"
+        //sending mail
+        let mailTransporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "asur0000000@gmail.com",
+            pass: "kctlxsfiokgpendr"
+          }
+        })
+        let details = {
+          from: "asur000000@gmail.com",
+          to: req.body.email,
+          subject: "Welcome to Artecho Solution: Reset your password through this link",
+          text: `http://localhost:3000/resetPassword/${person}/${uid}`
         }
-      })
-      let details = {
-        from: "asur000000@gmail.com",
-        to: req.body.email,
-        subject: "Welcome to Artecho Solution: Reset your password through this link",
-        text: `http://localhost:3000/resetPassword/${person}/${uid}`
+
+        mailTransporter.sendMail(details, (err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("Email is sent successfully");
+            return res.status(201).json({ success: "Email is sent successfully" });
+          }
+
+        })
+      } else {
+        return res.status(201).json({ success: "Invalid email for this user ID" });
       }
-
-      mailTransporter.sendMail(details, (err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Email is sent successfully");
-          return res.status(201).json({ success: "Email is sent successfully" });
-        }
-      })
     }
   } catch (error) {
     console.log(error);
@@ -280,40 +285,40 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
 })
 
 
-let startTime=0;
-let stopTime=0;
-let timeDb=0;
-let totalTimee=0;
-let finalTime=0;
-router.post("/dummy",async(req,res)=>{
-   startTime = req.cookies.startTime;
-   res.json({message:"ok"});
+let startTime = 0;
+let stopTime = 0;
+let timeDb = 0;
+let totalTimee = 0;
+let finalTime = 0;
+router.post("/dummy", async (req, res) => {
+  startTime = req.cookies.startTime;
+  res.json({ message: "ok" });
 });
 
-router.post("/dummyTwo",async(req,res)=>{
-   try {
-     stopTime = req.body.time;
+router.post("/dummyTwo", async (req, res) => {
+  try {
+    stopTime = req.body.time;
 
-     const timeD = await Dummy.find({empId:1});
-     timeDb = Number(timeD[0].workTime)
+    const timeD = await Dummy.find({ empId: 1 });
+    timeDb = Number(timeD[0].workTime)
 
-     totalTimee = (stopTime-startTime )/1000;
-     finalTime = totalTimee + timeDb;
- 
-    const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
-      res.json({message:"ok"}); 
-   } catch (error) {
+    totalTimee = (stopTime - startTime) / 1000;
+    finalTime = totalTimee + timeDb;
+
+    const data = await Dummy.findByIdAndUpdate({ _id: "64f8d0a81d14a2d94f186380" }, { $set: { workTime: finalTime } });
+    res.json({ message: "ok" });
+  } catch (error) {
     console.log(error);
-    res.json({message:error});
-   }
+    res.json({ message: error });
+  }
 })
 
 
-router.post("/addProject",async(req,res)=>{
-  const{projectTitle,startingDate,estimatedDate,employees} = req.body;
- 
+router.post("/addProject", async (req, res) => {
+  const { projectTitle, startingDate, estimatedDate, employees } = req.body;
+
   try {
-    if (!projectTitle || !startingDate || !estimatedDate || employees.length===0) {
+    if (!projectTitle || !startingDate || !estimatedDate || employees.length === 0) {
       res.status(422).json({ error: "Fill all details" });
       return;
     }
@@ -321,7 +326,7 @@ router.post("/addProject",async(req,res)=>{
     const data = new Project(req.body);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });
-   } catch (error) {
+  } catch (error) {
     console.log(error);
     res.status(422).json({ error: "Fill the details appropriately" })
   }

@@ -14,6 +14,7 @@ import logo from '../assets/logo.png'
 import context from '../Context/context';
 import Register from './Register';
 import Profile from './Profile';
+import Projects from './Projects';
 const { Header, Sider, Content, Footer } = Layout;
 
 
@@ -147,11 +148,10 @@ export default function Dashboard() {
                     <Content className='content' style={{ background: colorBgContainer, }}>
                         <div style={{ padding: 20 }}>
                             {sliderItem === 'registration' && <Register registerFor={registerFor} />}
-                            {sliderItem === 'profile' && <Profile />}
-                            {sliderItem === 'management' && <h2>Management</h2>}
-                            {sliderItem === 'projects' && <h2>Project {projectName}</h2>}
                         </div>
-                        {/* <Register /> */}
+                        {sliderItem === 'profile' && <Profile />}
+                        {sliderItem === 'management' && <h2>Management</h2>}
+                        {sliderItem === 'projects' && <Projects projectName={projectName} />}
                     </Content>
 
                     <Footer className='footer'>
