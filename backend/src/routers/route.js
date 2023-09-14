@@ -312,22 +312,21 @@ router.post("/dummy", async (req, res) => {
 
 router.post("/dummyTwo", async (req, res) => {
   const email = req.cookies.employeeEmail;
+
+  //I need project title from frontend
   try {
     let stopTime = req.body.time;
-    let taskTitle = req.body.taskTitle;
-
-    //  const data = await Project.find({"employees.empEmail":email});
-
+    //  let taskTitle = req.body.taskTitle;
 
     const timeD = await Project.find({ "employees.empEmail": email });
-    console.log(timeD[0].employees.tasks)
-    let timeDb = Number(timeD[0].employees.tasks.workTime)
+
+    let timeDb = timeD[0].employees[0].tasks[0].workTime;
 
     let totalTimee = (stopTime - startTime) / 1000;
     let finalTime = totalTimee + timeDb;
 
-    const data = await Project.findOneAndUpdate({ "employees.tasks.title": taskTitle }, { $set: { workTime: finalTime } });
-    // const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
+    const data = await Project.findOneAndUpdate({ title: "title 1" }, { $set: { workTime: finalTime } });
+    //  console.log(data);
     res.json({ message: "ok" });
   } catch (error) {
     console.log(error);
@@ -335,9 +334,8 @@ router.post("/dummyTwo", async (req, res) => {
   }
 })
 
-
 router.post("/addProject", async (req, res) => {
-  const { projectTitle, startingDate, estimatedDate, assignedEmployees } = req.body;
+  const { projectTitle, startingDate, estimatedDate, employees } = req.body;
 
   try {
     if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0) {
