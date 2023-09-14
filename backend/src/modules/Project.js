@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
- 
+
 const addProject = mongoose.Schema({
     projectTitle: {
         type: String,
@@ -11,12 +11,12 @@ const addProject = mongoose.Schema({
     estimatedDate: {
         type: String,
     },
-    employees: [
+    assignedEmployees: [
         {
-            empEmail:{
+            empEmail: {
                 type: String,
-             },
-            tasks:[
+            },
+            tasks: [
                 {
                     title: {
                         type: String,
@@ -30,12 +30,12 @@ const addProject = mongoose.Schema({
                     completionDate: {
                         type: String,
                     },
-                    workTime:{
+                    workTime: {
                         type: Number
-                      },
-                    breakTime:{
-                        type:Number
-                    }   
+                    },
+                    breakTime: {
+                        type: Number
+                    }
                 }
             ]
         }

@@ -46,8 +46,8 @@ const hrSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    imgValue:{
-        type:String
+    imgValue: {
+        type: String
     }
 })
 

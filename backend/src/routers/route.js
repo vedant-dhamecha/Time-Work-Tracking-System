@@ -13,10 +13,13 @@ const Manager = require("../modules/ProjectManager");
 const Employee = require("../modules/Employee");
 const Project = require("../modules/Project");
 const Dummy = require("../modules/Dummy");
+const hr = require("../modules/Hr");
 
 router.post("/login", async (req, res) => {
 
   const { id, password, person } = req.body;
+
+  console.log("inside login", req.body);
 
   if (person === "HR") {
     const hr = await Hr.findOne({ id: id });
@@ -32,7 +35,7 @@ router.post("/login", async (req, res) => {
           res.cookie('person', 'hr', {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
-          return res.status(201).json({ name: hr.name, id: hr.id, success: "HR login successful" });
+          return res.status(201).json({ name: hr.name, id: hr.id, profileImg: hr.imgValue, success: "HR login successful" });
         } else {
           return res.status(401).json({ error: "Invalid credentials of Hr" });
         }
@@ -59,7 +62,7 @@ router.post("/login", async (req, res) => {
           res.cookie('person', 'employee', {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
-          res.status(201).json({ name: emp.name, id: emp.id, success: "Employee login successful" });
+          res.status(201).json({ name: emp.name, id: emp.id, profileImg: emp.imgValue, success: "Employee login successful" });
         } else {
           res.status(401).json({ error: "Invalid credentials of Employee" });
         }
@@ -86,7 +89,7 @@ router.post("/login", async (req, res) => {
             expires: new Date(Date.now() + 3600 * 24 * 365),
           })
 
-          return res.status(201).json({ name: manager.name, id: manager.id, success: "Manager login successful" });
+          return res.status(201).json({ name: manager.name, id: manager.id, profileImg: manager.imgValue, success: "Manager login successful" });
         } else {
           return res.status(401).json({ error: "Invalid credentials of Manager" });
         }
@@ -101,15 +104,15 @@ router.post("/login", async (req, res) => {
 
 router.get('/logout', (req, res) => {
   if (req.cookies.person === 'employee') {
-    res.clearCookie('employeeToken');
+    res.clearCookie('employeeEmail');
     res.clearCookie('person')
   }
   else if (req.cookies.person === 'manager') {
-    res.clearCookie('managerToken');
+    res.clearCookie('managerEmail');
     res.clearCookie('person')
   }
   else if (req.cookies.person === 'hr') {
-    res.clearCookie('hrToken');
+    res.clearCookie('hrEmail');
     res.clearCookie('person')
   }
 
@@ -118,10 +121,10 @@ router.get('/logout', (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-     const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
+    const { name, id, dob, email, password, mobile, gender, address, joiningDate, registerFor, imgValue } = req.body;
     let designation = registerFor;
 
-     if (registerFor === 'manager') {
+    if (registerFor === 'manager') {
 
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
@@ -228,9 +231,10 @@ router.get('/getData', async (req, res) => {
       const m = await Manager.findOne({ email })
       res.send(m);
     }
-    else if (req.cookies.person === 'HR') {
+    else if (req.cookies.person === 'hr') {
+      console.log("hi1......123....")
       const email = req.cookies.hrEmail;
-      const h = await Police.findOne({ email })
+      const h = await hr.findOne({ email })
       res.send(h);
     }
   } catch (err) {
@@ -280,60 +284,63 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 })
 
-router.get('/getProject',async(req,res)=>{
+router.get('/getProject', async (req, res) => {
+  // console.log("hi1..........")
   const email = req.cookies.employeeEmail;
-     try {
-      
-       const data = await Project.find({"employees.empEmail":email});
-       
-       if (data.length===0) {
-          res.status(401).json({ message: "No projects assigned yet" })
-       } else {
-         res.json(data);
-       }
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ message: error })
+  // console.log(email)
+  try {
+    // console.log("hi2")
+    const data = await Project.find({ "employees.empEmail": email });
+    // console.log('data :>> ', data);
+    if (data.length === 0) {
+      res.status(401).json({ message: "No projects assigned yet" })
+    } else {
+      // console.log('data :>> ', data);
+      res.json(data);
     }
+  } catch (error) {
+    // console.log(error);
+    res.status(401).json({ message: error })
+  }
 });
 
-let startTime=0;
-router.post("/dummy",async(req,res)=>{
-   startTime = req.cookies.startTime;
-   res.json({message:"ok"});
+let startTime = 0;
+router.post("/dummy", async (req, res) => {
+  startTime = req.cookies.startTime;
+  res.json({ message: "ok" });
 });
 
-router.post("/dummyTwo",async(req,res)=>{
+router.post("/dummyTwo", async (req, res) => {
   const email = req.cookies.employeeEmail;
-   try {
-     let stopTime = req.body.time;
-     let taskTitle = req.body.taskTitle;
+  try {
+    let stopTime = req.body.time;
+    let taskTitle = req.body.taskTitle;
 
     //  const data = await Project.find({"employees.empEmail":email});
 
 
-     const timeD = await Project.find({"employees.empEmail":email});
-     console.log(timeD[0].employees.tasks)
-     let timeDb = Number(timeD[0].employees.tasks.workTime)
+    const timeD = await Project.find({ "employees.empEmail": email });
+    console.log(timeD[0].employees.tasks)
+    let timeDb = Number(timeD[0].employees.tasks.workTime)
 
-     let totalTimee = (stopTime-startTime )/1000;
-     let finalTime = totalTimee + timeDb;
- 
-     const data = await Project.findOneAndUpdate({"employees.tasks.title":taskTitle},{$set: {workTime: finalTime}});
+    let totalTimee = (stopTime - startTime) / 1000;
+    let finalTime = totalTimee + timeDb;
+
+    const data = await Project.findOneAndUpdate({ "employees.tasks.title": taskTitle }, { $set: { workTime: finalTime } });
     // const data = await Dummy.findByIdAndUpdate({_id:"64f8d0a81d14a2d94f186380"}, { $set: { workTime: finalTime }});
-      res.json({message:"ok"}); 
-   } catch (error) {
+    res.json({ message: "ok" });
+  } catch (error) {
     console.log(error);
-    res.json({message:error});
-   }
+    res.json({ message: error });
+  }
 })
 
 
-router.post("/addProject",async(req,res)=>{
-  const{projectTitle,startingDate,estimatedDate,employees} = req.body;
- 
+router.post("/addProject", async (req, res) => {
+  const { projectTitle, startingDate, estimatedDate, assignedEmployees } = req.body;
+
   try {
-    if (!projectTitle || !startingDate || !estimatedDate || employees.length===0) {
+    if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0) {
       res.status(422).json({ error: "Fill all details" });
       return;
     }
@@ -341,22 +348,10 @@ router.post("/addProject",async(req,res)=>{
     const data = new Project(req.body);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });
-   } catch (error) {
+  } catch (error) {
     console.log(error);
     res.status(422).json({ error: "Fill the details appropriately" })
   }
 })
 
-// router.get("/image/:id",async(req,res)=>{
-//   const{id} = req.params;
-//    try {
-//        const employee = await Employee.findById(id);
-//        const image = employee.imgValue;
-
-//        res.status(201).json({image});       
-//   } catch (error) {
-//     console.log(error);
-//     res.json({error:"error"})
-//   }
-// })
 module.exports = router;

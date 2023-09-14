@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Cookies from "js-cookie";
-import { Avatar, Card, Skeleton, Switch, Descriptions, Spin } from 'antd';
+
+import { Avatar, Card, Image, Switch, Descriptions, Spin } from 'antd';
+import context from '../Context/context';
+import '../styles/profile.css'
 
 const { Meta } = Card;
 
@@ -38,7 +41,7 @@ export default function Profile() {
         return (
             <>
                 <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-                    <Spin tip="Fetching Admin data...." size="large" />
+                    <Spin tip="Loading..." size="large" ><div className="content" /></Spin>
                 </div>
             </>
         )
@@ -49,28 +52,28 @@ export default function Profile() {
                     <h4>{person}  information</h4>
 
                     <Card className='infoCard mt-0 pt-0'>
-                        <Meta
-                            avatar={<Avatar src={personData.imgValue} />}
-                            title={personData.name}
 
-                        />
+
                         <div className="info">
-                            <Descriptions title="  ">
-                                {
-
-                                    <>
-                                        <Descriptions.Item label="ID">{personData.id}</Descriptions.Item>
-                                        <Descriptions.Item label="Mobile">{personData.mobile}</Descriptions.Item>
-                                        <Descriptions.Item label="Email">{personData.email}</Descriptions.Item>
-                                        <Descriptions.Item label="Gender">{personData.gender}</Descriptions.Item>
-                                        <Descriptions.Item label="Birth Date">{personData.dob}</Descriptions.Item>
-                                        <Descriptions.Item label="Date of Joining">{personData.joiningDate}</Descriptions.Item>
-                                        <Descriptions.Item label="Address">{personData.address}</Descriptions.Item>
-                                    </>
-                                }
-
-
-                            </Descriptions>
+                            <div className="profilepic mt-4" >
+                                <Image width={200} src={personData.imgValue} />
+                            </div>
+                            <div className="details">
+                                <Descriptions title="  " bordered>
+                                    {
+                                        <>
+                                            <Descriptions.Item label="Name">{personData.name}</Descriptions.Item>
+                                            <Descriptions.Item label="ID">{personData.id}</Descriptions.Item>
+                                            <Descriptions.Item label="Email">{personData.email}</Descriptions.Item>
+                                            <Descriptions.Item label="Mobile">{personData.mobile}</Descriptions.Item>
+                                            <Descriptions.Item label="Gender">{personData.gender}</Descriptions.Item>
+                                            <Descriptions.Item label="Birth Date">{personData.dob}</Descriptions.Item>
+                                            <Descriptions.Item label="Date of Joining">{personData.joiningDate}</Descriptions.Item>
+                                            <Descriptions.Item label="Address">{personData.address}</Descriptions.Item>
+                                        </>
+                                    }
+                                </Descriptions>
+                            </div>
                         </div>
                     </Card>
                 </div>

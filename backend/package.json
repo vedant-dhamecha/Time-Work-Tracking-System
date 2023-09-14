@@ -1,4 +1,14 @@
 {
+  "name": "project-sem7-timetracking",
+  "version": "1.0.0",
+  "description": "project-sem7-timetracking",
+  "main": "app.js",
+  "author": "kushang vihar vedant",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

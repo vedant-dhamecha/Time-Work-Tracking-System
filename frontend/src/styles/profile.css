@@ -1,0 +1,15 @@
+.info {
+  display: flex;
+  flex-direction: row;
+  /* border: 2px solid red; */
+  padding: 3vh;
+}
+.details {
+  padding-left: 4vh;
+  padding-right: 5vh;
+}
+@media (max-width: 530px) {
+  .info {
+    flex-direction: column;
+  }
+}

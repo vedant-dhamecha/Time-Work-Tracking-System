@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Logout() {
 
-    const { user, logged, setLogged, setUser } = useContext(context)
+    const { logged, setLogged } = useContext(context)
     const navigate = useNavigate()
     useEffect(() => {
         async function logout() {
@@ -19,7 +19,7 @@ export default function Logout() {
             })
             const data = await res.json();
             console.log('data in logout:>> ', data);
-            setUser({ name: null, id: null });
+            // setUser({ name: null, id: null });
             setLogged(false)
             navigate('/')
             window.alert(data.loggedOut)

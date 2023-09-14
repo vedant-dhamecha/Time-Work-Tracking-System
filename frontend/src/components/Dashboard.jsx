@@ -8,7 +8,7 @@ import {
     VideoCameraOutlined,
     AuditOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, Button, theme } from 'antd';
+import { Layout, Menu, Button, theme, Card, Avatar } from 'antd';
 import '../styles/dashboard.css'
 import logo from '../assets/logo.png'
 import context from '../Context/context';
@@ -16,19 +16,20 @@ import Register from './Register';
 import Profile from './Profile';
 import Projects from './Projects';
 const { Header, Sider, Content, Footer } = Layout;
-
+const { Meta } = Card;
 
 export default function Dashboard() {
     // const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate()
     const [sliderItem, setSliderItem] = useState('dashboard')
-    const [projectName, setProjectName] = useState('')
     const [registerFor, setRegisterFor] = useState('')
     const person = Cookies.get('person')
-    const { nav, setNav } = useContext(context);
+    const { setNav, profileImg, projects, projectName, setProjectName } = useContext(context);
     const {
         token: { colorBgContainer },
     } = theme.useToken();
+
+
 
     useEffect(() => {
         setNav(false);
@@ -81,34 +82,25 @@ export default function Dashboard() {
 
                                 ],
                             },
+
                             person === 'employee' && {
                                 key: '2',
                                 icon: <VideoCameraOutlined />,
                                 label: 'Projects',
 
-                                children: [
-
-                                    {
-                                        key: 'P1',
-                                        icon: <UserOutlined />,
-                                        label: 'P1',
-                                        onClick: () => {
-                                            setSliderItem('projects')
-                                            setProjectName('P1')
+                                children: projects && projects?.map((p) => {
+                                    return (
+                                        {
+                                            key: p.projectTitle,
+                                            icon: <UserOutlined />,
+                                            label: p.projectTitle,
+                                            onClick: () => {
+                                                setProjectName(p.projectTitle)
+                                                setSliderItem('projects')
+                                            }
                                         }
-                                    },
-
-                                    {
-                                        key: 'P2',
-                                        icon: <UserOutlined />,
-                                        label: 'P2',
-                                        onClick: () => {
-                                            setSliderItem('projects')
-                                            setProjectName('P2')
-                                        }
-                                    },
-
-                                ],
+                                    )
+                                })
                             },
                             person !== 'employee' && {
                                 key: '2',
@@ -142,7 +134,10 @@ export default function Dashboard() {
                     style={{ marginLeft: 15, marginRight: 15, minHeight: '100vh' }}>
 
                     <Header style={{ padding: 0, background: colorBgContainer }}>
-                        jhvjgc
+                        <Meta
+                            avatar={<Avatar src={profileImg} />}
+                        // title={personData.name}
+                        />
                     </Header>
 
                     <Content className='content' style={{ background: colorBgContainer, }}>

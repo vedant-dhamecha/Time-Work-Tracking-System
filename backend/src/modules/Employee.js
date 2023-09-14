@@ -58,15 +58,6 @@ employeeSchema.pre("save", async function (next) {
     }
 })
 
-employeeSchema.methods.generateAuthToken = async function () {
-    try {
-        const token = jwt.sign({ _id: this._id }, 'kushangviharvedanttimetrackigsoftware');
-        console.log('token :>> ', token);
 
-        return token;
-    } catch (err) {
-        console.log('err in token :>> ', err);
-    }
-}
 const employee = new mongoose.model("employee", employeeSchema);
 module.exports = employee;

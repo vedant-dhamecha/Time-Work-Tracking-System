@@ -4,13 +4,27 @@
   width: 100%;
   padding-right: 5vh;
 }
-.taskMenu {
-  border: 2px solid red;
+.title {
+  border: 1px solid rgb(228, 227, 227);
+  border-radius: 10px;
+  background-color: rgba(224, 224, 224, 0.329);
   width: 100%;
-  margin-top: 5vh;
+  margin-top: 3vh;
+  padding: 3vh;
+  padding-bottom: 1vh;
 }
 .task {
-  border: 2px solid blue;
-  min-height: 80vh;
-  margin-top: 4vh;
+  /* border: 2px solid blue; */
+  min-height: 60vh;
+  margin-top: 3vh;
+  padding-top: 3vh;
+  margin-bottom: 10vh;
 }
+
+/* .ant-table-cell {
+  width: 30%;
+} */
+
+/* .ant-upload-list {
+  width: max-content;
+} */

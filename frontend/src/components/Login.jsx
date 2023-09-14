@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Form, Input, Modal, message, notification, Spin } from 'antd';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 import '../styles/login.css'
 import managerImg from '../assets/manager.png'
 import empImg from '../assets/emp.png'
@@ -14,11 +16,8 @@ export default function Login() {
     const navigate = useNavigate()
     const [id, setId] = useState('')
     const [password, setPassword] = useState('')
-    const [notiefication, setNotification] = useState(null);
-    const [notificationTitle, setNotificationTitle] = useState(null);
-    const { load, setLoad } = useContext(context);
 
-    const { setLogged, user, setUser } = useContext(context)
+    const { user, setUser, load, setLoad, setProfileImg, setLogged, notiefication, setNotification, notificationTitle, setNotificationTitle } = useContext(context)
     const [messageApi, contextHolderMessage] = message.useMessage();
     const key = 'updatable';
     const openMessage = (s) => {
@@ -97,17 +96,22 @@ export default function Login() {
         }
         else if (data?.success) {
             setLogged(true)
-            setUser({ name: data.name, id: data.id });
+            // setUser({ 'id': data.id, 'profileImg': data.profileImg })
+            console.log('data :>> ', data);
+            setProfileImg(data.profileImg)
             setNotificationTitle("Login Successful")
-            setNotification(data?.success)
+            setNotification("data?.success")
+            // setNotification(data?.success)
 
             // window.alert(data.success)
             navigate('/dashboard')
+            openNotificationWithIcon('success');
         }
     }
     useEffect(() => {
+        console.log("hiiiii")
         if (notificationTitle) {
-            if (notificationTitle == "Login Successful") {
+            if (notificationTitle === "Login Successful") {
                 openNotificationWithIcon('success');
             }
             else {
