@@ -12,7 +12,7 @@ export default function Projects({ projectName }) {
                     'Content-Type': 'application/json'
                 },
                 credentials: "include",
-                body: JSON.stringify({ time })
+                // body: JSON.stringify({ time })
             })
 
             const data = await res.json();
