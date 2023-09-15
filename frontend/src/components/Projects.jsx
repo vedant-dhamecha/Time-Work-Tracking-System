@@ -12,7 +12,7 @@ export default function Projects({ projectName }) {
     const { projects, time, setTime, isRunning, setIsRunning } = useContext(context);
     const [project, setProject] = useState({})
 
-    console.log('project :>> ', project);
+    // console.log('project :>> ', project);
 
     const handleStartStop = () => {
         setIsRunning(!isRunning);
@@ -113,29 +113,50 @@ export default function Projects({ projectName }) {
             key: 'DueDate',
         },
     ];
+
+
     const data = [];
-    for (let i = 0; i < 3; ++i) {
-        data.push({
-            key: i.toString(),
-            taskName: 'Screen',
-            platform: 'iOS',
-            version: '10.3.4.5654',
-            upgradeNum: 500,
-            creator: 'Jack',
-            assignedDate: <span style={{ color: 'green' }}>2014-12-24 23:12:00</span>,
-            DueDate: <span style={{ color: 'red' }}>2014-12-24 23:12:00</span>,
-        });
-    }
+
+    project?.assignedEmployees?.map((emp) => {
+        return (
+            emp?.tasks?.map((task) => {
+                console.log("task: ", task);
+                data.push({
+                    key: task?.title,
+                    taskName: task?.title,
+                    creator: 'Jack',
+                    assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
+                    DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
+                });
+            })
+        )
+    });
+
+    // for (let i = 0; i < 3; ++i) {
+    //     data.push({
+    //         key: i.toString(),
+    //         taskName: 'Screen',
+    //         platform: 'iOS',
+    //         version: '10.3.4.5654',
+    //         upgradeNum: 500,
+    //         creator: 'Jack',
+    //         assignedDate: <span style={{ color: 'green' }}>2014-12-24 23:12:00</span>,
+    //         DueDate: <span style={{ color: 'red' }}>2014-12-24 23:12:00</span>,
+    //     });
+    // }
+
 
     useEffect(() => {
+        // console.log("Projecs: ", projects);
         projects.map((p) => {
-            if (projectName === p.projectTitle) {
+            // console.log("P: ", p);
+            if (projectName === p?.projectTitle) {
                 setProject(p)
             }
         })
-    })
+    }, [])
 
-    // console.log('project :>> ', project);
+
     return (
         <>
             <div className='proj'>
@@ -169,4 +190,5 @@ export default function Projects({ projectName }) {
             </div>
         </>
     )
+
 }

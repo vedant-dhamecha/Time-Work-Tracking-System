@@ -127,22 +127,22 @@ export default function Login() {
             {contextHolderMessage}
             {contextHolderNotification}
             <main className='padding'>
-                <div class="box">
+                <div className="box">
                     {load &&
                         <Spin tip="Logging in..." size="large" >
                             <div className="content" />
                         </Spin>
                     }
-                    <div class="inner-box">
+                    <div className="inner-box">
                         <div className="left">
-                            <div class="header">
+                            <div className="header">
                                 <div >
                                     <h2>Welcome</h2>
                                     <h5>Login as {person}</h5>
                                 </div>
                                 <img src={logo} alt="logo" className='logo' />
                             </div>
-                            <div class="forms-wrap">
+                            <div className="forms-wrap">
                                 <Form name="basic" initialValues={{ remember: true, }} className='loginform'>
                                     <Form.Item
                                         label={person + " ID"}
@@ -167,7 +167,7 @@ export default function Login() {
                                         </Button>
                                     </Form.Item>
                                 </Form>
-                                <p class="text">
+                                <p className="text">
                                     Forgotten your password or you login datails?
                                     <a href="#" onClick={showModal}><br />Get help</a> for signing in
                                 </p>

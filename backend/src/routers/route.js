@@ -285,13 +285,19 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
 })
 
 router.get('/getProject', async (req, res) => {
-  // console.log("hi1..........")
+  console.log("hi1..........")
   const email = req.cookies.employeeEmail;
-  // console.log(email)
+  // const email = "bhavesh.tanawala@bvmengineering.ac.in";
+  console.log(email)
   try {
-    // console.log("hi2")
-    const data = await Project.find({ "employees.empEmail": email });
-    // console.log('data :>> ', data);
+    console.log("hi2")
+    const data = await Project.find({ "assignedEmployees.empEmail": email });
+
+    console.log("Data:", data);
+    // let temp = data[0].assignedEmployees;
+    // console.log("Temp is:", temp);
+
+    console.log('data :>> ', data);
     if (data.length === 0) {
       res.status(401).json({ message: "No projects assigned yet" })
     } else {
@@ -299,7 +305,7 @@ router.get('/getProject', async (req, res) => {
       res.json(data);
     }
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     res.status(401).json({ message: error })
   }
 });

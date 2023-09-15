@@ -33,17 +33,17 @@ export default function Navigationbar() {
                     <Collapse isOpen={isOpen} navbar>
                         <Nav className="me-auto menu" navbar >
                             <NavItem>
-                                <Link to="/" class="nav-link menuitem" role="button">Home</Link>
+                                <Link to="/" className="nav-link menuitem" role="button">Home</Link>
                             </NavItem>
                             {!logged &&
                                 <>
                                     <UncontrolledDropdown nav inNavbar >
                                         <DropdownToggle nav caret className='menuitem'>Login</DropdownToggle>
                                         <DropdownMenu className='dropmenu'>
-                                            <Link class="dropdown-item" to='login/manager'>Manager</Link>
-                                            <Link class="dropdown-item" to='login/employee'>Employee</Link>
+                                            <Link className="dropdown-item" to='login/manager'>Manager</Link>
+                                            <Link className="dropdown-item" to='login/employee'>Employee</Link>
                                             <DropdownItem divider />
-                                            <Link class="dropdown-item" to='login/HR'>HR</Link>
+                                            <Link className="dropdown-item" to='login/HR'>HR</Link>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                 </>
@@ -52,12 +52,12 @@ export default function Navigationbar() {
                                 <>
 
                                     <NavItem>
-                                        <Link to="/dashboard" class="nav-link menuitem" role="button">Dashboard</Link>
+                                        <Link to="/dashboard" className="nav-link menuitem" role="button">Dashboard</Link>
                                     </NavItem>
                                     <UncontrolledDropdown nav inNavbar >
                                         <DropdownToggle nav caret className='menuitem'>{Cookies.get('person')}</DropdownToggle>
                                         <DropdownMenu className='dropmenu'>
-                                            <Link class="dropdown-item" to='/logout'>Logout</Link>
+                                            <Link className="dropdown-item" to='/logout'>Logout</Link>
                                         </DropdownMenu>
                                     </UncontrolledDropdown>
                                 </>
