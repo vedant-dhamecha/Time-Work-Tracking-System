@@ -1,0 +1,32 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 90%;
+}
+
+.split-container {
+    display: flex;
+    height: 90vh;
+    width:90%;
+}
+
+.left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #c2dde6; /* Left side background color */
+}
+
+.right {
+    flex: 1;
+    background-color: #ffffff; /* Right side background color */
+    overflow: hidden;
+}
+
+/* Add this to your existing CSS */
+.image-fit {
+    width: 80%; /* Make the image width 100% of the container */
+    height: auto; /* Make the image height 100% of the container */
+    object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+}
