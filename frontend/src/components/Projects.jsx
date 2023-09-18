@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons';
 import { Badge, Button, Space, Table, Input, Upload } from 'antd';
+import ImgCrop from 'antd-img-crop';
 import Cookies from "js-cookie";
 import '../styles/projects.css'
 import context from '../Context/context';
@@ -11,6 +12,14 @@ export default function Projects({ projectName }) {
 
     const { projects, time, setTime, isRunning, setIsRunning } = useContext(context);
     const [project, setProject] = useState({})
+    const [fileList, setFileList] = useState([
+        {
+            uid: '-1',
+            name: 'image.png',
+            status: 'done',
+            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+        },
+    ]);
 
     // console.log('project :>> ', project);
 
@@ -27,8 +36,30 @@ export default function Projects({ projectName }) {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    const onChange = (e) => {
+    const handleComments = (e) => {
         console.log('Change:', e.target.value);
+    };
+
+    const handleSS = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+    };
+
+    const handleUpload = (e) => {
+        console.log('e.target.value :>> ', e.target.value);
+    }
+    const onPreview = async (file) => {
+        let src = file.url;
+        if (!src) {
+            src = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
+            });
+        }
+        const image = new Image();
+        image.src = src;
+        const imgWindow = window.open(src);
+        imgWindow?.document.write(image.outerHTML);
     };
 
     const expandedRowRender = () => {
@@ -41,13 +72,20 @@ export default function Projects({ projectName }) {
                     <div
                     // style={{ width: '50%' }}
                     >
-                        <Upload
-                            listType="picture"
-                            maxCount={5}
-                            multiple
-                        >
-                            <Button icon={<UploadOutlined />}>Upload (Max: 5)</Button>
-                        </Upload>
+                        <ImgCrop rotationSlider>
+                            <Upload
+                                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                listType="picture-card"
+                                fileList={fileList}
+                                onChange={handleSS}
+                                onPreview={onPreview}
+                            >
+                                {fileList.length < 5 && '+ Upload'}
+                            </Upload>
+                        </ImgCrop>
+                        <Button type="primary" htmlType='submit' onClick={handleUpload} style={{ marginTop: '2vh' }}>
+                            Upload
+                        </Button>
                     </div>
                 ),
             },
@@ -57,7 +95,7 @@ export default function Projects({ projectName }) {
                 key: 'comment',
                 render: () => (
                     <div style={{ width: '100%' }}>
-                        <TextArea showCount maxLength={100} onChange={onChange} />
+                        <TextArea showCount maxLength={100} onChange={handleComments} />
                     </div>
                 ),
             },
@@ -83,7 +121,7 @@ export default function Projects({ projectName }) {
         const data = [{
             key: 1,
             time: formatTime(time),
-            comments: <TextArea showCount maxLength={100} onChange={onChange} />
+            comments: <TextArea showCount maxLength={100} onChange={handleComments} />
 
         }];
 
@@ -120,8 +158,9 @@ export default function Projects({ projectName }) {
     project?.assignedEmployees?.map((emp) => {
         return (
             emp?.tasks?.map((task) => {
-                console.log("task: ", task);
+                // console.log("task: ", task);
                 data.push({
+                    taskId: task?._id,
                     key: task?.title,
                     taskName: task?.title,
                     creator: 'Jack',
@@ -132,18 +171,6 @@ export default function Projects({ projectName }) {
         )
     });
 
-    // for (let i = 0; i < 3; ++i) {
-    //     data.push({
-    //         key: i.toString(),
-    //         taskName: 'Screen',
-    //         platform: 'iOS',
-    //         version: '10.3.4.5654',
-    //         upgradeNum: 500,
-    //         creator: 'Jack',
-    //         assignedDate: <span style={{ color: 'green' }}>2014-12-24 23:12:00</span>,
-    //         DueDate: <span style={{ color: 'red' }}>2014-12-24 23:12:00</span>,
-    //     });
-    // }
 
 
     useEffect(() => {
@@ -168,6 +195,7 @@ export default function Projects({ projectName }) {
                     </div>
                 </div>
                 <div className="task">
+
                     {
                         projects.map((p) => {
                             return (

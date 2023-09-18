@@ -134,7 +134,7 @@ export default function Login() {
                         </Spin>
                     }
                     <div className="inner-box">
-                        <div className="left">
+                        <div className="loginLeft">
                             <div className="header">
                                 <div >
                                     <h2>Welcome</h2>
@@ -183,7 +183,7 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <div className="right">
+                        <div className="loginRight">
                             {person === 'employee' &&
                                 <img src={empImg} alt="employee" width='70%' height='70%' />}
                             {person === 'manager' &&
@@ -194,7 +194,7 @@ export default function Login() {
 
                     </div>
                 </div>
-            </main >
+            </main>
         </>
     )
 }
