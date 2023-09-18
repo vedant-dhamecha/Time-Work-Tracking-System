@@ -117,7 +117,7 @@ router.get('/logout', (req, res) => {
   }
 
   return res.json({ loggedOut: req.cookies.person + " logged out" })
-})
+});
 
 router.post("/register", async (req, res) => {
   try {
@@ -168,7 +168,7 @@ router.post("/register", async (req, res) => {
     console.log("error in register : ", error);
     res.status(422).json({ error: "Fill the details appropriately" })
   }
-})
+});
 
 router.post("/sendEmail", async (req, res) => {
   const { email, person } = req.body;
@@ -217,7 +217,7 @@ router.post("/sendEmail", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-})
+});
 
 router.get('/getData', async (req, res) => {
   try {
@@ -232,15 +232,14 @@ router.get('/getData', async (req, res) => {
       res.send(m);
     }
     else if (req.cookies.person === 'hr') {
-      console.log("hi1......123....")
-      const email = req.cookies.hrEmail;
+       const email = req.cookies.hrEmail;
       const h = await hr.findOne({ email })
       res.send(h);
     }
   } catch (err) {
     console.log('err in adminInfo auth :>> ', err);
   }
-})
+});
 
 router.post("/resetPassword/:person/:idd", async function (req, res) {
   const { password, confirmPassword } = req.body;
@@ -282,26 +281,17 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
     console.log(error);
     res.status(401).json({ message: error })
   }
-})
+});
 
 router.get('/getProject', async (req, res) => {
-  console.log("hi1..........")
-  const email = req.cookies.employeeEmail;
-  // const email = "bhavesh.tanawala@bvmengineering.ac.in";
-  console.log(email)
-  try {
-    console.log("hi2")
-    const data = await Project.find({ "assignedEmployees.empEmail": email });
+   const email = req.cookies.employeeEmail;
+   try {
+     const data = await Project.find({ "assignedEmployees.empEmail": email });
 
-    console.log("Data:", data);
-    // let temp = data[0].assignedEmployees;
-    // console.log("Temp is:", temp);
-
-    console.log('data :>> ', data);
-    if (data.length === 0) {
+     if (data.length === 0) {
       res.status(401).json({ message: "No projects assigned yet" })
     } else {
-      // console.log('data :>> ', data);
+      // console.log('data :>> ', data[0].assignedEmployees[0].tasks);
       res.json(data);
     }
   } catch (error) {
@@ -338,13 +328,26 @@ router.post("/dummyTwo", async (req, res) => {
     console.log(error);
     res.json({ message: error });
   }
-})
+});
+
+router.post('/addTaskData',async(req,res)=>{
+  const email = req.cookies.employeeEmail;
+  const{taskId} = req.body;
+    try {
+      console.log(taskId);
+
+      res.json({ message: "ok" });
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ message: "Inappropriate" });
+    }
+});
 
 router.post("/addProject", async (req, res) => {
-  const { projectTitle, startingDate, estimatedDate, employees } = req.body;
+  const { projectTitle, startingDate, estimatedDate, assignedEmployees, status } = req.body;
 
   try {
-    if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0) {
+    if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0 || !status) {
       res.status(422).json({ error: "Fill all details" });
       return;
     }
@@ -356,6 +359,6 @@ router.post("/addProject", async (req, res) => {
     console.log(error);
     res.status(422).json({ error: "Fill the details appropriately" })
   }
-})
+});
 
 module.exports = router;
