@@ -21,7 +21,22 @@ export default function Projects({ projectName }) {
         },
     ]);
 
-    // console.log('project :>> ', project);
+    const taskDetailsAdd = async (taskId) => {
+        try {
+            const taskDetails = await fetch('http://localhost:3218/addTaskData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ taskId })
+            })
+
+            const data = await taskDetails.json();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleStartStop = () => {
         setIsRunning(!isRunning);
@@ -110,9 +125,8 @@ export default function Projects({ projectName }) {
                 key: 'operation',
                 render: () => (
                     <Space size="middle">
-                        {/* {isRunning?} */}
                         <Button type='primary' danger={isRunning ? true : false} size='small' onClick={handleStartStop}>{isRunning ? 'Stop' : 'Start'}</Button>
-                        {/* <Button type="primary" danger size='small' onClick={handleStartStop}>Stop</Button> */}
+                        <Button type="primary" size='small' onClick={() => taskDetailsAdd(task.taskId)}>Submit</Button>
                     </Space>
                 ),
             },
@@ -158,10 +172,9 @@ export default function Projects({ projectName }) {
     project?.assignedEmployees?.map((emp) => {
         return (
             emp?.tasks?.map((task) => {
-                // console.log("task: ", task);
                 data.push({
+                    key: task?._id,
                     taskId: task?._id,
-                    key: task?.title,
                     taskName: task?.title,
                     creator: 'Jack',
                     assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
@@ -174,9 +187,7 @@ export default function Projects({ projectName }) {
 
 
     useEffect(() => {
-        // console.log("Projecs: ", projects);
         projects.map((p) => {
-            // console.log("P: ", p);
             if (projectName === p?.projectTitle) {
                 setProject(p)
             }
