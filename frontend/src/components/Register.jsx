@@ -64,7 +64,7 @@ export default function Register({ registerFor }) {
 
   const handleChange = async (e) => {
     setFileList(e.fileList)
-
+    console.log('e.file :>> ', e.file);
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }

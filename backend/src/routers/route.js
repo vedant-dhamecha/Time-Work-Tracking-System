@@ -6,7 +6,8 @@ app.use(cookieParser());
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const nodemailer = require("nodemailer");
-
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 //importing schemas
 const Hr = require("../modules/Hr");
 const Manager = require("../modules/ProjectManager");
@@ -232,7 +233,7 @@ router.get('/getData', async (req, res) => {
       res.send(m);
     }
     else if (req.cookies.person === 'hr') {
-       const email = req.cookies.hrEmail;
+      const email = req.cookies.hrEmail;
       const h = await hr.findOne({ email })
       res.send(h);
     }
@@ -284,11 +285,11 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
 });
 
 router.get('/getProject', async (req, res) => {
-   const email = req.cookies.employeeEmail;
-   try {
-     const data = await Project.find({ "assignedEmployees.empEmail": email });
+  const email = req.cookies.employeeEmail;
+  try {
+    const data = await Project.find({ "assignedEmployees.empEmail": email });
 
-     if (data.length === 0) {
+    if (data.length === 0) {
       res.status(401).json({ message: "No projects assigned yet" })
     } else {
       // console.log('data :>> ', data[0].assignedEmployees[0].tasks);
@@ -330,17 +331,20 @@ router.post("/dummyTwo", async (req, res) => {
   }
 });
 
-router.post('/addTaskData',async(req,res)=>{
+router.post('/addTaskData', upload.none(), async (req, res) => {
   const email = req.cookies.employeeEmail;
-  const{taskId} = req.body;
-    try {
-      console.log(taskId);
+  const { taskId, comment, imgValues } = req.body;
+  console.log('req.body :>> ', req.body);
+  console.log('taskId :>> ', taskId);
+  console.log(imgValues?.length)
 
-      res.json({ message: "ok" });
-    } catch (error) {
-      console.log(error);
-      res.status(401).json({ message: "Inappropriate" });
-    }
+
+  try {
+    res.json({ message: "ok" });
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: "Inappropriate" });
+  }
 });
 
 router.post("/addProject", async (req, res) => {

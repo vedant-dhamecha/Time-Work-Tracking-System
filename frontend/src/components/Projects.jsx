@@ -1,7 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react'
-import { UploadOutlined } from '@ant-design/icons';
-import { Badge, Button, Space, Table, Input, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Badge, Button, Space, Table, Input, Upload, Spin } from 'antd';
 import ImgCrop from 'antd-img-crop';
+import toast, { Toaster } from 'react-hot-toast';
 import Cookies from "js-cookie";
 import '../styles/projects.css'
 import context from '../Context/context';
@@ -11,32 +12,78 @@ const { TextArea } = Input;
 export default function Projects({ projectName }) {
 
     const { projects, time, setTime, isRunning, setIsRunning } = useContext(context);
+    const [load, setLoad] = useState(false)
     const [project, setProject] = useState({})
-    const [fileList, setFileList] = useState([
-        {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-    ]);
+    const [fileList, setFileList] = useState([]);
+
 
     const taskDetailsAdd = async (taskId) => {
-        try {
-            const taskDetails = await fetch('http://localhost:3218/addTaskData', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ taskId })
-            })
+        if (comment) {
+            // setLoad(true)
+            console.log("hi1")
+            await handleUpload();
+            console.log("hi2")
+            // console.log('load :>> ', load);
+            console.log("imgValues :", imgValues)
+            // if (load) {
+            //     return (
+            //         <>
+            //             <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+            //                 <Spin tip="Loading..." size="large" ><div className="content" /></Spin>
+            //             </div>
+            //         </>
+            //     )
+            // } else {
+            try {
+                // const data = { taskId, comment, imgValues };
+                // console.log('data :>> ', data);
 
-            const data = await taskDetails.json();
-        } catch (error) {
-            console.log(error);
+                const formData = new FormData();
+                formData.append('taskId', taskId)
+                formData.append('comment', comment)
+                // formData.append('imgValues', imgValues)
+                for (let i = 0; i < fileList.length; i++) {
+                    console.log(fileList[i].thumbUrl);
+                    formData.append("imgValues[]", fileList[i].thumbUrl);
+                }
+                console.log('formData :>> ', formData);
+                const taskDetails = await fetch('http://localhost:3218/addTaskData', {
+                    method: 'POST',
+                    // headers: {
+                    //     'Content-Type': 'application/json'
+                    //     // 'Content-Type': 'multipart/form-data; boundary=something'
+                    // },
+                    // // credentials: 'include',
+                    // body: JSON.stringify({ taskId, comment, imgValues }),
+                    body: formData,
+                })
+
+                const response = await taskDetails.json();
+            } catch (error) {
+                console.log(error);
+            }
+            // }
+        }
+        else {
+            alert("fill...")
+            notify();
+            // console.log("hii")
         }
     };
+    const notify = () => {
+        toast.error('Look at my styles.', {
+            style: {
+                border: '1px solid #713200',
+                padding: '16px',
+                color: '#713200',
+            },
+            iconTheme: {
+                primary: '#713200',
+                secondary: '#FFFAEE',
+            },
+        });
+        <Toaster />
+    }
 
     const handleStartStop = () => {
         setIsRunning(!isRunning);
@@ -51,18 +98,22 @@ export default function Projects({ projectName }) {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
+    const [comment, setComment] = useState()
     const handleComments = (e) => {
-        console.log('Change:', e.target.value);
+        setComment(e.target.value)
     };
 
-    const handleSS = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-    };
 
-    const handleUpload = (e) => {
-        console.log('e.target.value :>> ', e.target.value);
-    }
-    const onPreview = async (file) => {
+    var imgValues = []
+    const [imageSize, setImageSize] = useState(0);
+    const upload = (
+        <div>
+            <PlusOutlined />
+            Upload
+
+        </div>
+    );
+    const handlePreview = async (file) => {
         let src = file.url;
         if (!src) {
             src = await new Promise((resolve) => {
@@ -77,7 +128,34 @@ export default function Projects({ projectName }) {
         imgWindow?.document.write(image.outerHTML);
     };
 
-    const expandedRowRender = () => {
+    const handleSS = async (e) => {
+        //here, all images are stored in one state of array 'fileList'( in raw form)
+        console.log('e.fileList :>> ', e.fileList);
+        // (e.fileList).map(async (file) => {
+        //     if (!file.url && !file.preview) {
+        //         file.preview = await getBase64(file?.originFileObj);
+        //     }
+        //     imgValues.push(file.preview)
+        // })
+
+        setFileList(e.fileList)
+        console.log('fileList :>> ', fileList);
+    };
+
+    const handleUpload = async () => {
+        console.log("in upload")
+        //here, all images from fileList are converted in base64 and stored this useful image values in 'imgValues' array
+        // fileList.map(async (file) => {
+        //     if (!file.url && !file.preview) {
+        //         file.preview = await getBase64(file?.originFileObj);
+        //     }
+        //     imgValues.push(file.preview)
+        // })
+        // setLoad(false)
+
+    }
+
+    const expandedRowRender = (task) => {
         const columns = [
             {
                 title: 'Upload work',
@@ -89,18 +167,20 @@ export default function Projects({ projectName }) {
                     >
                         <ImgCrop rotationSlider>
                             <Upload
-                                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                                 listType="picture-card"
                                 fileList={fileList}
+                                onPreview={handlePreview}
                                 onChange={handleSS}
-                                onPreview={onPreview}
                             >
-                                {fileList.length < 5 && '+ Upload'}
+                                {fileList.length > 3 ? null : upload}
                             </Upload>
                         </ImgCrop>
-                        <Button type="primary" htmlType='submit' onClick={handleUpload} style={{ marginTop: '2vh' }}>
+                        {/* <Button type="primary" htmlType='submit' onClick={handleUpload} style={{ marginTop: '2vh' }}>
                             Upload
-                        </Button>
+                        </Button> */}
+                        {/* <Button type="primary" htmlType='submit' onClick={() => { console.log(imgValues); console.log(comment); }} style={{ marginTop: '2vh' }}>
+                            view
+                        </Button> */}
                     </div>
                 ),
             },
@@ -118,6 +198,7 @@ export default function Projects({ projectName }) {
                 title: 'Time',
                 dataIndex: 'time',
                 key: 'time',
+
             },
             {
                 title: 'Action',
@@ -126,7 +207,8 @@ export default function Projects({ projectName }) {
                 render: () => (
                     <Space size="middle">
                         <Button type='primary' danger={isRunning ? true : false} size='small' onClick={handleStartStop}>{isRunning ? 'Stop' : 'Start'}</Button>
-                        <Button type="primary" size='small' onClick={() => taskDetailsAdd(task.taskId)}>Submit</Button>
+                        <Button type="primary" style={{ backgroundColor: 'green' }} size='small'
+                            onClick={() => { taskDetailsAdd(task.taskId) }}>Submit</Button>
                     </Space>
                 ),
             },
@@ -148,11 +230,17 @@ export default function Projects({ projectName }) {
             dataIndex: 'taskName',
             key: 'taskName',
         },
+        {
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
+        },
 
         {
             title: 'Status',
-            key: 'state',
-            render: () => <Badge status="success" text="Finished" />,
+            dataIndex: 'status',
+            key: 'status',
+
         },
         {
             title: 'Assigned Date',
@@ -172,10 +260,17 @@ export default function Projects({ projectName }) {
     project?.assignedEmployees?.map((emp) => {
         return (
             emp?.tasks?.map((task) => {
+                // console.log('task :>> ', task);
                 data.push({
                     key: task?._id,
                     taskId: task?._id,
                     taskName: task?.title,
+                    description: task?.desc,
+                    status: <span>{
+                        task?.status === 'finished' ? <Badge status="success" text={task?.status} /> :
+                            task?.status === 'pending' ? <Badge status="error" text={task?.status} /> :
+                                <Badge status="processing" text={task?.status} />}
+                    </span>,
                     creator: 'Jack',
                     assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
                     DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
@@ -197,6 +292,7 @@ export default function Projects({ projectName }) {
 
     return (
         <>
+            {/* <Toaster /> */}
             <div className='proj'>
                 <div className="title">
                     <h2> {projectName}</h2>
@@ -230,4 +326,12 @@ export default function Projects({ projectName }) {
         </>
     )
 
+}
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => { resolve(reader.result) };
+        reader.onerror = (error) => { reject(error); }
+    })
 }
