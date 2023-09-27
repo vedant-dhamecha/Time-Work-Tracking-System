@@ -38,6 +38,12 @@ const addProject = mongoose.Schema({
                     },
                     breakTime: {
                         type: Number
+                    },
+                    comments:{
+                        type: String
+                    },
+                    images:{
+                        type: Array
                     }
                 }
             ]
