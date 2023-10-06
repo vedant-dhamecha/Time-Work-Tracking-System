@@ -1,6 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react'
-import { UploadOutlined } from '@ant-design/icons';
-import { Badge, Button, Space, Table, Input, Upload } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Badge, Button, Space, Table, Input, Upload, Spin } from 'antd';
+import ImgCrop from 'antd-img-crop';
+import toast, { Toaster } from 'react-hot-toast';
 import Cookies from "js-cookie";
 import '../styles/projects.css'
 import context from '../Context/context';
@@ -10,9 +12,78 @@ const { TextArea } = Input;
 export default function Projects({ projectName }) {
 
     const { projects, time, setTime, isRunning, setIsRunning } = useContext(context);
+    const [load, setLoad] = useState(false)
     const [project, setProject] = useState({})
+    const [fileList, setFileList] = useState([]);
 
-    // console.log('project :>> ', project);
+
+    const taskDetailsAdd = async (taskId) => {
+        if (comment) {
+            // setLoad(true)
+            console.log("hi1")
+            await handleUpload();
+            console.log("hi2")
+            // console.log('load :>> ', load);
+            console.log("imgValues :", imgValues)
+            // if (load) {
+            //     return (
+            //         <>
+            //             <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+            //                 <Spin tip="Loading..." size="large" ><div className="content" /></Spin>
+            //             </div>
+            //         </>
+            //     )
+            // } else {
+            try {
+                // const data = { taskId, comment, imgValues };
+                // console.log('data :>> ', data);
+
+                const formData = new FormData();
+                formData.append('taskId', taskId)
+                formData.append('comment', comment)
+                // formData.append('imgValues', imgValues)
+                for (let i = 0; i < fileList.length; i++) {
+                    console.log(fileList[i].thumbUrl);
+                    formData.append("imgValues[]", fileList[i].thumbUrl);
+                }
+                console.log('formData :>> ', formData);
+                const taskDetails = await fetch('http://localhost:3218/addTaskData', {
+                    method: 'POST',
+                    // headers: {
+                    //     'Content-Type': 'application/json'
+                    //     // 'Content-Type': 'multipart/form-data; boundary=something'
+                    // },
+                    // // credentials: 'include',
+                    // body: JSON.stringify({ taskId, comment, imgValues }),
+                    body: formData,
+                })
+
+                const response = await taskDetails.json();
+            } catch (error) {
+                console.log(error);
+            }
+            // }
+        }
+        else {
+            alert("fill...")
+            notify();
+            // console.log("hii")
+        }
+    };
+    const notify = () => {
+        toast.error('Look at my styles.', {
+            style: {
+                border: '1px solid #713200',
+                padding: '16px',
+                color: '#713200',
+            },
+            iconTheme: {
+                primary: '#713200',
+                secondary: '#FFFAEE',
+            },
+        });
+        <Toaster />
+    }
 
     const handleStartStop = () => {
         setIsRunning(!isRunning);
@@ -27,11 +98,64 @@ export default function Projects({ projectName }) {
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    const onChange = (e) => {
-        console.log('Change:', e.target.value);
+    const [comment, setComment] = useState()
+    const handleComments = (e) => {
+        setComment(e.target.value)
     };
 
-    const expandedRowRender = () => {
+
+    var imgValues = []
+    const [imageSize, setImageSize] = useState(0);
+    const upload = (
+        <div>
+            <PlusOutlined />
+            Upload
+
+        </div>
+    );
+    const handlePreview = async (file) => {
+        let src = file.url;
+        if (!src) {
+            src = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
+            });
+        }
+        const image = new Image();
+        image.src = src;
+        const imgWindow = window.open(src);
+        imgWindow?.document.write(image.outerHTML);
+    };
+
+    const handleSS = async (e) => {
+        //here, all images are stored in one state of array 'fileList'( in raw form)
+        console.log('e.fileList :>> ', e.fileList);
+        // (e.fileList).map(async (file) => {
+        //     if (!file.url && !file.preview) {
+        //         file.preview = await getBase64(file?.originFileObj);
+        //     }
+        //     imgValues.push(file.preview)
+        // })
+
+        setFileList(e.fileList)
+        console.log('fileList :>> ', fileList);
+    };
+
+    const handleUpload = async () => {
+        console.log("in upload")
+        //here, all images from fileList are converted in base64 and stored this useful image values in 'imgValues' array
+        // fileList.map(async (file) => {
+        //     if (!file.url && !file.preview) {
+        //         file.preview = await getBase64(file?.originFileObj);
+        //     }
+        //     imgValues.push(file.preview)
+        // })
+        // setLoad(false)
+
+    }
+
+    const expandedRowRender = (task) => {
         const columns = [
             {
                 title: 'Upload work',
@@ -41,13 +165,22 @@ export default function Projects({ projectName }) {
                     <div
                     // style={{ width: '50%' }}
                     >
-                        <Upload
-                            listType="picture"
-                            maxCount={5}
-                            multiple
-                        >
-                            <Button icon={<UploadOutlined />}>Upload (Max: 5)</Button>
-                        </Upload>
+                        <ImgCrop rotationSlider>
+                            <Upload
+                                listType="picture-card"
+                                fileList={fileList}
+                                onPreview={handlePreview}
+                                onChange={handleSS}
+                            >
+                                {fileList.length > 3 ? null : upload}
+                            </Upload>
+                        </ImgCrop>
+                        {/* <Button type="primary" htmlType='submit' onClick={handleUpload} style={{ marginTop: '2vh' }}>
+                            Upload
+                        </Button> */}
+                        {/* <Button type="primary" htmlType='submit' onClick={() => { console.log(imgValues); console.log(comment); }} style={{ marginTop: '2vh' }}>
+                            view
+                        </Button> */}
                     </div>
                 ),
             },
@@ -57,7 +190,7 @@ export default function Projects({ projectName }) {
                 key: 'comment',
                 render: () => (
                     <div style={{ width: '100%' }}>
-                        <TextArea showCount maxLength={100} onChange={onChange} />
+                        <TextArea showCount maxLength={100} onChange={handleComments} />
                     </div>
                 ),
             },
@@ -65,6 +198,7 @@ export default function Projects({ projectName }) {
                 title: 'Time',
                 dataIndex: 'time',
                 key: 'time',
+
             },
             {
                 title: 'Action',
@@ -72,9 +206,9 @@ export default function Projects({ projectName }) {
                 key: 'operation',
                 render: () => (
                     <Space size="middle">
-                        {/* {isRunning?} */}
                         <Button type='primary' danger={isRunning ? true : false} size='small' onClick={handleStartStop}>{isRunning ? 'Stop' : 'Start'}</Button>
-                        {/* <Button type="primary" danger size='small' onClick={handleStartStop}>Stop</Button> */}
+                        <Button type="primary" style={{ backgroundColor: 'green' }} size='small'
+                            onClick={() => { taskDetailsAdd(task.taskId) }}>Submit</Button>
                     </Space>
                 ),
             },
@@ -83,7 +217,7 @@ export default function Projects({ projectName }) {
         const data = [{
             key: 1,
             time: formatTime(time),
-            comments: <TextArea showCount maxLength={100} onChange={onChange} />
+            comments: <TextArea showCount maxLength={100} onChange={handleComments} />
 
         }];
 
@@ -96,11 +230,17 @@ export default function Projects({ projectName }) {
             dataIndex: 'taskName',
             key: 'taskName',
         },
+        {
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
+        },
 
         {
             title: 'Status',
-            key: 'state',
-            render: () => <Badge status="success" text="Finished" />,
+            dataIndex: 'status',
+            key: 'status',
+
         },
         {
             title: 'Assigned Date',
@@ -120,10 +260,17 @@ export default function Projects({ projectName }) {
     project?.assignedEmployees?.map((emp) => {
         return (
             emp?.tasks?.map((task) => {
-                console.log("task: ", task);
+                // console.log('task :>> ', task);
                 data.push({
-                    key: task?.title,
+                    key: task?._id,
+                    taskId: task?._id,
                     taskName: task?.title,
+                    description: task?.desc,
+                    status: <span>{
+                        task?.status === 'finished' ? <Badge status="success" text={task?.status} /> :
+                            task?.status === 'pending' ? <Badge status="error" text={task?.status} /> :
+                                <Badge status="processing" text={task?.status} />}
+                    </span>,
                     creator: 'Jack',
                     assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
                     DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
@@ -132,24 +279,10 @@ export default function Projects({ projectName }) {
         )
     });
 
-    // for (let i = 0; i < 3; ++i) {
-    //     data.push({
-    //         key: i.toString(),
-    //         taskName: 'Screen',
-    //         platform: 'iOS',
-    //         version: '10.3.4.5654',
-    //         upgradeNum: 500,
-    //         creator: 'Jack',
-    //         assignedDate: <span style={{ color: 'green' }}>2014-12-24 23:12:00</span>,
-    //         DueDate: <span style={{ color: 'red' }}>2014-12-24 23:12:00</span>,
-    //     });
-    // }
 
 
     useEffect(() => {
-        // console.log("Projecs: ", projects);
         projects.map((p) => {
-            // console.log("P: ", p);
             if (projectName === p?.projectTitle) {
                 setProject(p)
             }
@@ -159,6 +292,7 @@ export default function Projects({ projectName }) {
 
     return (
         <>
+            {/* <Toaster /> */}
             <div className='proj'>
                 <div className="title">
                     <h2> {projectName}</h2>
@@ -168,6 +302,7 @@ export default function Projects({ projectName }) {
                     </div>
                 </div>
                 <div className="task">
+
                     {
                         projects.map((p) => {
                             return (
@@ -191,4 +326,12 @@ export default function Projects({ projectName }) {
         </>
     )
 
+}
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => { resolve(reader.result) };
+        reader.onerror = (error) => { reject(error); }
+    })
 }

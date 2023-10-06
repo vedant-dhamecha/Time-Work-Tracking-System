@@ -11,6 +11,10 @@ const addProject = mongoose.Schema({
     estimatedDate: {
         type: String,
     },
+    status: {
+        type: String,
+        default: "pending"
+    },
     assignedEmployees: [
         {
             empEmail: {
