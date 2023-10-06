@@ -31,3 +31,12 @@
     margin-left: 6vh;
   }
 }
+
+.navbar{
+  background-color: /*#0300a3*/ #2b344c /* #374949*/ ;
+}
+.navbar-text,
+.navbar-brand,
+.nav-link{ 
+  color:rgb(255, 255, 255) !important;
+}
