@@ -11,8 +11,21 @@ const addProject = mongoose.Schema({
     estimatedDate: {
         type: String,
     },
-    status:{
-       type:String
+    status: {
+        type: String,
+        default: "pending"
+    },
+    isClockRunning:{
+        type:Boolean,
+        default:false
+    },
+    workTime: {
+        type: Number,
+        default:0
+    },
+    breakTime: {
+        type: Number,
+        default:0
     },
     assignedEmployees: [
         {
@@ -32,12 +45,6 @@ const addProject = mongoose.Schema({
                     },
                     completionDate: {
                         type: String,
-                    },
-                    workTime: {
-                        type: Number
-                    },
-                    breakTime: {
-                        type: Number
                     },
                     comments:{
                         type: String

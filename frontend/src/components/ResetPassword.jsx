@@ -35,15 +35,16 @@ export default function ResetPassword() {
     }
   return (
     <>
+    <center><h1>Reset your password</h1></center>
      <Form name="basic" initialValues={{ remember: true, }} className='loginform'>
-        <Form.Item
+        <center><Form.Item style={{width:"50%", marginTop:"60px"}}
             label="New Passsword"
             name="New Password"
             rules={[{ required: true },]}>
             <Input.Password onChange={(e) => setPassword(e.target.value)}/>
-        </Form.Item>
+        </Form.Item></center>
 
-        <Form.Item
+        <center><Form.Item style={{width:"50%"}}
             label="Confirm Passsword"
             name="Confirm Password"
             rules={[
@@ -59,9 +60,9 @@ export default function ResetPassword() {
               ]}
             >
             <Input.Password onChange={(e) => setConfirmPassword(e.target.value)}/>
-        </Form.Item>
+        </Form.Item></center>
 
-        <Form.Item wrapper Col={{ offset: 8, span: 16, }} >
+        <Form.Item wrapper Col={{ offset: 8, span: 16, }} style={{marginLeft:"380px"}} >
            <Button type="primary" htmlType='submit' onClick={handlePassword}>
                Submit
            </Button>

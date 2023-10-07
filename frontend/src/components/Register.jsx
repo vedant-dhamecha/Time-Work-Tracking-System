@@ -64,7 +64,7 @@ export default function Register({ registerFor }) {
 
   const handleChange = async (e) => {
     setFileList(e.fileList)
-
+    console.log('e.file :>> ', e.file);
     if (!e.file.url && !e.file.preview) {
       e.file.preview = await getBase64(e.file.originFileObj);
     }
@@ -102,7 +102,7 @@ export default function Register({ registerFor }) {
     const { name, id, email, password, mobile, gender, address } = values;
 
     // const designation = registerFor === 'employee' ? values.designation : ''
-
+console.log(1);
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {

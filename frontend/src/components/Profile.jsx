@@ -56,7 +56,7 @@ export default function Profile() {
 
                         <div className="info">
                             <div className="profilepic mt-4" >
-                                <Image width={200} src={personData.imgValue} />
+                                <Image width={160} src={personData.imgValue} />
                             </div>
                             <div className="details">
                                 <Descriptions title="  " bordered>

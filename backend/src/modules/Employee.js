@@ -29,10 +29,6 @@ const employeeSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    designation: {
-        type: String,
-        required: true,
-    },
     mobile: {
         type: Number,
         required: true,
