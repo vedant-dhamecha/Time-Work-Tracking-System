@@ -52,8 +52,10 @@ const addProject = mongoose.Schema({
                         default: "pending"
                     }, 
                 }
+                   
+            
             ]
-        }
+        },
     ]
 })
 

@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import "../styles/projects.css";
 import context from "../Context/context";
 
+
 const { TextArea } = Input;
 
 export default function Projects({ projectName }) {
@@ -52,6 +53,7 @@ export default function Projects({ projectName }) {
         for (let i = 0; i < fileList.length; i++) {
           console.log(fileList[i].thumbUrl);
           formData.append("imgValues[]", fileList[i].thumbUrl);
+
         }
         console.log("formData :>> ", formData);
         const taskDetails = await fetch("http://localhost:3218/addTaskData", {
@@ -121,6 +123,8 @@ export default function Projects({ projectName }) {
       } catch (error) {
         console.error("Error storing time on the server:", error);
       }
+   
+   
     };
 
     if (isRunning) {
@@ -381,6 +385,8 @@ export default function Projects({ projectName }) {
   if(projectName==="not_found"){
     return(
       <h1>404 error</h1>
+
+  
     )
   }
 
