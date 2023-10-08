@@ -1,21 +1,36 @@
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Badge, Button, Space, Table, Input, Upload, Spin } from 'antd';
+import Cookies from 'js-cookie';
+import { Badge, Button, Space, Table, Input, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import toast, { Toaster } from 'react-hot-toast';
-import Cookies from "js-cookie";
-import '../styles/projects.css'
+import '../styles/projects.css';
+import StartStopProject from './StartStopProject';
 import context from '../Context/context';
 
 const { TextArea } = Input;
 
 export default function Projects({ projectName }) {
 
-    const { projects, time, setTime, isRunning, setIsRunning } = useContext(context);
+    const [timeOfTask, setTimeOfTask] = useState({
+        taskId: {
+            time: "",
+        },
+    });
+    // -> Manav's
+    // const [taskTime, usetaskTime] = useState({
+    //     taskId: {
+    //         startTime: "",
+    //         endTime: "",
+    //     }
+    // });
+    const [taskRunningStatus, setTaskRunningStatus] = useState({});
+
+    const { projects, time, setTime, isRunning, setIsRunning, runningTask, setRunningTask } = useContext(context);
     const [load, setLoad] = useState(false)
     const [project, setProject] = useState({})
     const [fileList, setFileList] = useState([]);
-
+    const [tasks, setTasks] = useState(null);
 
     const taskDetailsAdd = async (taskId) => {
         if (comment) {
@@ -25,15 +40,6 @@ export default function Projects({ projectName }) {
             console.log("hi2")
             // console.log('load :>> ', load);
             console.log("imgValues :", imgValues)
-            // if (load) {
-            //     return (
-            //         <>
-            //             <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-            //                 <Spin tip="Loading..." size="large" ><div className="content" /></Spin>
-            //             </div>
-            //         </>
-            //     )
-            // } else {
             try {
                 // const data = { taskId, comment, imgValues };
                 // console.log('data :>> ', data);
@@ -85,8 +91,9 @@ export default function Projects({ projectName }) {
         <Toaster />
     }
 
-    const handleStartStop = () => {
+    const handleStartStop = (taskId) => {
         setIsRunning(!isRunning);
+        Cookies.set('taskId', taskId, { expires: 365 });
         Cookies.set('isTimeRunning', !isRunning, { expires: 365 });
     };
 
@@ -97,6 +104,33 @@ export default function Projects({ projectName }) {
 
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
+
+    // -> MAnav's........................
+    // const handleStartStop = (taskId) => {
+    //     setIsRunning(!isRunning);
+    //     const updatedRunningStatus = {
+    //         ...taskRunningStatus,
+    //         [taskId]: !taskRunningStatus[taskId] // Toggle the running status for the task
+    //     };
+    //     setTaskRunningStatus(updatedRunningStatus);
+
+    //     // Update task start time for the clicked task if it's starting
+    //     if (updatedRunningStatus[taskId]) {
+    //         usetaskTime({
+    //             ...taskTime,
+    //             [taskId]: {
+    //                 startTime: new Date(),
+    //                 endTime: "",
+    //             }
+    //         });
+    //     } else {
+    //         // Update task end time for the clicked task if it's stopping
+    //         const updatedTaskTime = { ...taskTime };
+    //         updatedTaskTime[taskId].endTime = new Date();
+    //         usetaskTime(updatedTaskTime);
+    //     }
+    // };
+
 
     const [comment, setComment] = useState()
     const handleComments = (e) => {
@@ -198,7 +232,16 @@ export default function Projects({ projectName }) {
                 title: 'Time',
                 dataIndex: 'time',
                 key: 'time',
+                // -> Manav's
+                // render: () => {
+                //     const taskTimeObj = taskTime[task.taskId];
+                //     if (taskRunningStatus[task.taskId] && taskTimeObj.startTime) {
+                //         const currentTime = Math.floor((Date.now() - new Date(taskTimeObj.startTime)) / 1000);
+                //         return formatTime(currentTime);
+                //     }
 
+                //     return taskTime[task.taskId] ? taskTime[task.taskId].endTime : "00:00:00"; // Display "00:00:00" if not running or no start time
+                // },
             },
             {
                 title: 'Action',
@@ -206,10 +249,29 @@ export default function Projects({ projectName }) {
                 key: 'operation',
                 render: () => (
                     <Space size="middle">
-                        <Button type='primary' danger={isRunning ? true : false} size='small' onClick={handleStartStop}>{isRunning ? 'Stop' : 'Start'}</Button>
+                        <Button type='primary' danger={isRunning ? true : false} size='small' onClick={() => { handleStartStop(task.taskId) }}>{isRunning ? 'Stop' : 'Start'}</Button>
                         <Button type="primary" style={{ backgroundColor: 'green' }} size='small'
                             onClick={() => { taskDetailsAdd(task.taskId) }}>Submit</Button>
                     </Space>
+                    // -> MAnav's........................
+                    // <Space size="middle">
+                    //     <Button
+                    //         type='primary'
+                    //         danger={taskRunningStatus[task.taskId]}
+                    //         size='small'
+                    //         onClick={() => { handleStartStop(task.taskId) }}
+                    //     >
+                    //         {taskRunningStatus[task.taskId] ? 'Stop' : 'Start'}
+                    //     </Button>
+                    //     <Button
+                    //         type="primary"
+                    //         style={{ backgroundColor: 'green' }}
+                    //         size='small'
+                    //         onClick={() => { taskDetailsAdd(task.taskId) }}
+                    //     >
+                    //         Submit
+                    //     </Button>
+                    // </Space>
                 ),
             },
 
@@ -257,37 +319,63 @@ export default function Projects({ projectName }) {
 
     const data = [];
 
-    project?.assignedEmployees?.map((emp) => {
+    tasks && tasks.map((task) => {
         return (
-            emp?.tasks?.map((task) => {
-                // console.log('task :>> ', task);
-                data.push({
-                    key: task?._id,
-                    taskId: task?._id,
-                    taskName: task?.title,
-                    description: task?.desc,
-                    status: <span>{
-                        task?.status === 'finished' ? <Badge status="success" text={task?.status} /> :
-                            task?.status === 'pending' ? <Badge status="error" text={task?.status} /> :
-                                <Badge status="processing" text={task?.status} />}
-                    </span>,
-                    creator: 'Jack',
-                    assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
-                    DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
-                });
-            })
-        )
+            // console.log('task :>> ', task);
+            data.push({
+                key: task?._id,
+                taskId: task?._id,
+                taskName: task?.title,
+                description: task?.desc,
+                status: <span>{
+                    task?.status === 'finished' ? <Badge status="success" text={task?.status} /> :
+                        task?.status === 'pending' ? <Badge status="error" text={task?.status} /> :
+                            <Badge status="processing" text={task?.status} />}
+                </span>,
+                creator: 'Jack',
+                assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
+                DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
+            }));
     });
+    // });
+
+    // project?.assignedEmployees?.map((emp) => {
+    //     return (
+    //         emp?.tasks?.map((task) => {
+    //             // console.log('task :>> ', task);
+    //             data.push({
+    //                 key: task?._id,
+    //                 taskId: task?._id,
+    //                 taskName: task?.title,
+    //                 description: task?.desc,
+    //                 status: <span>{
+    //                     task?.status === 'finished' ? <Badge status="success" text={task?.status} /> :
+    //                         task?.status === 'pending' ? <Badge status="error" text={task?.status} /> :
+    //                             <Badge status="processing" text={task?.status} />}
+    //                 </span>,
+    //                 creator: 'Jack',
+    //                 assignedDate: <span style={{ color: 'green' }}>{task?.startDate}</span>,
+    //                 DueDate: <span style={{ color: 'red' }}>{task?.completionDate}</span>,
+    //             });
+    //         })
+    //     )
+    // });
 
 
 
     useEffect(() => {
+        console.log("Rendering dashboard", projects);
         projects.map((p) => {
+            console.log("P : ", p);
             if (projectName === p?.projectTitle) {
                 setProject(p)
+                p?.assignedEmployees.map((e) => {
+                    setTasks(e.tasks);
+                });
+                console.log('project :>> ', project);
             }
         })
-    }, [])
+    }, [projectName]);
 
 
     return (

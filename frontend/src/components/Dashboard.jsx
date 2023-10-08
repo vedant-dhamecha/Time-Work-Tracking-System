@@ -15,6 +15,8 @@ import context from '../Context/context';
 import Register from './Register';
 import Profile from './Profile';
 import Projects from './Projects';
+import CreateProject from './CreateProject';
+import ViewProgress from './ViewProgress';
 const { Header, Sider, Content, Footer } = Layout;
 const { Meta } = Card;
 
@@ -61,7 +63,7 @@ export default function Dashboard() {
                                 children: [
                                     person === 'hr' &&
                                     {
-                                        key: 'manager',
+                                        key: 'hr',
                                         icon: <UserOutlined />,
                                         label: 'Manager',
                                         onClick: () => {
@@ -95,6 +97,7 @@ export default function Dashboard() {
                                             icon: <UserOutlined />,
                                             label: p.projectTitle,
                                             onClick: () => {
+                                                console.log("CLicked", p.projectTitle);
                                                 setProjectName(p.projectTitle)
                                                 setSliderItem('projects')
                                             }
@@ -102,13 +105,29 @@ export default function Dashboard() {
                                     )
                                 })
                             },
-                            person !== 'employee' && {
+                            person === 'manager' && {
                                 key: '2',
                                 icon: <VideoCameraOutlined />,
                                 label: 'Management',
-                                onClick: () => {
-                                    setSliderItem('management')
-                                }
+                                children: [
+                                    {
+                                        key: 'Create Project',
+                                        icon: <UserOutlined />,
+                                        label: 'Create Project',
+                                        onClick: () => {
+                                            setSliderItem('create project')
+                                        }
+                                    },
+                                    {
+                                        key: 'View Progress',
+                                        icon: <UserOutlined />,
+                                        label: 'View Progress',
+                                        onClick: () => {
+                                            setSliderItem('view progress')
+                                        }
+                                    },
+                                ],
+
                             },
                             {
                                 key: 'profile',
@@ -145,8 +164,9 @@ export default function Dashboard() {
                             {sliderItem === 'registration' && <Register registerFor={registerFor} />}
                         </div>
                         {sliderItem === 'profile' && <Profile />}
-                        {sliderItem === 'management' && <h2>Management</h2>}
                         {sliderItem === 'projects' && <Projects projectName={projectName} />}
+                        {sliderItem === 'create project' && <CreateProject />}
+                        {sliderItem === 'view progress' && <ViewProgress />}
                     </Content>
 
                     <Footer className='footer'>
