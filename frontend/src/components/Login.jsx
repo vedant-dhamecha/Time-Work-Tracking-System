@@ -21,7 +21,6 @@ export default function Login() {
     const [messageApi, contextHolderMessage] = message.useMessage();
     const key = 'updatable';
     const openMessage = (s) => {
-        console.log('s :>> ', s);
         messageApi.open({
             key,
             type: 'loading',

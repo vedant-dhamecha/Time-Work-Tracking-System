@@ -56,16 +56,16 @@ export default function Projects({ projectName }) {
         console.log("formData :>> ", formData);
         const taskDetails = await fetch("http://localhost:3218/addTaskData", {
           method: "POST",
-          // headers: {
-          //     'Content-Type': 'application/json'
-          //     // 'Content-Type': 'multipart/form-data; boundary=something'
-          // },
-          // // credentials: 'include',
-          // body: JSON.stringify({ taskId, comment, imgValues }),
+          credentials: 'include',
           body: formData,
         });
 
         const response = await taskDetails.json();
+        if (response?.success) {
+          alert("ok");
+        } else {
+          
+        }
       } catch (error) {
         console.log(error);
       }

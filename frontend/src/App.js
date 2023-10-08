@@ -24,7 +24,7 @@ function App() {
   const [profileImg, setProfileImg] = useState();
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState("");
-
+ 
   const getInformation = async () => {
     try {
       // setLoad(true)
