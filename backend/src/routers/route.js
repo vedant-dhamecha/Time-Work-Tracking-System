@@ -353,51 +353,47 @@ router.get("/getProject", async (req, res) => {
   }
 });
 
-let startTime = 0;
-router.post("/dummy", async (req, res) => {
-  startTime = req.cookies.startTime;
-  res.json({ message: "ok" });
-});
-
-router.post("/dummyTwo", async (req, res) => {
-  const email = req.cookies.employeeEmail;
-
-  //I need project title from frontend
-  try {
-    let stopTime = req.body.time;
-    //  let taskTitle = req.body.taskTitle;
-
-    const timeD = await Project.find({ "employees.empEmail": email });
-
-    let timeDb = timeD[0].employees[0].tasks[0].workTime;
-
-    let totalTimee = (stopTime - startTime) / 1000;
-    let finalTime = totalTimee + timeDb;
-
-    const data = await Project.findOneAndUpdate(
-      { title: "title 1" },
-      { $set: { workTime: finalTime } }
-    );
-    //  console.log(data);
-    res.json({ message: "ok" });
-  } catch (error) {
-    console.log(error);
-    res.json({ message: error });
-  }
-});
-
 router.post("/addTaskData", upload.none(), async (req, res) => {
-  const email = req.cookies.employeeEmail;
+  const empEmail = req.cookies.employeeEmail;
   const { taskId, comment, imgValues } = req.body;
-  console.log("req.body :>> ", req.body);
-  console.log("taskId :>> ", taskId);
-  console.log(imgValues?.length);
 
   try {
-    res.json({ message: "ok" });
+    // Find the project document that matches the employee's email.
+    const project = await Project.findOne({ "assignedEmployees.empEmail": empEmail });
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    // Find the specific task in the project document and update the fields.
+    const assignedEmployeeIndex = project.assignedEmployees.findIndex(
+      (employee) => employee.empEmail === empEmail
+    );
+
+    const taskIndex = project.assignedEmployees[assignedEmployeeIndex].tasks.findIndex(
+      (task) => task._id.toString() === taskId
+    );
+
+    if (taskIndex === -1) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    // Update the comments and images for the task.
+    project.assignedEmployees[assignedEmployeeIndex].tasks[taskIndex].comments = comment;
+    project.assignedEmployees[assignedEmployeeIndex].tasks[taskIndex].images = imgValues;
+
+    // Save the updated project document.
+    const updatedProject = await project.save();
+
+    if (!updatedProject) {
+      console.error("Failed to save updated project");
+      return res.status(500).json({ error: "Failed to save updated project" });
+    }
+
+    res.status(200).json({ success: "Task data updated successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(401).json({ message: "Inappropriate" });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -429,8 +425,6 @@ router.post("/toggleClockState",async(req,res)=>{
 
   const {projectId,time}=req.body;
 
-  console.log("here in toggle : ",projectId);
-
   try {
     const project = await Project.findById(projectId);
 
@@ -458,8 +452,6 @@ router.post("/storeTime",async(req,res)=>{
 
   const {projectId,time}=req.body;
 
-  console.log("here in store time : ",projectId);
-
   try {
     const project = await Project.findById(projectId);
 
@@ -486,8 +478,6 @@ router.post("/storeTime",async(req,res)=>{
 router.get("/getTimeNstate/:_id",async(req,res)=>{
 
   const projectId=req.params._id;
-
-  console.log("here in get time : ",projectId);
 
   try {
     const project = await Project.findById(projectId);
