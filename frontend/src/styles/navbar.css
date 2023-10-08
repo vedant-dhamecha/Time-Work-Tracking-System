@@ -32,11 +32,13 @@
   }
 }
 
-.navbar{
-  background-color: /*#0300a3*/ #2b344c /* #374949*/ ;
+.navbar {
+  background-color: /*#0300a3*/ #1a1f30 /* #374949*/;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
 }
 .navbar-text,
 .navbar-brand,
-.nav-link{ 
-  color:rgb(255, 255, 255) !important;
+.nav-link {
+  color: rgb(255, 255, 255) !important;
 }

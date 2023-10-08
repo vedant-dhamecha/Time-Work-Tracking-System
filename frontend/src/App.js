@@ -16,10 +16,10 @@ import Dummy from "./components/Dummy";
 function App() {
 
   const [user, setUser] = useState({ id: null, profileImg: null });
-//   const initialTime = parseInt(Cookies.get('stopwatchTime')) || 0;
-//   const isTimeRunning = Cookies.get('isTimeRunning') === "true" ? true : false || false;
-//   const [runningTask, setRunningTask] = useState(null);
-//   const [user, setUser] = useState({ 'id': null, 'profileImg': null })
+  //   const initialTime = parseInt(Cookies.get('stopwatchTime')) || 0;
+  //   const isTimeRunning = Cookies.get('isTimeRunning') === "true" ? true : false || false;
+  //   const [runningTask, setRunningTask] = useState(null);
+  //   const [user, setUser] = useState({ 'id': null, 'profileImg': null })
   const [nav, setNav] = useState(true);
   const [logged, setLogged] = useState(false);
   const [load, setLoad] = useState(false);
@@ -111,7 +111,7 @@ function App() {
           setNotificationTitle,
         }}
       >
-//       <context.Provider value={{ nav, setNav, logged, setLogged, load, setLoad, user, setUser, profileImg, setProfileImg, projects, setProjects, projectName, setProjectName, time, setTime, isRunning, setIsRunning, notiefication, setNotification, notificationTitle, setNotificationTitle, runningTask, setRunningTask }}>
+        {/* <context.Provider value={{ nav, setNav, logged, setLogged, load, setLoad, user, setUser, profileImg, setProfileImg, projects, setProjects, projectName, setProjectName, time, setTime, isRunning, setIsRunning, notiefication, setNotification, notificationTitle, setNotificationTitle, runningTask, setRunningTask }}> */}
         <Router>
           {nav && <Navbar />}
           <Routes>

@@ -44,6 +44,16 @@ export default function Navigationbar() {
                   Home
                 </Link>
               </NavItem>
+              <NavItem>
+                <Link to="/" className="nav-link menuitem" role="button">
+                  About
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link to="/" className="nav-link menuitem" role="button">
+                  Help
+                </Link>
+              </NavItem>
               {!logged && (
                 <>
                   <UncontrolledDropdown nav inNavbar>
@@ -88,16 +98,7 @@ export default function Navigationbar() {
                   </UncontrolledDropdown>
                 </>
               )}
-              <NavItem>
-                <Link to="/" className="nav-link menuitem" role="button">
-                  About
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link to="/" className="nav-link menuitem" role="button">
-                  Help
-                </Link>
-              </NavItem>
+
             </Nav>
             <NavbarText></NavbarText>
           </Collapse>
