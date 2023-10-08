@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const addProject = mongoose.Schema({
     projectTitle: {
         type: String,
-
     },
     startingDate: {
         type: String,
@@ -53,8 +52,10 @@ const addProject = mongoose.Schema({
                         type: Array
                     }
                 }
+                   
+            
             ]
-        }
+        },
     ]
 })
 

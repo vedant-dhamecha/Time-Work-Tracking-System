@@ -15,6 +15,21 @@ import context from "../Context/context";
 import Register from "./Register";
 import Profile from "./Profile";
 import Projects from "./Projects";
+//     HomeFilled,
+//     MenuUnfoldOutlined,
+//     UserOutlined,
+//     VideoCameraOutlined,
+//     AuditOutlined
+// } from '@ant-design/icons';
+// import { Layout, Menu, Button, theme, Card, Avatar } from 'antd';
+// import '../styles/dashboard.css'
+// import logo from '../assets/logo.png'
+// import context from '../Context/context';
+// import Register from './Register';
+// import Profile from './Profile';
+// import Projects from './Projects';
+// import CreateProject from './CreateProject';
+// import ViewProgress from './ViewProgress';
 const { Header, Sider, Content, Footer } = Layout;
 const { Meta } = Card;
 
@@ -168,6 +183,7 @@ export default function Dashboard() {
               <Projects projectName={projectName} />
             )}
           </Content>
+   
 
           <Footer className="footer">Time & Work Tracking System</Footer>
         </Layout>
