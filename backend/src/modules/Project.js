@@ -2,17 +2,13 @@ const mongoose = require("mongoose");
 
 const addProject = mongoose.Schema({
     projectTitle: {
-        type: String,
+        type: String
     },
     startingDate: {
-        type: String,
+        type: String
     },
     estimatedDate: {
-        type: String,
-    },
-    status: {
-        type: String,
-        default: "pending"
+        type: String
     },
     isClockRunning:{
         type:Boolean,
@@ -50,7 +46,11 @@ const addProject = mongoose.Schema({
                     },
                     images:{
                         type: Array
-                    }
+                    },
+                    status: {
+                        type: String,
+                        default: "pending"
+                    }, 
                 }
                    
             
