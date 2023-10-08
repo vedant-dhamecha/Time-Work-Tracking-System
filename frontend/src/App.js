@@ -2,9 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
-import './App.css';
-import context from './Context/context';
-import Dashboard from './components/Dashboard';
+import "./App.css";
+import context from "./Context/context";
+import Dashboard from "./components/Dashboard";
 import Navbar from "./components/Navigationbar";
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -15,96 +15,103 @@ import Dummy from "./components/Dummy";
 
 function App() {
 
-  const initialTime = parseInt(Cookies.get('stopwatchTime')) || 0;
-  const isTimeRunning = Cookies.get('isTimeRunning') === "true" ? true : false || false;
-  const [runningTask, setRunningTask] = useState(null);
-  const [user, setUser] = useState({ 'id': null, 'profileImg': null })
+  const [user, setUser] = useState({ id: null, profileImg: null });
+//   const initialTime = parseInt(Cookies.get('stopwatchTime')) || 0;
+//   const isTimeRunning = Cookies.get('isTimeRunning') === "true" ? true : false || false;
+//   const [runningTask, setRunningTask] = useState(null);
+//   const [user, setUser] = useState({ 'id': null, 'profileImg': null })
   const [nav, setNav] = useState(true);
   const [logged, setLogged] = useState(false);
-  const [load, setLoad] = useState(false)
+  const [load, setLoad] = useState(false);
   const [notiefication, setNotification] = useState(null);
   const [notificationTitle, setNotificationTitle] = useState(null);
-  const [profileImg, setProfileImg] = useState()
-  const [projects, setProjects] = useState()
-  const [projectName, setProjectName] = useState('')
-  const [time, setTime] = useState(initialTime);
-  const [isRunning, setIsRunning] = useState(isTimeRunning);
+  const [profileImg, setProfileImg] = useState();
+  const [projects, setProjects] = useState([]);
+  const [projectName, setProjectName] = useState("");
 
   const getInformation = async () => {
     try {
       // setLoad(true)
       const res = await fetch("http://localhost:3218/getData", {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include'
+        credentials: "include",
       });
       const data = await res.json();
       // setLoad(false)
       // console.log('data in app:>> ', data);
       setUser(data);
-      setProfileImg(data.imgValue)
-
+      setProfileImg(data.imgValue);
     } catch (err) {
-      console.log('err in app :>> ', err);
+      console.log("err in app :>> ", err);
     }
-  }
+  };
   const getProjects = async () => {
     try {
       const res = await fetch(`http://localhost:3218/getProject`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         credentials: "include",
-      })
+      });
       const data = await res.json();
-      setProjects(data)
+      if (data?.length > 0) {
+        setProjects(data);
+      } else {
+        console.log("no project found");
+      }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   useEffect(() => {
-    if (Cookies.get('person') === "employee" || Cookies.get('person') === "HR" || Cookies.get('person') === "manager") {
-      setLogged(true)
-    }
-    else {
-      setLogged(false)
+    if (
+      Cookies.get("person") === "employee" ||
+      Cookies.get("person") === "HR" ||
+      Cookies.get("person") === "manager"
+    ) {
+      setLogged(true);
+    } else {
+      setLogged(false);
     }
 
     if (logged) {
       getInformation();
       getProjects();
     }
-  }, [logged])
+  }, [logged]);
 
-  useEffect(() => {
-    let interval;
-    console.log('isTimeRunning :>> ', isTimeRunning);
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-    Cookies.set('isTimeRunning', isRunning, { expires: 365 });
-    return () => clearInterval(interval);
-  }, [isRunning]);
-
-  useEffect(() => {
-    Cookies.set('stopwatchTime', time.toString(), { expires: 365 });
-    // Cookies.set('stopwatchTime', time.toString());
-  }, [time]);
-  // useEffect(() => {
-  // }, [projectName])
 
 
   return (
     <>
-      <context.Provider value={{ nav, setNav, logged, setLogged, load, setLoad, user, setUser, profileImg, setProfileImg, projects, setProjects, projectName, setProjectName, time, setTime, isRunning, setIsRunning, notiefication, setNotification, notificationTitle, setNotificationTitle, runningTask, setRunningTask }}>
+      <context.Provider
+        value={{
+          nav,
+          setNav,
+          logged,
+          setLogged,
+          load,
+          setLoad,
+          user,
+          setUser,
+          profileImg,
+          setProfileImg,
+          projects,
+          setProjects,
+          projectName,
+          setProjectName,
+          notiefication,
+          setNotification,
+          notificationTitle,
+          setNotificationTitle,
+        }}
+      >
+//       <context.Provider value={{ nav, setNav, logged, setLogged, load, setLoad, user, setUser, profileImg, setProfileImg, projects, setProjects, projectName, setProjectName, time, setTime, isRunning, setIsRunning, notiefication, setNotification, notificationTitle, setNotificationTitle, runningTask, setRunningTask }}>
         <Router>
           {nav && <Navbar />}
           <Routes>
@@ -114,7 +121,10 @@ function App() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dummy" element={<Dummy />} />
-            <Route path="/resetPassword/:person/:idd" element={<ResetPassword />} />
+            <Route
+              path="/resetPassword/:person/:idd"
+              element={<ResetPassword />}
+            />
           </Routes>
         </Router>
       </context.Provider>

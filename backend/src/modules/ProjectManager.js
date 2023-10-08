@@ -34,10 +34,6 @@ const managerSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    designation: {
-        type: String,
-        required: true,
-    },
     address: {
         type: String,
         required: true,

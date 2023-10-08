@@ -102,7 +102,7 @@ export default function Register({ registerFor }) {
     const { name, id, email, password, mobile, gender, address } = values;
 
     // const designation = registerFor === 'employee' ? values.designation : ''
-
+console.log(1);
     const res = await fetch("http://localhost:3218/register", {
       method: 'POST',
       headers: {

@@ -21,10 +21,6 @@ const hrSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    designation: {
-        type: String,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
