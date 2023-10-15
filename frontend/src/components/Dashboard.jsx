@@ -15,28 +15,15 @@ import context from "../Context/context";
 import Register from "./Register";
 import Profile from "./Profile";
 import Projects from "./Projects";
-//     HomeFilled,
-//     MenuUnfoldOutlined,
-//     UserOutlined,
-//     VideoCameraOutlined,
-//     AuditOutlined
-// } from '@ant-design/icons';
-// import { Layout, Menu, Button, theme, Card, Avatar } from 'antd';
-// import '../styles/dashboard.css'
-// import logo from '../assets/logo.png'
-// import context from '../Context/context';
-// import Register from './Register';
-// import Profile from './Profile';
-// import Projects from './Projects';
-// import CreateProject from './CreateProject';
-// import ViewProgress from './ViewProgress';
+import CreateProject from './CreateProject';
+
 const { Header, Sider, Content, Footer } = Layout;
 const { Meta } = Card;
 
 export default function Dashboard() {
   // const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-  const [sliderItem, setSliderItem] = useState("dashboard");
+  const [sliderItem, setSliderItem] = useState("profile");
   const [registerFor, setRegisterFor] = useState("");
   const person = Cookies.get("person");
   const { setNav, profileImg, projects, projectName, setProjectName } =
@@ -75,14 +62,14 @@ export default function Dashboard() {
           <Menu
             theme="dark"
             mode="inline"
-            // defaultSelectedKeys={['']}
+            defaultSelectedKeys={['profile']}
             items={[
-              person !== "employee" && {
+              person === "hr" && {
                 key: "1",
                 icon: <AuditOutlined />,
                 label: "New Registrations",
                 children: [
-                  person === "hr" && {
+                  {
                     key: "manager",
                     icon: <UserOutlined />,
                     label: "Manager",
@@ -91,8 +78,8 @@ export default function Dashboard() {
                       setRegisterFor("manager");
                     },
                   },
-                  person === "manager" && {
-                    key: "manager",
+                  {
+                    key: "employee",
                     icon: <UserOutlined />,
                     label: "Employee",
                     onClick: () => {
@@ -103,38 +90,47 @@ export default function Dashboard() {
                 ],
               },
 
-              
-                person === "employee" && (
-                  projects.length > 0
-                    ? {
-                        key: "2",
-                        icon: <VideoCameraOutlined />,
-                        label: "Projects",
-                        children: projects.map((p) => {
-                          return {
-                            key: p.projectTitle,
-                            icon: <UserOutlined />,
-                            label: p.projectTitle,
-                            onClick: () => {
-                              setProjectName(p.projectTitle);
-                              setSliderItem("projects");
-                            },
-                          };
-                        }),
-                      }
-                    : 
-                    {
-                        key: "2",
-                        icon: <VideoCameraOutlined />,
-                        label: "Projects",
+              person === "manager" && {
+                key: "add project",
+                icon: <UserOutlined />,
+                label: "Add Project",
+                onClick: () => {
+                  setSliderItem("add project");
+                  // setRegisterFor("project");
+                },
+              },
+
+              person === "employee" && (
+                projects.length > 0
+                  ? {
+                    key: "2",
+                    icon: <VideoCameraOutlined />,
+                    label: "Projects",
+                    children: projects.map((p) => {
+                      return {
+                        key: p.projectTitle,
+                        icon: <UserOutlined />,
+                        label: p.projectTitle,
                         onClick: () => {
-                            setProjectName("not_found");
-                            setSliderItem("projects");
-                          },
-                      }
-                    
-                ),
-                
+                          setProjectName(p.projectTitle);
+                          setSliderItem("projects");
+                        },
+                      };
+                    }),
+                  }
+                  :
+                  {
+                    key: "2",
+                    icon: <VideoCameraOutlined />,
+                    label: "Projects",
+                    onClick: () => {
+                      setProjectName("not_found");
+                      setSliderItem("projects");
+                    },
+                  }
+
+              ),
+
               person !== "employee" && {
                 key: "2",
                 icon: <VideoCameraOutlined />,
@@ -144,7 +140,7 @@ export default function Dashboard() {
                 },
               },
               {
-                key: "profile",
+                key: 'profile',
                 icon: <UserOutlined />,
                 label: "Profile",
                 onClick: () => {
@@ -167,7 +163,7 @@ export default function Dashboard() {
           <Header style={{ padding: 0, background: colorBgContainer }}>
             <Meta
               avatar={<Avatar src={profileImg} />}
-              // title={personData.name}
+            // title={personData.name}
             />
           </Header>
 
@@ -179,11 +175,10 @@ export default function Dashboard() {
             </div>
             {sliderItem === "profile" && <Profile />}
             {sliderItem === "management" && <h2>Management</h2>}
-            {sliderItem === "projects" && (
-              <Projects projectName={projectName} />
-            )}
+            {sliderItem === "projects" && (<Projects projectName={projectName} />)}
+            {sliderItem === "add project" && (<CreateProject />)}
           </Content>
-   
+
 
           <Footer className="footer">Time & Work Tracking System</Footer>
         </Layout>

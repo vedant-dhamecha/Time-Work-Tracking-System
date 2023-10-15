@@ -1,5 +1,9 @@
 .projForm {
-  border: 2px solid blue;
-  width: 46%;
-  padding: 3vh;
+  border: 1px solid rgb(189, 188, 188);
+  border-radius: 15px;
+  background-color: rgba(211, 210, 210, 0.353);
+  width: 50%;
+  padding: 4vh;
+  margin-top: 4vh;
+  margin-bottom: 4vh;
 }

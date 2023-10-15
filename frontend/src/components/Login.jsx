@@ -98,13 +98,13 @@ export default function Login() {
             // setUser({ 'id': data.id, 'profileImg': data.profileImg })
             console.log('data :>> ', data);
             setProfileImg(data.profileImg)
-            setNotificationTitle("Login Successful")
-            setNotification("data?.success")
+            // setNotificationTitle("Login Successful")
+            // setNotification("data?.success")
             // setNotification(data?.success)
 
-            // window.alert(data.success)
+            window.alert(data.success)
             navigate('/dashboard')
-            openNotificationWithIcon('success');
+            // openNotificationWithIcon('success');
         }
     }
     useEffect(() => {

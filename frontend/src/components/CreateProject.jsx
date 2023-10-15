@@ -8,7 +8,8 @@ import {
     Radio, Modal, Upload, Popconfirm
 } from "antd";
 import '../styles/addProj.css'
-
+import AddEmpsInProj from './AddEmpsInProj';
+// import AddProject from '../components/projects/AddProject';
 
 export default function CreateProject() {
 
@@ -35,6 +36,7 @@ export default function CreateProject() {
                             <DatePicker onChange={(e, date) => { }} />
                         </Form.Item>
                     </span>
+                    < AddEmpsInProj />
                 </Form>
 
             </div>

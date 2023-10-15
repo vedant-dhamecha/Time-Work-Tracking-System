@@ -66,7 +66,7 @@ export default function Projects({ projectName }) {
         if (response?.success) {
           alert("ok");
         } else {
-          
+
         }
       } catch (error) {
         console.log(error);
@@ -123,8 +123,8 @@ export default function Projects({ projectName }) {
       } catch (error) {
         console.error("Error storing time on the server:", error);
       }
-   
-   
+
+
     };
 
     if (isRunning) {
@@ -267,7 +267,7 @@ export default function Projects({ projectName }) {
         key: "comment",
         render: () => (
           <div style={{ width: "100%" }}>
-            <TextArea showCount maxLength={100} onChange={handleComments} />
+            <TextArea showCount maxLength={500} onChange={handleComments} />
           </div>
         ),
       },
@@ -296,7 +296,7 @@ export default function Projects({ projectName }) {
       {
         key: 1,
         comments: (
-          <TextArea showCount maxLength={100} onChange={handleComments} />
+          <TextArea showCount maxLength={500} onChange={handleComments} />
         ),
       },
     ];
@@ -340,7 +340,7 @@ export default function Projects({ projectName }) {
       setProject(p);
       // setTime(p.workTime);
       setIsRunning(p.isClockRunning);
-      console.log(p.workTime, p.isClockRunning,p._id);
+      console.log(p.workTime, p.isClockRunning, p._id);
 
       fetch(`http://localhost:3218/getTimeNstate/${p._id}`)
         .then((respone) => respone.json())
@@ -366,9 +366,9 @@ export default function Projects({ projectName }) {
                 <Badge status="success" text={task?.status} />
               ) : task?.status === "pending" ? (
                 <Badge status="error" text={task?.status} />
-              ) : (
+              ) : task?.status === "in progress" ? (
                 <Badge status="processing" text={task?.status} />
-              )}
+              ) : null}
             </span>
           ),
           creator: "Jack",
@@ -382,11 +382,11 @@ export default function Projects({ projectName }) {
     setData(data);
   }, [projectName]);
 
-  if(projectName==="not_found"){
-    return(
-      <h1>404 error</h1>
+  if (projectName === "not_found") {
+    return (
+      <h1>No Projects Assigned Yet 😥</h1>
 
-  
+
     )
   }
 

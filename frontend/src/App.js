@@ -11,7 +11,7 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import Register from "./components/Register";
 import ResetPassword from "./components/ResetPassword";
-import Dummy from "./components/Dummy";
+// import Dum from "./components/Dum";
 
 function App() {
 
@@ -28,7 +28,7 @@ function App() {
   const [profileImg, setProfileImg] = useState();
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState("");
- 
+
   const getInformation = async () => {
     try {
       // setLoad(true)
@@ -120,7 +120,7 @@ function App() {
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dummy" element={<Dummy />} />
+            {/* <Route path="/dummy" element={<Dum />} /> */}
             <Route
               path="/resetPassword/:person/:idd"
               element={<ResetPassword />}
