@@ -11,7 +11,7 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import Register from "./components/Register";
 import ResetPassword from "./components/ResetPassword";
-import Dum from "./components/Dummy";
+import Dummy from "./components/Dummy";
 
 function App() {
 
@@ -120,13 +120,14 @@ function App() {
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dummy" element={<Dum />} />
+            <Route path="/dummy" element={<Dummy />} />
             <Route
               path="/resetPassword/:person/:idd"
               element={<ResetPassword />}
             />
           </Routes>
         </Router>
+
       </context.Provider>
     </>
   );

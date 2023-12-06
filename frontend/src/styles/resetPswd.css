@@ -1,0 +1,21 @@
+.resetForm {
+  /* border: 2px solid red; */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  color: white;
+  padding-top: 10vh;
+  background-image: url("../assets/bg.png");
+}
+
+.inputs {
+  /* border: 2px solid red; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  color: white;
+}

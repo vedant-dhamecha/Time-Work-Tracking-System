@@ -157,7 +157,7 @@ router.post("/register", async (req, res) => {
     } = req.body;
     let designation = registerFor;
     console.log(registerFor);
-    
+
     if (registerFor === "manager") {
       const findId = await Manager.findOne({ id });
       const findMobile = await Manager.findOne({ mobile });
@@ -254,7 +254,7 @@ router.post("/sendEmail", async (req, res) => {
         to: req.body.email,
         subject:
           "Welcome to Artecho Solution: Reset your password through this link",
-        text: `With global reach and thousands of consultants, Artech Consulting Solutions is ideally positioned to` + `\n` +  `deliver a wide array of IT-focused solutions, backed by superior talent, methodology and delivery` + `\n` + `http://localhost:3000/resetPassword/${person}/${uid}`,
+        text: `With global reach and thousands of consultants, Artech Consulting Solutions is ideally positioned to` + `\n` + `deliver a wide array of IT-focused solutions, backed by superior talent, methodology and delivery` + `\n` + `http://localhost:3000/resetPassword/${person}/${uid}`,
       };
 
       mailTransporter.sendMail(details, (err) => {
@@ -353,6 +353,14 @@ router.get("/getProject", async (req, res) => {
   }
 });
 
+router.get("/getEmployees", async (req, res) => {
+  const emps = await Employee.find();
+  // console.log('emps :>> ', emps);
+  const x = emps.map((emp) => { console.log('emp.email :>> ', emp.email); })
+  return res.json(emps);
+
+
+})
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
   const { taskId, comment, imgValues } = req.body;
@@ -396,7 +404,7 @@ router.post("/addTaskData", upload.none(), async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
- 
+
 router.post("/addProject", async (req, res) => {
   const {
     projectTitle,
@@ -405,8 +413,13 @@ router.post("/addProject", async (req, res) => {
     assignedEmployees,
     status,
   } = req.body;
- 
+
   try {
+    // if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0 || !status) {
+    //   res.status(422).json({ error: "Fill all details" });
+    //   return;
+    // }
+
     const data = new Project(req.body);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });
@@ -416,9 +429,9 @@ router.post("/addProject", async (req, res) => {
   }
 });
 
-router.post("/toggleClockState",async(req,res)=>{
+router.post("/toggleClockState", async (req, res) => {
 
-  const {projectId,time}=req.body;
+  const { projectId, time } = req.body;
 
   try {
     const project = await Project.findById(projectId);
@@ -443,9 +456,9 @@ router.post("/toggleClockState",async(req,res)=>{
 
 })
 
-router.post("/storeTime",async(req,res)=>{
+router.post("/storeTime", async (req, res) => {
 
-  const {projectId,time}=req.body;
+  const { projectId, time } = req.body;
 
   try {
     const project = await Project.findById(projectId);
@@ -470,9 +483,9 @@ router.post("/storeTime",async(req,res)=>{
 })
 
 
-router.get("/getTimeNstate/:_id",async(req,res)=>{
+router.get("/getTimeNstate/:_id", async (req, res) => {
 
-  const projectId=req.params._id;
+  const projectId = req.params._id;
 
   try {
     const project = await Project.findById(projectId);
@@ -481,7 +494,7 @@ router.get("/getTimeNstate/:_id",async(req,res)=>{
       return 'Project not found';
     }
 
-    return res.status(200).json({ success: "Clock time found.",time:project.workTime,isClockRunning:project.isClockRunning });
+    return res.status(200).json({ success: "Clock time found.", time: project.workTime, isClockRunning: project.isClockRunning });
 
     return project;
   } catch (error) {

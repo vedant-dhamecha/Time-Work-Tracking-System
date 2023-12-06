@@ -82,7 +82,7 @@
 import React from "react";
 import { Modal, Form, Input, DatePicker, Button, Table } from "antd";
 
-const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask ,form}) => {
+const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask, form }) => {
 
     const handleAddTask = () => {
         form.validateFields({ validateOnly: true }).then((values) => {
@@ -100,6 +100,7 @@ const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask ,form
             open={visible}
             onOk={handleAddTask}
             onCancel={onCancel}
+            width='40%'
         >
             <Form form={form}>
                 <Form.Item
@@ -136,7 +137,7 @@ const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask ,form
                         },
                     ]}
                 >
-                    <DatePicker name="startDate"/>
+                    <DatePicker name="startDate" />
                 </Form.Item>
                 <Form.Item
                     name="dueDate"
@@ -148,7 +149,7 @@ const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask ,form
                         },
                     ]}
                 >
-                    <DatePicker name="dueDate"/>
+                    <DatePicker name="dueDate" />
                 </Form.Item>
             </Form>
         </Modal>

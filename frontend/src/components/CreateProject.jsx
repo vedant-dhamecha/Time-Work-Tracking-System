@@ -49,13 +49,13 @@ export default function CreateProject() {
         });
 
         const data = await res.json();
-        
-        if (res.status===201) {
+
+        if (res.status === 201) {
           alert("Done");
           setTimeout(() => {
             window.location.reload();
           }, 1000);
-        }else{
+        } else {
           alert("Not Done");
         }
 
@@ -101,7 +101,7 @@ export default function CreateProject() {
               label="Assigned Date"
               rules={[{ required: true }]}
             >
-              <DatePicker onChange={(e, date) => {}} />
+              <DatePicker onChange={(e, date) => { }} />
             </Form.Item>
             <Form.Item
               name="estimatedDate"
@@ -110,7 +110,7 @@ export default function CreateProject() {
                 { required: true, message: "Please select an estimated date" },
               ]}
             >
-              <DatePicker onChange={(e, date) => {}} />
+              <DatePicker onChange={(e, date) => { }} />
             </Form.Item>
           </span>
           <AddEmpsInProj addEmployeeToProject={addEmployeeToProject} />

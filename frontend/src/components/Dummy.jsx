@@ -1,42 +1,50 @@
-import React, { useEffect, useRef} from "react";
-import Chart from 'chart.js/auto';
+import React, { useState, useEffect } from 'react';
+import { Radio, Select, Space } from 'antd';
 
-export default function Dummy() {
-  const chartRef = useRef(null);
-  const chartInstance = useRef(null);
+const App = () => {
 
-  useEffect(()=>{
-    if (chartInstance.current) {
-      chartInstance.current.destroy()
-    }
+  const [employees, setEmployees] = useState([])
+  const [options, setOptions] = useState([])
 
-    const myChartRef = chartRef.current.getContext('2d');
+  const handleChange = (value) => {
+    console.log('value :>> ', value);
+    setEmployees(value)
+  };
+  useEffect(async () => {
+    const res = await fetch("http://localhost:3218/getEmployees", {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    });
+    const data = await res.json();
+    console.log('data :>> ', data);
 
-    chartInstance.current = new Chart(myChartRef,{
-      type:"pie",
-      data:{
-        labels: ["Label 1","Label 2","Label 3"],
-        datasets:[
-        {
-           data: [300,50,100],
-           backgroundColor: [
-            'rgb(255,99,132)',
-            'rgb(54,162,235)',
-            'rgb(255,205,)'
-          ]
-         }
-        ]
-      }
-    })
-    return () =>{
-      if (chartInstance.current) {
-        chartInstance.current.destroy()
-      }
-    }
-  },[])
+    data?.map((emp => {
+      console.log('emp.email :>> ', emp.email);
+
+      setOptions(prev => [...prev, { value: emp.email, label: emp.email }])
+    }))
+  }, [])
+  console.log('options :>> ', options);
+  console.log('employees :>> ', employees);
+
   return (
-     <div>
-       <canvas ref={chartRef} />
-     </div>
+    <>
+
+      <Select
+        mode="multiple"
+        placeholder="select employees"
+        onChange={handleChange}
+        style={{
+          width: '100%',
+        }}
+        options={options}
+      />
+
+    </>
   );
 };
+export default App;
