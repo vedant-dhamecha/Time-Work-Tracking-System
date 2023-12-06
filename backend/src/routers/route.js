@@ -396,7 +396,7 @@ router.post("/addTaskData", upload.none(), async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
+ 
 router.post("/addProject", async (req, res) => {
   const {
     projectTitle,
@@ -405,13 +405,8 @@ router.post("/addProject", async (req, res) => {
     assignedEmployees,
     status,
   } = req.body;
-
+ 
   try {
-    // if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0 || !status) {
-    //   res.status(422).json({ error: "Fill all details" });
-    //   return;
-    // }
-
     const data = new Project(req.body);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });

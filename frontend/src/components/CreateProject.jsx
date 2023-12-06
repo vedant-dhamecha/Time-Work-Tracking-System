@@ -1,18 +1,5 @@
-import React, { useState } from "react";
-import {
-  DatePicker,
-  Space,
-  Spin,
-  notification,
-  Button,
-  Form,
-  Input,
-  Select,
-  Radio,
-  Modal,
-  Upload,
-  Popconfirm,
-} from "antd";
+import React, { useEffect, useState } from "react";
+import { DatePicker, Button, Form, Input } from "antd";
 import "../styles/addProj.css";
 import AddEmpsInProj from "./AddEmpsInProj";
 // import AddProject from '../components/projects/AddProject';
@@ -20,33 +7,71 @@ import AddEmpsInProj from "./AddEmpsInProj";
 export default function CreateProject() {
   const [project, setProject] = useState({
     projectTitle: "",
-    startingDate: null,
+    assignedDate: null,
     estimatedDate: null,
     assignedEmployees: [],
   });
   const formRef = React.useRef(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    const formValues = formRef.current.getFieldsValue();
-    const { projectTitle, assignedDate, estimatedDate } = formValues;
+  const handleSubmit = async () => {
+    try {
+      const formValues = formRef.current.getFieldsValue();
+      const { projectTitle, assignedDate, estimatedDate } = formValues;
 
-    setProject({
-      projectTitle,
-      assignedDate: assignedDate.format("YYYY-MM-DD"),
-      estimatedDate: estimatedDate.format("YYYY-MM-DD"),
-      assignedEmployees:project.assignedEmployees
-    });
+      // Update project state
+      setProject((prevProject) => ({
+        ...prevProject,
+        projectTitle,
+        assignedDate: assignedDate?.format("YYYY-MM-DD"),
+        estimatedDate: estimatedDate?.format("YYYY-MM-DD"),
+        assignedEmployees: project.assignedEmployees,
+      }));
 
-    console.log("Project Data:", project);
+      // Set submitting to true to indicate that the form is being submitted
+      setSubmitting(true);
+    } catch (error) {
+      // Handle errors, if any
+      console.error("Error:", error);
+    }
   };
 
+  useEffect(() => {
+    if (submitting && project) {
+      const sendProject = async () => {
+        const res = await fetch("http://localhost:3218/addproject", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(project),
+        });
+
+        const data = await res.json();
+        
+        if (res.status===201) {
+          alert("Done");
+        }else{
+          alert("Not Done");
+        }
+
+        // Reset submitting state after the API call is complete
+        setSubmitting(false);
+      };
+
+      sendProject();
+    }
+  }, [submitting, project]);
+
   const addEmployeeToProject = (employee) => {
+    console.log(employee);
+
     setProject((prevProject) => ({
       ...prevProject,
       assignedEmployees: [...prevProject.assignedEmployees, employee],
     }));
   };
-
   return (
     <>
       <div className="projForm">
