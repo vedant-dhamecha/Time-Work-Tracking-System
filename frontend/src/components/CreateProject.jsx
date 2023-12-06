@@ -1,18 +1,5 @@
-import React, { useState } from "react";
-import {
-  DatePicker,
-  Space,
-  Spin,
-  notification,
-  Button,
-  Form,
-  Input,
-  Select,
-  Radio,
-  Modal,
-  Upload,
-  Popconfirm,
-} from "antd";
+import React, { useEffect, useState } from "react";
+import { DatePicker, Button, Form, Input } from "antd";
 import "../styles/addProj.css";
 import AddEmpsInProj from "./AddEmpsInProj";
 // import AddProject from '../components/projects/AddProject';
@@ -20,28 +7,73 @@ import AddEmpsInProj from "./AddEmpsInProj";
 export default function CreateProject() {
   const [project, setProject] = useState({
     projectTitle: "",
-    startingDate: null,
+    assignedDate: null,
     estimatedDate: null,
     assignedEmployees: [],
   });
-  const [date, setDate] = useState(null);
   const formRef = React.useRef(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    const formValues = formRef.current.getFieldsValue();
-    const { projectTitle, assignedDate, estimatedDate } = formValues;
+  const handleSubmit = async () => {
+    try {
+      const formValues = formRef.current.getFieldsValue();
+      console.log("formValues :", formValues)
+      const { projectTitle, estimatedDate } = formValues;
+      // console.log("start :", estimatedDate[0].format("YYYY-MM-DD"))
+      // console.log("end :", estimatedDate[1].format("YYYY-MM-DD"))
+      // Update project state
+      setProject((prevProject) => ({
+        ...prevProject,
+        projectTitle,
+        assignedDate: estimatedDate[0]?.format("YYYY-MM-DD"),
+        estimatedDate: estimatedDate[1]?.format("YYYY-MM-DD"),
+        assignedEmployees: project.assignedEmployees,
+      }));
 
-    setProject({
-      projectTitle,
-      assignedDate: assignedDate.format("YYYY-MM-DD"),
-      estimatedDate: estimatedDate.format("YYYY-MM-DD"),
-      assignedEmployees: project.assignedEmployees
-    });
-
-    console.log("Project Data:", project);
+      // Set submitting to true to indicate that the form is being submitted
+      setSubmitting(true);
+      console.log('project :>> ', project);
+    } catch (error) {
+      // Handle errors, if any
+      console.error("Error:", error);
+    }
   };
 
+  useEffect(() => {
+    if (submitting && project) {
+      const sendProject = async () => {
+        const res = await fetch("http://localhost:3218/addproject", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(project),
+        });
+
+        const data = await res.json();
+
+        if (res.status === 201) {
+          formRef.current?.resetFields();
+          alert("Project successfully created");
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 1000);
+        } else {
+          alert("Not Done");
+        }
+
+        // Reset submitting state after the API call is complete
+        setSubmitting(false);
+      };
+
+      sendProject();
+    }
+  }, [submitting, project]);
+
   const addEmployeeToProject = (employee) => {
+    console.log(employee);
+
     setProject((prevProject) => ({
       ...prevProject,
       assignedEmployees: [...prevProject.assignedEmployees, employee],
@@ -69,21 +101,21 @@ export default function CreateProject() {
               justifyContent: "space-between",
             }}
           >
-            <Form.Item
+            {/* <Form.Item
               name="assignedDate"
               label="Assigned Date"
               rules={[{ required: true }]}
             >
-              <DatePicker onChange={(e, date) => { setDate(date) }} />
-            </Form.Item>
+              <DatePicker onChange={(e, date) => { console.log(date) }} />
+            </Form.Item> */}
             <Form.Item
               name="estimatedDate"
-              label="Estimated Date"
+              label="Estimated Completion Date"
               rules={[
-                { required: true, message: "Please select an estimated date" },
+                { required: true, message: "Please select dates" },
               ]}
             >
-              <DatePicker onChange={(e, date) => { }} />
+              <DatePicker.RangePicker onChange={(e, date) => { console.log(date) }} style={{ width: '100%', }} />
             </Form.Item>
           </span>
           <AddEmpsInProj addEmployeeToProject={addEmployeeToProject} />

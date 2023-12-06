@@ -54,7 +54,7 @@ export default function Navigationbar() {
                   Help
                 </Link>
               </NavItem>
-              {!logged && (
+              {Cookies.get("person") === undefined && (
                 <>
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret className="menuitem">
@@ -75,7 +75,8 @@ export default function Navigationbar() {
                   </UncontrolledDropdown>
                 </>
               )}
-              {logged && (
+              {console.log(logged)}
+              {Cookies.get("person") && (
                 <>
                   <NavItem>
                     <Link

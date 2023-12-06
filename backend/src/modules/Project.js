@@ -4,23 +4,23 @@ const addProject = mongoose.Schema({
     projectTitle: {
         type: String
     },
-    startingDate: {
+    assignedDate: {
         type: String
     },
     estimatedDate: {
         type: String
     },
-    isClockRunning:{
-        type:Boolean,
-        default:false
+    isClockRunning: {
+        type: Boolean,
+        default: false
     },
     workTime: {
         type: Number,
-        default:0
+        default: 0
     },
     breakTime: {
         type: Number,
-        default:0
+        default: 0
     },
     assignedEmployees: [
         {
@@ -38,22 +38,25 @@ const addProject = mongoose.Schema({
                     startDate: {
                         type: String,
                     },
-                    completionDate: {
+                    dueDate: {
                         type: String,
                     },
-                    comments:{
+                    description: {
+                        type: String,
+                    },
+                    comments: {
                         type: String
                     },
-                    images:{
+                    images: {
                         type: Array
                     },
                     status: {
                         type: String,
                         default: "pending"
-                    }, 
+                    },
                 }
-                   
-            
+
+
             ]
         },
     ]

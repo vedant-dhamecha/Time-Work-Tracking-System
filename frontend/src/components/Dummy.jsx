@@ -1,18 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { Radio, Select, Space } from 'antd';
+import React, { useEffect, useRef, useState } from "react";
+import { Select } from 'antd';
 
+import Chart from 'chart.js/auto';
 
+export default function Dummy() {
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+  var empEmails = []
+  var emailss = []
+  const [emails, setEmails] = useState([])
 
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy()
+    }
 
-const App = () => {
+    const myChartRef = chartRef.current.getContext('2d');
 
-  const [employees, setEmployees] = useState([])
-  const [options, setOptions] = useState([])
-
-  const handleChange = (value) => {
-    console.log('value :>> ', value);
-    setEmployees(value)
-  };
+    chartInstance.current = new Chart(myChartRef, {
+      type: "pie",
+      data: {
+        labels: ["Label 1", "Label 2", "Label 3"],
+        datasets: [
+          {
+            data: [300, 50, 100],
+            backgroundColor: [
+              'rgb(255,99,132)',
+              'rgb(54,162,235)',
+              'rgb(255,205,)'
+            ]
+          }
+        ]
+      }
+    })
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy()
+      }
+    }
+  }, [])
   useEffect(async () => {
     const res = await fetch("http://localhost:3218/getEmployees", {
       method: 'GET',
@@ -22,32 +48,41 @@ const App = () => {
       },
       credentials: 'include'
     });
-    const data = await res.json();
-    console.log('data :>> ', data);
+    empEmails = await res.json();
+    console.log('empEmails :>> ', empEmails);
 
-    data?.map((emp => {
-      console.log('emp.email :>> ', emp.email);
+    emailss = empEmails.map(e => ({
+      value: e,
+      label: e,
+    }));
 
-      setOptions(prev => [...prev, { value: emp.email, label: emp.email }])
-    }))
+    console.log('emails :>> ', emails);
+    setEmails(emailss)
   }, [])
-  console.log('options :>> ', options);
-  console.log('employees :>> ', employees);
+
+  const handleChange = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+
 
   return (
     <>
+      <canvas ref={chartRef} />
 
       <Select
-        mode="multiple"
-        placeholder="select employees"
-        onChange={handleChange}
+        showSearch
         style={{
-          width: '100%',
+          width: 200,
         }}
-        options={options}
+        placeholder="Search to Select"
+        optionFilterProp="children"
+        filterOption={(input, option) => (option?.label ?? '').includes(input)}
+        filterSort={(optionA, optionB) =>
+          (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+        }
+        options={emails}
       />
-
     </>
   );
 };
-export default App;

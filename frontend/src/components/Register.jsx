@@ -219,7 +219,15 @@ export default function Register({ registerFor }) {
               </Space>
             </Form.Item>
 
-            <Form.Item name="mobile" label="Phone Number" rules={[{ required: true }]} >
+            <Form.Item name="mobile" label="Phone Number"
+              rules={[{ required: true },
+              {
+                // type: "mobile",
+                pattern: /^\d{10}$/,
+                message: "Enter valid mobile number",
+              },
+              ]}
+            >
               <Input addonBefore={<PhoneFilled />} />
             </Form.Item>
 
