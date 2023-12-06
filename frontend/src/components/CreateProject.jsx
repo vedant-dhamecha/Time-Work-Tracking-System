@@ -24,6 +24,7 @@ export default function CreateProject() {
     estimatedDate: null,
     assignedEmployees: [],
   });
+  const [date, setDate] = useState(null);
   const formRef = React.useRef(null);
 
   const handleSubmit = () => {
@@ -34,7 +35,7 @@ export default function CreateProject() {
       projectTitle,
       assignedDate: assignedDate.format("YYYY-MM-DD"),
       estimatedDate: estimatedDate.format("YYYY-MM-DD"),
-      assignedEmployees:project.assignedEmployees
+      assignedEmployees: project.assignedEmployees
     });
 
     console.log("Project Data:", project);
@@ -73,7 +74,7 @@ export default function CreateProject() {
               label="Assigned Date"
               rules={[{ required: true }]}
             >
-              <DatePicker onChange={(e, date) => {}} />
+              <DatePicker onChange={(e, date) => { setDate(date) }} />
             </Form.Item>
             <Form.Item
               name="estimatedDate"
@@ -82,7 +83,7 @@ export default function CreateProject() {
                 { required: true, message: "Please select an estimated date" },
               ]}
             >
-              <DatePicker onChange={(e, date) => {}} />
+              <DatePicker onChange={(e, date) => { }} />
             </Form.Item>
           </span>
           <AddEmpsInProj addEmployeeToProject={addEmployeeToProject} />
