@@ -52,6 +52,9 @@ export default function CreateProject() {
         
         if (res.status===201) {
           alert("Done");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }else{
           alert("Not Done");
         }
