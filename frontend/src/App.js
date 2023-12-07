@@ -11,7 +11,8 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import Register from "./components/Register";
 import ResetPassword from "./components/ResetPassword";
-import Dummy from "./components/Dummy";
+import Dum from "./components/Dummy";
+import Dummy2 from "./components/Dummy2";
 
 function App() {
 
@@ -120,7 +121,8 @@ function App() {
             <Route path="/login/:person" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dummy" element={<Dummy />} />
+            <Route path="/dummy" element={<Dum />} />
+            <Route path="/dummy2" element={<Dummy2 />} />
             <Route
               path="/resetPassword/:person/:idd"
               element={<ResetPassword />}

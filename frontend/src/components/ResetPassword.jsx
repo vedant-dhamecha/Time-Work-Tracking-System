@@ -25,7 +25,6 @@ export default function ResetPassword() {
           password, confirmPassword
         })
       });
-
       const data = await res.json();
       if (res.status === 201) {
         alert("password updated successfully")
@@ -40,6 +39,7 @@ export default function ResetPassword() {
   }
   return (
     <div >
+
       <Form name="basic" initialValues={{ remember: true, }} className='resetForm'>
         <img src={logo} alt="" style={{ height: '20vh' }} />
         <div><h1>Reset your password</h1></div>

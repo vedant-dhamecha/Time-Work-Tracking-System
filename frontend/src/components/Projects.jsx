@@ -11,10 +11,7 @@ import context from "../Context/context";
 const { TextArea } = Input;
 
 export default function Projects({ projectName }) {
-  // const projectTime = localStorage.getItem("projectTime");
-  // const pt = projectTime?.find(
-  //   (p) => p?.projectTitle === projectName
-  // );
+  const formRef = React.useRef(null);
 
   const { projects } = useContext(context);
   const [load, setLoad] = useState(false);
@@ -64,7 +61,8 @@ export default function Projects({ projectName }) {
 
         const response = await taskDetails.json();
         if (response?.success) {
-          alert("ok");
+          formRef.current?.resetFields();
+          alert("progress sent to your project manager");
         } else {
 
         }
@@ -359,7 +357,7 @@ export default function Projects({ projectName }) {
           key: task?._id,
           taskId: task?._id,
           taskName: task?.title,
-          description: task?.desc,
+          description: task?.description,
           status: (
             <span>
               {task?.status === "finished" ? (
@@ -375,7 +373,7 @@ export default function Projects({ projectName }) {
           assignedDate: (
             <span style={{ color: "green" }}>{task?.startDate}</span>
           ),
-          DueDate: <span style={{ color: "red" }}>{task?.completionDate}</span>,
+          DueDate: <span style={{ color: "red" }}>{task?.dueDate}</span>,
         });
       });
     });
@@ -434,7 +432,7 @@ export default function Projects({ projectName }) {
             }}
           >
             <p style={{ color: "rgb(0, 0, 55)" }}>
-              Starting Date : {project.startingDate}
+              Starting Date : {project.assignedDate}
             </p>
             <p style={{ color: "rgb(116, 0, 0)" }}>
               Estimated Date : {project.estimatedDate}

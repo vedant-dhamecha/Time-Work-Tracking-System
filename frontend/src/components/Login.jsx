@@ -17,7 +17,7 @@ export default function Login() {
     const [id, setId] = useState('')
     const [password, setPassword] = useState('')
 
-    const { user, setUser, load, setLoad, setProfileImg, setLogged, notiefication, setNotification, notificationTitle, setNotificationTitle } = useContext(context)
+    const { load, setLoad, setProfileImg, logged, setLogged, notiefication, setNotification, notificationTitle, setNotificationTitle } = useContext(context)
     const [messageApi, contextHolderMessage] = message.useMessage();
     const key = 'updatable';
     const openMessage = (s) => {
@@ -32,7 +32,7 @@ export default function Login() {
                 type: s === 'Email is sent successfully' ? 'success' : 'error',
                 content: s,
             });
-        }, 2000);
+        }, 1000);
     };
     const [api, contextHolderNotification] = notification.useNotification();
     const openNotificationWithIcon = (type) => {
@@ -49,6 +49,7 @@ export default function Login() {
     const handleCancel = () => { setIsModalOpen(false); };
 
     const handleOk = async (e) => {
+        setLoad(true)
         setIsModalOpen(false);
 
         // openMessage("hii")
@@ -63,9 +64,11 @@ export default function Login() {
         const data = await res.json();
 
         if (data?.error) {
+            setLoad(false)
             openMessage(data?.error)
         }
         else if (data?.success) {
+            setLoad(false)
             openMessage(data?.success)
         }
 
@@ -102,7 +105,9 @@ export default function Login() {
             // setNotification("data?.success")
             // setNotification(data?.success)
 
+            // alert("hiS")
             window.alert(data.success)
+            console.log('logged :>> ', logged);
             navigate('/dashboard')
             // openNotificationWithIcon('success');
         }
@@ -128,7 +133,7 @@ export default function Login() {
             <main className='padding'>
                 <div className="box">
                     {load &&
-                        <Spin tip="Logging in..." size="large" >
+                        <Spin tip="Please Wait..." size="large" >
                             <div className="content" />
                         </Spin>
                     }

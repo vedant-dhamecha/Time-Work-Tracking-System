@@ -17,19 +17,22 @@ export default function CreateProject() {
   const handleSubmit = async () => {
     try {
       const formValues = formRef.current.getFieldsValue();
-      const { projectTitle, assignedDate, estimatedDate } = formValues;
-
+      console.log("formValues :", formValues)
+      const { projectTitle, estimatedDate } = formValues;
+      // console.log("start :", estimatedDate[0].format("YYYY-MM-DD"))
+      // console.log("end :", estimatedDate[1].format("YYYY-MM-DD"))
       // Update project state
       setProject((prevProject) => ({
         ...prevProject,
         projectTitle,
-        assignedDate: assignedDate?.format("YYYY-MM-DD"),
-        estimatedDate: estimatedDate?.format("YYYY-MM-DD"),
+        assignedDate: estimatedDate[0]?.format("YYYY-MM-DD"),
+        estimatedDate: estimatedDate[1]?.format("YYYY-MM-DD"),
         assignedEmployees: project.assignedEmployees,
       }));
 
       // Set submitting to true to indicate that the form is being submitted
       setSubmitting(true);
+      console.log('project :>> ', project);
     } catch (error) {
       // Handle errors, if any
       console.error("Error:", error);
@@ -51,7 +54,8 @@ export default function CreateProject() {
         const data = await res.json();
 
         if (res.status === 201) {
-          alert("Done");
+          formRef.current?.resetFields();
+          alert("Project successfully created");
           setTimeout(() => {
             window.location.reload();
           }, 1000);
@@ -96,21 +100,21 @@ export default function CreateProject() {
               justifyContent: "space-between",
             }}
           >
-            <Form.Item
+            {/* <Form.Item
               name="assignedDate"
               label="Assigned Date"
               rules={[{ required: true }]}
             >
-              <DatePicker onChange={(e, date) => { }} />
-            </Form.Item>
+              <DatePicker onChange={(e, date) => { console.log(date) }} />
+            </Form.Item> */}
             <Form.Item
               name="estimatedDate"
-              label="Estimated Date"
+              label="Estimated Completion Date"
               rules={[
-                { required: true, message: "Please select an estimated date" },
+                { required: true, message: "Please select dates" },
               ]}
             >
-              <DatePicker onChange={(e, date) => { }} />
+              <DatePicker.RangePicker onChange={(e, date) => { console.log(date) }} style={{ width: '100%', }} />
             </Form.Item>
           </span>
           <AddEmpsInProj addEmployeeToProject={addEmployeeToProject} />

@@ -336,6 +336,18 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 });
 
+router.get('/getAllProjects', async (req, res) => {
+  try {
+    // Select only the fields you need (projectTitle and workTime)
+    const data = await Project.find().select('projectTitle workTime');
+
+    res.status(201).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: error });
+  }
+});
+
 router.get("/getProject", async (req, res) => {
   const email = req.cookies.employeeEmail;
   try {
@@ -354,13 +366,13 @@ router.get("/getProject", async (req, res) => {
 });
 
 router.get("/getEmployees", async (req, res) => {
-  const emps = await Employee.find();
-  // console.log('emps :>> ', emps);
-  const x = emps.map((emp) => { console.log('emp.email :>> ', emp.email); })
-  return res.json(emps);
-
-
+  const emps = await Employee.find({});
+  const empEmails = [];
+  emps.map((emp) => { empEmails.push(emp.email) })
+  return res.json(empEmails);
 })
+
+
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
   const { taskId, comment, imgValues } = req.body;
@@ -408,18 +420,13 @@ router.post("/addTaskData", upload.none(), async (req, res) => {
 router.post("/addProject", async (req, res) => {
   const {
     projectTitle,
-    startingDate,
+    assignedDate,
     estimatedDate,
     assignedEmployees,
     status,
   } = req.body;
-
+  console.log("hiii")
   try {
-    // if (!projectTitle || !startingDate || !estimatedDate || assignedEmployees.length === 0 || !status) {
-    //   res.status(422).json({ error: "Fill all details" });
-    //   return;
-    // }
-
     const data = new Project(req.body);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });

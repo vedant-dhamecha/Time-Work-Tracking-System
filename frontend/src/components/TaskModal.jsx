@@ -127,21 +127,10 @@ const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask, form
                 >
                     <Input />
                 </Form.Item>
+
                 <Form.Item
-                    name="startDate"
-                    label="Start Date"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please select Start Date",
-                        },
-                    ]}
-                >
-                    <DatePicker name="startDate" />
-                </Form.Item>
-                <Form.Item
-                    name="dueDate"
-                    label="Due Date"
+                    name="duration"
+                    label="Task Duration"
                     rules={[
                         {
                             required: true,
@@ -149,7 +138,7 @@ const TaskModal = ({ visible, onCancel, onAddTaskForEmployee, onDeleteTask, form
                         },
                     ]}
                 >
-                    <DatePicker name="dueDate" />
+                    <DatePicker.RangePicker name="duration" />
                 </Form.Item>
             </Form>
         </Modal>
