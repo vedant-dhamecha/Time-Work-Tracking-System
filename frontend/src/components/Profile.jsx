@@ -52,8 +52,6 @@ export default function Profile() {
                     <h4>{person}  information</h4>
 
                     <Card className='infoCard mt-0 pt-0'>
-
-
                         <div className="info">
                             <div className="profilepic mt-4" >
                                 <Image width={160} src={personData.imgValue} />

@@ -4,6 +4,12 @@ const addProject = mongoose.Schema({
     projectTitle: {
         type: String
     },
+    manager: {
+        type: String
+    },
+    status: {
+        type: String
+    },
     assignedDate: {
         type: String
     },

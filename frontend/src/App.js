@@ -28,6 +28,7 @@ function App() {
   const [profileImg, setProfileImg] = useState();
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState("");
+  const [managerProjects, setManagerProjects] = useState([]);
 
   const getInformation = async () => {
     try {
@@ -68,6 +69,26 @@ function App() {
       console.log(error);
     }
   };
+  const getManagerProjects = async () => {
+    try {
+      const res = await fetch(`http://localhost:3218/getManagerProjects`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await res.json();
+      console.log('data :>> ', data);
+      if (data?.length > 0) {
+        setManagerProjects(data);
+      } else {
+        console.log("no project found");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (
       Cookies.get("person") === "employee" ||
@@ -82,6 +103,7 @@ function App() {
     if (logged) {
       getInformation();
       getProjects();
+      getManagerProjects();
     }
   }, [logged]);
 
@@ -105,6 +127,8 @@ function App() {
           setProjects,
           projectName,
           setProjectName,
+          managerProjects,
+          setManagerProjects,
           notiefication,
           setNotification,
           notificationTitle,

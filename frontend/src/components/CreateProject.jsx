@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DatePicker, Button, Form, Input } from "antd";
+import Cookies from "js-cookie";
 import "../styles/addProj.css";
 import AddEmpsInProj from "./AddEmpsInProj";
 // import AddProject from '../components/projects/AddProject';
@@ -28,6 +29,8 @@ export default function CreateProject() {
         assignedDate: estimatedDate[0]?.format("YYYY-MM-DD"),
         estimatedDate: estimatedDate[1]?.format("YYYY-MM-DD"),
         assignedEmployees: project.assignedEmployees,
+        manager: Cookies.get("managerEmail"),
+        status: 'process'
       }));
 
       // Set submitting to true to indicate that the form is being submitted
@@ -41,7 +44,9 @@ export default function CreateProject() {
 
   useEffect(() => {
     if (submitting && project) {
+
       const sendProject = async () => {
+        console.log('project :>> ', project);
         const res = await fetch("http://localhost:3218/addproject", {
           method: "POST",
           headers: {
@@ -73,11 +78,17 @@ export default function CreateProject() {
 
   const addEmployeeToProject = (employee) => {
     console.log(employee);
-
-    setProject((prevProject) => ({
-      ...prevProject,
-      assignedEmployees: [...prevProject.assignedEmployees, employee],
-    }));
+    const isEmployeeAlreadyAdded = project.assignedEmployees.some(
+      (emp) => emp.empEmail === employee.empEmail
+    );
+    if (!isEmployeeAlreadyAdded) {
+      setProject((prevProject) => ({
+        ...prevProject,
+        assignedEmployees: [...prevProject.assignedEmployees, employee],
+      }));
+    } else {
+      console.log(`Employee with email ${employee.email} is already added.`);
+    }
   };
 
   return (
