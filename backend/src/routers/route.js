@@ -364,6 +364,22 @@ router.get("/getProject", async (req, res) => {
     res.status(401).json({ message: error });
   }
 });
+router.get("/getManagerProjects", async (req, res) => {
+  const email = req.cookies.managerEmail;
+  try {
+    const data = await Project.find({ "manager": email });
+    console.log('data :>> ', data);
+    if (data.length === 0) {
+      res.status(401).json({ message: "No projects assigned yet" });
+    } else {
+      // console.log('data :>> ', data[0].assignedEmployees[0].tasks);
+      res.json(data);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: error });
+  }
+});
 
 router.get("/getEmployees", async (req, res) => {
   const emps = await Employee.find({});
@@ -425,7 +441,6 @@ router.post("/addProject", async (req, res) => {
     assignedEmployees,
     status,
   } = req.body;
-  console.log("hiii")
   try {
     const data = new Project(req.body);
     await data.save();

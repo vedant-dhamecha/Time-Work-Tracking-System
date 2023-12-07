@@ -7,6 +7,7 @@ import {
   UserOutlined,
   VideoCameraOutlined,
   AuditOutlined,
+  BarChartOutlined
 } from "@ant-design/icons";
 import { Layout, Menu, Button, theme, Card, Avatar } from "antd";
 import "../styles/dashboard.css";
@@ -16,6 +17,8 @@ import Register from "./Register";
 import Profile from "./Profile";
 import Projects from "./Projects";
 import CreateProject from './CreateProject';
+import ManageProjects from "./ManageProjects";
+import AnalysisProject from "./AnalysisProject";
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Meta } = Card;
@@ -26,15 +29,14 @@ export default function Dashboard() {
   const [sliderItem, setSliderItem] = useState("profile");
   const [registerFor, setRegisterFor] = useState("");
   const person = Cookies.get("person");
-  const { setNav, profileImg, projects, projectName, setProjectName } =
-    useContext(context);
+  const { setNav, profileImg, projects, projectName, setProjectName, managerProjects, setManagerProjects, } = useContext(context);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   useEffect(() => {
     setNav(false);
-    console.log(projects);
+    // console.log(projects);
   }, []);
 
   return (
@@ -131,12 +133,32 @@ export default function Dashboard() {
 
               ),
 
-              person !== "employee" && {
+              person === "manager" && {
                 key: "2",
                 icon: <VideoCameraOutlined />,
                 label: "Management",
+                children: managerProjects.map((p) => {
+                  return {
+                    key: p.projectTitle,
+                    icon: <UserOutlined />,
+                    label: p.projectTitle,
+                    onClick: () => {
+                      setProjectName(p.projectTitle);
+                      setSliderItem("management");
+                    },
+                  };
+                }),
+                // onClick: () => {
+                //   setSliderItem("management");
+                // },
+              },
+              person === "manager" && {
+                key: "work analysis",
+                icon: <BarChartOutlined />,
+                label: "Work Analysis",
+
                 onClick: () => {
-                  setSliderItem("management");
+                  setSliderItem("work analysis");
                 },
               },
               {
@@ -174,7 +196,8 @@ export default function Dashboard() {
               )}
             </div>
             {sliderItem === "profile" && <Profile />}
-            {sliderItem === "management" && <h2>Management</h2>}
+            {sliderItem === "management" && <ManageProjects projectName={projectName} projects={managerProjects} />}
+            {sliderItem === "work analysis" && <AnalysisProject />}
             {sliderItem === "projects" && (<Projects projectName={projectName} />)}
             {sliderItem === "add project" && (<CreateProject />)}
           </Content>
