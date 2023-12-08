@@ -61,9 +61,9 @@ export default function CreateProject() {
         if (res.status === 201) {
           formRef.current?.resetFields();
           alert("Project successfully created");
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 1000);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         } else {
           alert("Not Done");
         }
@@ -90,7 +90,6 @@ export default function CreateProject() {
       console.log(`Employee with email ${employee.email} is already added.`);
     }
   };
-
   return (
     <>
       <div className="projForm">

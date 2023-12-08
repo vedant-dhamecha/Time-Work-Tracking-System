@@ -336,6 +336,18 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 });
 
+router.get('/getAllProjects', async (req, res) => {
+  try {
+    // Select only the fields you need (projectTitle and workTime)
+    const data = await Project.find().select('projectTitle workTime');
+
+    res.status(201).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(401).json({ message: error });
+  }
+});
+
 router.get("/getProject", async (req, res) => {
   const email = req.cookies.employeeEmail;
   try {
@@ -352,6 +364,7 @@ router.get("/getProject", async (req, res) => {
     res.status(401).json({ message: error });
   }
 });
+
 router.get("/getManagerProjects", async (req, res) => {
   const email = req.cookies.managerEmail;
   try {
@@ -375,7 +388,6 @@ router.get("/getEmployees", async (req, res) => {
   emps.map((emp) => { empEmails.push(emp.email) })
   return res.json(empEmails);
 })
-
 
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
@@ -491,7 +503,6 @@ router.post("/storeTime", async (req, res) => {
   }
 
 })
-
 
 router.get("/getTimeNstate/:_id", async (req, res) => {
 
