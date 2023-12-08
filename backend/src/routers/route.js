@@ -392,21 +392,21 @@ router.get("/getEmployees", async (req, res) => {
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
   const { taskId, comment, imgValues } = req.body;
-
+  
   try {
     // Find the project document that matches the employee's email.
     const project = await Project.findOne({ "assignedEmployees.empEmail": empEmail });
-
+    
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
-
+    
     // Find the specific task in the project document and update the fields.
     const assignedEmployeeIndex = project.assignedEmployees.findIndex(
       (employee) => employee.empEmail === empEmail
-    );
-
-    const taskIndex = project.assignedEmployees[assignedEmployeeIndex].tasks.findIndex(
+      );
+      
+      const taskIndex = project.assignedEmployees[assignedEmployeeIndex].tasks.findIndex(
       (task) => task._id.toString() === taskId
     );
 

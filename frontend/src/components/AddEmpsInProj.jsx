@@ -225,25 +225,29 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
     var empEmails = []
     var emailss = []
     const [emails, setEmails] = useState([])
-    useEffect(async () => {
-        const res = await fetch("http://localhost:3218/getEmployees", {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
-        empEmails = await res.json();
-        console.log('empEmails :>> ', empEmails);
+    useEffect( () => {
+        const callFunc = async()=>{
+            const res = await fetch("http://localhost:3218/getEmployees", {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            empEmails = await res.json();
+            console.log('empEmails :>> ', empEmails);
+    
+            emailss = empEmails.map(e => ({
+                value: e,
+                label: e,
+            }));
+    
+            console.log('emails :>> ', emails);
+            setEmails(emailss)
+        }
 
-        emailss = empEmails.map(e => ({
-            value: e,
-            label: e,
-        }));
-
-        console.log('emails :>> ', emails);
-        setEmails(emailss)
+        callFunc();
     }, [])
 
     return (
