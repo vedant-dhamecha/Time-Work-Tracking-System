@@ -21,11 +21,29 @@ export default function ManageProjects({ projectName, projects }) {
             });
         }
         console.log('assignedEmps :>> ', assignedEmps);
+        // setTasks([])
+        // assignedEmps.forEach((emp) => {
+        //     emp?.tasks?.forEach((t) => {
+        //         setTasks((prevTasks) => [...prevTasks, t])
+        //     })
+        // })
+        // console.log('tasks :>> ', tasks);
     }, [projectName])
+    useEffect(() => {
+        setTasks([]);
+        assignedEmps.forEach((emp) => {
+            emp?.tasks?.forEach((t) => {
+                setTasks((prevTasks) => [...prevTasks, t]);
+            });
+        });
+    }, [assignedEmps]);
 
+    const tabList = tasks.map((t) => ({
+        key: t.title,
+        tab: t.title,
+    }))
+    const tabLis = [
 
-
-    const tabList = [
         {
             key: 'tab1',
             tab: 'tab1',
@@ -34,6 +52,8 @@ export default function ManageProjects({ projectName, projects }) {
             key: 'tab2',
             tab: 'tab2',
         },
+
+
     ];
     const contentList = {
         tab1: <p>content1</p>,
