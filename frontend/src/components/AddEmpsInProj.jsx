@@ -54,10 +54,12 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
                             ? { ...emp, ...values, tasks: currentEmployeeTasks }
                             : emp
                     );
+                    console.log('updated emp: ', updatedEmployees);
                     setEmployees(updatedEmployees);
                 } else {
                     // Create a new employee object with values and tasks
                     const newEmployee = { ...values, tasks: currentEmployeeTasks };
+                    console.log('newemp: ', newEmployee);
                     setEmployees([...employees, newEmployee]);
 
                     // Add the new employee to the project using the addEmployeeToProject function
@@ -116,10 +118,11 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
                 startDate: values.duration[0].format("YYYY-MM-DD"),
                 dueDate: values.duration[1].format("YYYY-MM-DD"),
             };
-            setCurrentEmployeeTasks([...currentEmployeeTasks, formattedTask]);
+            // setCurrentEmployeeTasks([...currentEmployeeTasks, formattedTask]);
+            setCurrentEmployeeTasks((prevTasks) => [...prevTasks, formattedTask]);
             taskForm.resetFields();
             setTaskModalVisible(false);
-
+            console.log('CurrentEmployeeTasks :>> ', currentEmployeeTasks);
             // Add the employee and their tasks to the project
             addEmployeeToProject({
                 empEmail: form.getFieldValue("empEmail"), // Get the employee email from the form
@@ -225,8 +228,8 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
     var empEmails = []
     var emailss = []
     const [emails, setEmails] = useState([])
-    useEffect( () => {
-        const callFunc = async()=>{
+    useEffect(() => {
+        const callFunc = async () => {
             const res = await fetch("http://localhost:3218/getEmployees", {
                 method: 'GET',
                 headers: {
@@ -237,12 +240,12 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
             });
             empEmails = await res.json();
             console.log('empEmails :>> ', empEmails);
-    
+
             emailss = empEmails.map(e => ({
                 value: e,
                 label: e,
             }));
-    
+
             console.log('emails :>> ', emails);
             setEmails(emailss)
         }
@@ -277,6 +280,7 @@ export default function AddEmpsInProj({ addEmployeeToProject }) {
                         />
                     </Form.Item>
                 </Form>
+                {(console.log(currentEmployeeTasks))}
                 <Table
                     dataSource={currentEmployeeTasks}
                     columns={taskColumns}

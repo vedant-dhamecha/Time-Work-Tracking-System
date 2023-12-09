@@ -21,24 +21,31 @@ export default function Projects({ projectName }) {
 
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  function getCurrentDateTime() {
+    const currentDate = new Date();
 
+    // Format date as dd/mm/yy
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = String(currentDate.getFullYear()).slice(-2); // Get last two digits of the year
+
+    const formattedDate = `${day}/${month}/${year}`;
+
+    // Format time as hh:mm:ss
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    return { formattedDate, formattedTime };
+  }
   const taskDetailsAdd = async (taskId) => {
     if (comment) {
       // setLoad(true)
-      console.log("hi1");
       await handleUpload();
-      console.log("hi2");
-      // console.log('load :>> ', load);
-      console.log("imgValues :", imgValues);
-      // if (load) {
-      //     return (
-      //         <>
-      //             <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
-      //                 <Spin tip="Loading..." size="large" ><div className="content" /></Spin>
-      //             </div>
-      //         </>
-      //     )
-      // } else {
+
+
       try {
         // const data = { taskId, comment, imgValues };
         // console.log('data :>> ', data);
@@ -46,13 +53,15 @@ export default function Projects({ projectName }) {
         const formData = new FormData();
         formData.append("taskId", taskId);
         formData.append("comment", comment);
+        const { formattedDate, formattedTime } = getCurrentDateTime();
+        formData.append("time", formattedDate + "," + formattedTime);
         // formData.append('imgValues', imgValues)
         for (let i = 0; i < fileList.length; i++) {
           console.log(fileList[i].thumbUrl);
           formData.append("imgValues[]", fileList[i].thumbUrl);
 
         }
-        console.log("formData :>> ", formData);
+        // console.log("formData :>> ", formData);
         const taskDetails = await fetch("http://localhost:3218/addTaskData", {
           method: "POST",
           credentials: 'include',
@@ -210,12 +219,6 @@ export default function Projects({ projectName }) {
   const handleSS = async (e) => {
     //here, all images are stored in one state of array 'fileList'( in raw form)
     console.log("e.fileList :>> ", e.fileList);
-    // (e.fileList).map(async (file) => {
-    //     if (!file.url && !file.preview) {
-    //         file.preview = await getBase64(file?.originFileObj);
-    //     }
-    //     imgValues.push(file.preview)
-    // })
 
     setFileList(e.fileList);
     console.log("fileList :>> ", fileList);
@@ -363,7 +366,7 @@ export default function Projects({ projectName }) {
           description: task?.description,
           status: (
             <span>
-              {task?.status === "finished" ? (
+              {task?.status === "completed" ? (
                 <Badge status="success" text={task?.status} />
               ) : task?.status === "pending" ? (
                 <Badge status="error" text={task?.status} />
