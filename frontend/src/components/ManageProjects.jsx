@@ -7,41 +7,33 @@ export default function ManageProjects({ projectName, projects }) {
     const [project, setProject] = useState({});
     const [tasks, setTasks] = useState([]);
     const [assignedEmps, setAssignedEmps] = useState([]);
-    const [emps, setEmps] = useState()
-
-
 
     useEffect(() => {
         const p = projects.find((p) => p?.projectTitle === projectName);
         if (p) {
             setProject(p);
-            setAssignedEmps([])
-            p?.assignedEmployees.forEach((e) => {
-                setAssignedEmps((prevEmps) => [...prevEmps, e]);
-            });
+            setAssignedEmps(p.assignedEmployees || []);
         }
-        console.log('assignedEmps :>> ', assignedEmps);
-        // setTasks([])
-        // assignedEmps.forEach((emp) => {
-        //     emp?.tasks?.forEach((t) => {
-        //         setTasks((prevTasks) => [...prevTasks, t])
-        //     })
-        // })
-        // console.log('tasks :>> ', tasks);
-    }, [projectName])
-    useEffect(() => {
-        setTasks([]);
-        assignedEmps.forEach((emp) => {
-            emp?.tasks?.forEach((t) => {
-                setTasks((prevTasks) => [...prevTasks, t]);
-            });
-        });
-    }, [assignedEmps]);
+    }, [projectName]);
 
-    const tabList = tasks.map((t) => ({
-        key: t.title,
-        tab: t.title,
-    }))
+    useEffect(() => {
+        const allTasks = assignedEmps
+            .map((emp) => emp.tasks || [])
+            .flat();
+        
+        setTasks(allTasks);
+    }, [assignedEmps]);
+    const [tabList, setTabList] = useState([]);
+    useEffect(() => {
+        // ... (previous code remains unchanged)
+
+        // Update the tab list based on tasks
+        const newTabList = tasks.map((t) => ({
+            key: t.id,
+            tab: t.title,
+        }));
+        setTabList(newTabList);
+    }, [projectName, tasks]);
     const tabLis = [
 
         {
@@ -147,6 +139,6 @@ export default function ManageProjects({ projectName, projects }) {
                 </div>
             </div>
 
-        </>
-    )
+        </>
+    )
 }
