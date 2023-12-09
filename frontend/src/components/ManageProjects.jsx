@@ -1,68 +1,113 @@
 import React, { useEffect, useState } from 'react'
-import { Steps, Card, Image, Switch, Descriptions, Spin } from 'antd';
+import { Steps, Card, Image, Descriptions, Button } from 'antd';
 import '../styles/manageproj.css'
 const description = 'This is a description';
 
 export default function ManageProjects({ projectName, projects }) {
     const [project, setProject] = useState({});
     const [tasks, setTasks] = useState([]);
+    const [taskTitles, setTaskTitles] = useState([]);
     const [assignedEmps, setAssignedEmps] = useState([]);
-    const [emps, setEmps] = useState()
+    const [employeeTasks, setEmployeeTasks] = useState({});
+    const [activeTabKey1, setActiveTabKey1] = useState();
+    const [empEmails, setEmpEmails] = useState([])
+    const [emails, setEmails] = useState([])
+    var empEmailss = []
+    var emailss = []
 
 
+    // useEffect(() => {
+    //     const p = projects.find((p) => p?.projectTitle === projectName);
+    //     if (p) {
+    //         setProject(p);
+    //         setAssignedEmps([])
+    //         p?.assignedEmployees.forEach((e) => {
+    //             setAssignedEmps((prevEmps) => [...prevEmps, e]);
+    //         });
+    //     }
+    //     // console.log('assignedEmps :>> ', assignedEmps);
+
+    // }, [projectName])
+
+    // useEffect(() => {
+    //     setTasks([]);
+    //     assignedEmps.forEach((emp) => {
+    //         emp?.tasks?.forEach((t) => {
+    //             setTasks((prevTasks) => [...prevTasks, t]);
+    //         });
+    //     });
+    // }, [assignedEmps]);
+
+    // useEffect(() => {
+    //     setTaskTitles([])
+    //     tasks.forEach((t) => {
+    //         setTaskTitles((prevTitles) => [...prevTitles, t.title])
+    //     })
+    //     console.log('taskTitles :>> ', taskTitles);
+    // }, [tasks])
 
     useEffect(() => {
         const p = projects.find((p) => p?.projectTitle === projectName);
         if (p) {
             setProject(p);
+            const employeeTasksMap = {};
+
             setAssignedEmps([])
+            setEmpEmails([])
             p?.assignedEmployees.forEach((e) => {
                 setAssignedEmps((prevEmps) => [...prevEmps, e]);
+                setEmpEmails((prevEmail) => [...prevEmail, e?.empEmail])
+                const tasksForEmployee = e?.tasks || [];
+                employeeTasksMap[e.empEmail] = tasksForEmployee;
             });
+
+            setEmployeeTasks(employeeTasksMap);
+            emailss = empEmails.map(e => ({
+                value: e,
+                label: e,
+            }));
+            // console.log('emailss :>> ', emailss);
+            setEmails(emailss)
         }
-        console.log('assignedEmps :>> ', assignedEmps);
-        // setTasks([])
-        // assignedEmps.forEach((emp) => {
-        //     emp?.tasks?.forEach((t) => {
-        //         setTasks((prevTasks) => [...prevTasks, t])
-        //     })
-        // })
-        // console.log('tasks :>> ', tasks);
-    }, [projectName])
-    useEffect(() => {
-        setTasks([]);
-        assignedEmps.forEach((emp) => {
-            emp?.tasks?.forEach((t) => {
-                setTasks((prevTasks) => [...prevTasks, t]);
-            });
-        });
-    }, [assignedEmps]);
-
-    const tabList = tasks.map((t) => ({
-        key: t.title,
-        tab: t.title,
-    }))
-    const tabLis = [
-
-        {
-            key: 'tab1',
-            tab: 'tab1',
-        },
-        {
-            key: 'tab2',
-            tab: 'tab2',
-        },
+    }, [projectName]);
 
 
-    ];
+    const onTab1Change = (key) => {
+        // alert(key)
+        setActiveTabKey1(key);
+    };
+    console.log('activeTabKey1 :>> ', activeTabKey1);
+
+
     const contentList = {
+
         tab1: <p>content1</p>,
         tab2: <p>content2</p>,
     };
-    const [activeTabKey1, setActiveTabKey1] = useState('tab1');
-    const onTab1Change = (key) => {
-        setActiveTabKey1(key);
+    const handleChange = (value) => {
+        console.log(`selected ${value}`);
     };
+
+    const finishTask = async (tid) => {
+        // alert(tid)
+        try {
+            const res = await fetch(`http://localhost:3218/changeStatus`, {
+                method: "post",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tid, pid: project._id })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                // If the API call is successful, update the local state
+                alert(data.message)
+                window.location.reload();
+            } else {
+                console.error('Failed to update task status');
+            }
+        } catch (error) {
+            console.error('Error updating task status:', error);
+        }
+    }
     return (
         <>
             <div className="proj">
@@ -123,8 +168,15 @@ export default function ManageProjects({ projectName, projects }) {
                 </div>
 
                 <div className="tasks mt-5">
+
                     {
                         assignedEmps.map((e) => {
+                            const tasksForEmployee = employeeTasks[e.empEmail] || [];
+                            {/* console.log("tasksForEmployee:", tasksForEmployee) */ }
+                            const tabList = tasksForEmployee.map((t) => ({
+                                key: t.title,
+                                tab: t.title,
+                            }));
                             return (
 
                                 <Card
@@ -134,11 +186,48 @@ export default function ManageProjects({ projectName, projects }) {
                                         marginBottom: '6vh'
                                     }}
                                     title={"Employee : " + e.empEmail}
+                                    // tabList={newTablist(e,)}
                                     tabList={tabList}
                                     activeTabKey={activeTabKey1}
                                     onTabChange={onTab1Change}
                                 >
-                                    {contentList[activeTabKey1]}
+                                    {
+                                        tasksForEmployee.map((t) => {
+                                            {/* activeTabKey1 === t.title && */ }
+                                            return (
+                                                <>
+                                                    <Descriptions >
+                                                        {
+                                                            <>
+                                                                <Descriptions.Item label="Start Date">{t.startDate}</Descriptions.Item>
+                                                                <Descriptions.Item label="Due Date">{t.dueDate}</Descriptions.Item>
+                                                                <Descriptions.Item label="Status">
+                                                                    <span style={{ color: t.status === 'pending' ? 'red' : 'green' }}>{t.status}</span>
+                                                                </Descriptions.Item>
+                                                                <Descriptions.Item label="Description">{t.description}</Descriptions.Item>
+                                                                <Descriptions.Item label="Comments">{t.comments}</Descriptions.Item>
+                                                                <Descriptions.Button >
+                                                                    <Button border disabled={t.status === 'pending' ? false : true} onClick={() => finishTask(t._id)}><b>Finish Task</b></Button>
+                                                                </Descriptions.Button>
+                                                                {/* <br /> */}
+                                                                <Descriptions.Item label="Photos">{
+                                                                    t.images.map((i) => {
+                                                                        return (
+                                                                            <Image src={i} alt='img' style={{ height: '100px', width: '100px' }} />
+                                                                        )
+                                                                    })
+                                                                }</Descriptions.Item>
+
+                                                            </>
+                                                        }
+                                                    </Descriptions>
+                                                </>
+
+
+
+                                            )
+                                        })
+                                    }
                                 </Card>
                             )
 

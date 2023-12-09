@@ -19,6 +19,7 @@ import Projects from "./Projects";
 import CreateProject from './CreateProject';
 import ManageProjects from "./ManageProjects";
 import AnalysisProject from "./AnalysisProject";
+import DeleteProject from "./DeleteProject";
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Meta } = Card;
@@ -92,16 +93,6 @@ export default function Dashboard() {
                 ],
               },
 
-              person === "manager" && {
-                key: "add project",
-                icon: <UserOutlined />,
-                label: "Add Project",
-                onClick: () => {
-                  setSliderItem("add project");
-                  // setRegisterFor("project");
-                },
-              },
-
               person === "employee" && (
                 projects.length > 0
                   ? {
@@ -133,6 +124,24 @@ export default function Dashboard() {
 
               ),
 
+              person === "manager" && {
+                key: "add project",
+                icon: <UserOutlined />,
+                label: "Add Project",
+                onClick: () => {
+                  setSliderItem("add project");
+                  // setRegisterFor("project");
+                },
+              },
+              person === "manager" && {
+                key: "Delete project",
+                icon: <UserOutlined />,
+                label: "Delete Project",
+                onClick: () => {
+                  setSliderItem("delete project");
+                  // setRegisterFor("project");
+                },
+              },
               person === "manager" && {
                 key: "2",
                 icon: <VideoCameraOutlined />,
@@ -200,6 +209,7 @@ export default function Dashboard() {
             {sliderItem === "work analysis" && <AnalysisProject />}
             {sliderItem === "projects" && (<Projects projectName={projectName} />)}
             {sliderItem === "add project" && (<CreateProject />)}
+            {sliderItem === "delete project" && (<DeleteProject />)}
           </Content>
 
 

@@ -365,11 +365,49 @@ router.get("/getProject", async (req, res) => {
   }
 });
 
+router.post("/changeStatus", async (req, res) => {
+  try {
+    const tid = req.body.tid;
+    const pid = req.body.pid;
+
+    console.log('tid :>> ', tid);
+    console.log('pid :>> ', pid);
+
+    const project = await Project.findOneAndUpdate(
+      { 'assignedEmployees.tasks._id': tid },
+      { $set: { 'assignedEmployees.$[i].tasks.$[j].status': 'completed' } },
+      { arrayFilters: [{ 'i.tasks._id': tid }, { 'j._id': tid }], new: true }
+    );
+
+    console.log('project :>> ', project);
+    const allTasksCompleted = project.assignedEmployees.every(e =>
+      e.tasks.every(t => t.status === 'completed')
+    );
+
+    if (allTasksCompleted) {
+      // If all tasks are completed, update the project status to 'finish'
+      await Project.findByIdAndUpdate(
+        pid,
+        { $set: { status: 'finish' } },
+        { new: true }
+      );
+
+      return res.json({ success: true, message: ' status updated successfully' });
+    } else {
+      return res.json({ success: false, message: 'Not all tasks are completed' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+})
+
 router.get("/getManagerProjects", async (req, res) => {
   const email = req.cookies.managerEmail;
   try {
     const data = await Project.find({ "manager": email });
-    console.log('data :>> ', data);
+    // console.log('data :>> ', data);r
     if (data.length === 0) {
       res.status(401).json({ message: "No projects assigned yet" });
     } else {
@@ -391,7 +429,7 @@ router.get("/getEmployees", async (req, res) => {
 
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
-  const { taskId, comment, imgValues } = req.body;
+  const { taskId, comment, imgValues, time } = req.body;
 
   try {
     // Find the project document that matches the employee's email.
@@ -417,6 +455,7 @@ router.post("/addTaskData", upload.none(), async (req, res) => {
     // Update the comments and images for the task.
     project.assignedEmployees[assignedEmployeeIndex].tasks[taskIndex].comments = comment;
     project.assignedEmployees[assignedEmployeeIndex].tasks[taskIndex].images = imgValues;
+    project.assignedEmployees[assignedEmployeeIndex].tasks[taskIndex].time = time;
 
     // Save the updated project document.
     const updatedProject = await project.save();
@@ -443,6 +482,7 @@ router.post("/addProject", async (req, res) => {
   } = req.body;
   try {
     const data = new Project(req.body);
+    console.log('data :>> ', req.body.assignedEmployees);
     await data.save();
     return res.status(201).json({ success: "Project successfully added" });
   } catch (error) {
@@ -451,6 +491,25 @@ router.post("/addProject", async (req, res) => {
   }
 });
 
+router.delete("/deleteProject", async (req, res) => {
+  const projectId = req.body.pid;
+
+  try {
+    // Find the project by ID and delete it
+    const result = await Project.deleteOne({ _id: projectId });
+
+    // Check if the project was found and deleted
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Return success response
+    res.json({ success: 'Project deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
 router.post("/toggleClockState", async (req, res) => {
 
   const { projectId, time } = req.body;

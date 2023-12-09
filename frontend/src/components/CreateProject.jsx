@@ -20,6 +20,7 @@ export default function CreateProject() {
       const formValues = formRef.current.getFieldsValue();
       console.log("formValues :", formValues)
       const { projectTitle, estimatedDate } = formValues;
+      console.log('project.assigned: ', project.assignedEmployees);
       // console.log("start :", estimatedDate[0].format("YYYY-MM-DD"))
       // console.log("end :", estimatedDate[1].format("YYYY-MM-DD"))
       // Update project state
@@ -77,7 +78,7 @@ export default function CreateProject() {
   }, [submitting, project]);
 
   const addEmployeeToProject = (employee) => {
-    console.log(employee);
+    console.log('emp is: ', employee);
     const isEmployeeAlreadyAdded = project.assignedEmployees.some(
       (emp) => emp.empEmail === employee.empEmail
     );

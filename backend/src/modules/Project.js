@@ -24,10 +24,6 @@ const addProject = mongoose.Schema({
         type: Number,
         default: 0
     },
-    breakTime: {
-        type: Number,
-        default: 0
-    },
     assignedEmployees: [
         {
             empEmail: {
@@ -55,6 +51,9 @@ const addProject = mongoose.Schema({
                     },
                     images: {
                         type: Array
+                    },
+                    time: {
+                        type: String
                     },
                     status: {
                         type: String,
