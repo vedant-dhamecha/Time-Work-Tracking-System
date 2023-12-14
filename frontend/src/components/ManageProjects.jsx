@@ -211,6 +211,7 @@ export default function ManageProjects({ projectName, projects }) {
                                                                     <Button border disabled={t.status === 'pending' ? false : true} onClick={() => finishTask(t._id)}><b>Finish Task</b></Button>
                                                                 </Descriptions.Button>
                                                                 {/* <br /> */}
+                                                                <Descriptions.Item label="Last progress submitted">{t.time}</Descriptions.Item>
                                                                 <Descriptions.Item label="Photos">{
                                                                     t.images.map((i) => {
                                                                         return (
@@ -237,6 +238,6 @@ export default function ManageProjects({ projectName, projects }) {
                 </div>
             </div>
 
-        </>
-    )
+        </>
+    )
 }

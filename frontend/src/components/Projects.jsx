@@ -54,7 +54,7 @@ export default function Projects({ projectName }) {
         formData.append("taskId", taskId);
         formData.append("comment", comment);
         const { formattedDate, formattedTime } = getCurrentDateTime();
-        formData.append("time", formattedDate + "," + formattedTime);
+        formData.append("time", "on " + formattedDate + " at " + formattedTime);
         // formData.append('imgValues', imgValues)
         for (let i = 0; i < fileList.length; i++) {
           console.log(fileList[i].thumbUrl);
