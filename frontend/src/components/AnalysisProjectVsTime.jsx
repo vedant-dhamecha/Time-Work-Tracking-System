@@ -6,7 +6,7 @@ Chart.register(
     Tooltip, Title, ArcElement, Legend, CategoryScale, LinearScale, BarElement
 )
 
-function AnalysisProject() {
+function AnalysisProjectVsTime() {
     const [option, setOption] = useState(null);
     const onChange = (e) => {
         setOption(e.target.value);
@@ -143,4 +143,4 @@ function AnalysisProject() {
     );
 }
 
-export default AnalysisProject;
+export default AnalysisProjectVsTime;
