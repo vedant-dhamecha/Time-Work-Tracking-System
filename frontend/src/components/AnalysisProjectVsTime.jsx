@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio } from 'antd';
+import { Radio, Button } from 'antd';
 import { Chart, Tooltip, Title, ArcElement, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'; // Import from 'chart.js'
 import { Pie, Bar } from 'react-chartjs-2';
 Chart.register(
@@ -114,6 +114,34 @@ function AnalysisProjectVsTime() {
         getAllProjects();
     }, [])
 
+    const handleDownloadCSV = async () => {
+        try {
+            const res = await fetch("http://localhost:3218/getAllProjects", {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            const dataa = await res.json();
+
+            // Create a CSV string
+            const csvContent = "data:text/csv;charset=utf-8," +
+                "Project Title,Work Time(Hrs.)\n" +
+                dataa.map(project => `${project.projectTitle}, ${project.workTime / 3600}`).join("\n");
+
+            // Create a data URI and create a link element to trigger the download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Project vs Time.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.log('err in downloading CSV :>> ', err);
+        }
+    };
     return (
         <>
             <div className="container" style={{
@@ -123,7 +151,7 @@ function AnalysisProjectVsTime() {
                 <Radio.Group onChange={onChange} value={option} style={{ color: 'black', fontWeight: 'bold' }}>
                     <Radio value='bar' >Bar Graph</Radio>
                     <Radio value='pie'>Pie Chart</Radio>
-
+                    <Button type='primary' onClick={handleDownloadCSV} style={{ width: '70px', height: '30px' }}>click</Button>
                 </Radio.Group>
                 {!option && <h1 style={{ marginTop: '20vh' }}>Analysis of Project Duration</h1>}
                 {

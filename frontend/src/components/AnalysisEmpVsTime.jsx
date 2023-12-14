@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio } from 'antd';
+import { Radio, Button } from 'antd';
 
 import { Chart, Tooltip, Title, ArcElement, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'; // Import from 'chart.js'
 import { Pie, Bar } from 'react-chartjs-2';
@@ -10,6 +10,7 @@ Chart.register(
 function AnalysisEmpVsTime() {
     //Employees vs Hours
     const [option, setOption] = useState(null);
+    const [emps, setEmps] = useState()
     const onChange = (e) => {
         setOption(e.target.value);
     };
@@ -46,7 +47,7 @@ function AnalysisEmpVsTime() {
                     }
                 });
                 const dataa = await res.json();
-
+                setEmps(dataa)
                 const label = [];
 
                 for (var i of dataa) {
@@ -108,6 +109,7 @@ function AnalysisEmpVsTime() {
                         }]
                     }
                 )
+
             } catch (err) {
                 console.log('err in info card :>> ', err);
             }
@@ -115,7 +117,26 @@ function AnalysisEmpVsTime() {
         getAllProjects();
     }, [])
 
+    const handleDownloadCSV = async () => {
+        try {
+            var i = 0;
+            var t = [12, 4, 9, 12, 10, 15, 18];
+            const csvContent = "data:text/csv;charset=utf-8," +
+                "Employee,Work Time(Hrs.)\n" +
+                emps.map(emp => `${emp.name}, ${t[i++]}`).join("\n");
 
+            // Create a data URI and create a link element to trigger the download
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Emp vs Time.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.log('err in downloading CSV :>> ', err);
+        }
+    };
 
     return (
         <div className="container" style={{
@@ -125,7 +146,7 @@ function AnalysisEmpVsTime() {
             <Radio.Group onChange={onChange} value={option} style={{ color: 'black', fontWeight: 'bold' }}>
                 <Radio value='bar' >Bar Graph</Radio>
                 <Radio value='pie'>Pie Chart</Radio>
-
+                <Button type='primary' onClick={handleDownloadCSV} style={{ width: '70px', height: '30px' }}>click</Button>
             </Radio.Group>
             {!option && <h1 style={{ marginTop: '20vh' }}>Analysis of Employee Work</h1>}
             {
