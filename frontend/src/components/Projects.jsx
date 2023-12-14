@@ -72,8 +72,11 @@ export default function Projects({ projectName }) {
         if (response?.success) {
           formRef.current?.resetFields();
           alert("progress sent to your project manager");
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000);
         } else {
-
+          alert(response?.error)
         }
       } catch (error) {
         console.log(error);

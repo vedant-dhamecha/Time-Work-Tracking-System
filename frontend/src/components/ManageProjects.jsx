@@ -236,6 +236,6 @@ export default function ManageProjects({ projectName, projects }) {
                 </div>
             </div>
 
-        </>
-    )
+        </>
+    )
 }
