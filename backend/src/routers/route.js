@@ -336,6 +336,16 @@ router.post("/resetPassword/:person/:idd", async function (req, res) {
   }
 });
 
+router.get('/getAllEmployees',async(req,res)=>{
+    try {
+      const data = await Employee.find();
+      res.status(201).json(data);
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ message: error });
+    }
+});
+
 router.get('/getAllProjects', async (req, res) => {
   try {
     // Select only the fields you need (projectTitle and workTime)
@@ -425,7 +435,7 @@ router.get("/getEmployees", async (req, res) => {
   const empEmails = [];
   emps.map((emp) => { empEmails.push(emp.email) })
   return res.json(empEmails);
-})
+});
 
 router.post("/addTaskData", upload.none(), async (req, res) => {
   const empEmail = req.cookies.employeeEmail;
@@ -434,17 +444,17 @@ router.post("/addTaskData", upload.none(), async (req, res) => {
   try {
     // Find the project document that matches the employee's email.
     const project = await Project.findOne({ "assignedEmployees.empEmail": empEmail });
-
+    
     if (!project) {
       return res.status(404).json({ error: "Project not found" });
     }
-
+    
     // Find the specific task in the project document and update the fields.
     const assignedEmployeeIndex = project.assignedEmployees.findIndex(
       (employee) => employee.empEmail === empEmail
-    );
-
-    const taskIndex = project.assignedEmployees[assignedEmployeeIndex].tasks.findIndex(
+      );
+      
+      const taskIndex = project.assignedEmployees[assignedEmployeeIndex].tasks.findIndex(
       (task) => task._id.toString() === taskId
     );
 
@@ -535,7 +545,7 @@ router.post("/toggleClockState", async (req, res) => {
 
   }
 
-})
+});
 
 router.post("/storeTime", async (req, res) => {
 
@@ -561,7 +571,7 @@ router.post("/storeTime", async (req, res) => {
 
   }
 
-})
+});
 
 router.get("/getTimeNstate/:_id", async (req, res) => {
 
@@ -583,5 +593,5 @@ router.get("/getTimeNstate/:_id", async (req, res) => {
 
   }
 
-})
+});
 module.exports = router;
