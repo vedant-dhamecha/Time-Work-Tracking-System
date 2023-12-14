@@ -140,6 +140,7 @@ export default function ManageProjects({ projectName, projects }) {
                             <b>Estimated Date : {project.estimatedDate}</b>
                         </p>
                     </div>
+
                 </div>
                 <div style={{ marginTop: '4vh' }}>
                     <h5>Progress :</h5>

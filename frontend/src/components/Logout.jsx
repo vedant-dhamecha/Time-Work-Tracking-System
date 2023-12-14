@@ -23,6 +23,7 @@ export default function Logout() {
             setLogged(false)
             navigate('/')
             window.alert(data.loggedOut)
+            window.location.reload()
         }
         logout();
     }, [])
