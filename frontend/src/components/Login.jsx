@@ -108,6 +108,7 @@ export default function Login() {
             // alert("hiS")
             window.alert(data.success)
             console.log('logged :>> ', logged);
+
             navigate('/dashboard')
             // openNotificationWithIcon('success');
         }

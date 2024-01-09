@@ -54,7 +54,7 @@ export default function Projects({ projectName }) {
         formData.append("taskId", taskId);
         formData.append("comment", comment);
         const { formattedDate, formattedTime } = getCurrentDateTime();
-        formData.append("time", formattedDate + "," + formattedTime);
+        formData.append("time", "on " + formattedDate + " at " + formattedTime);
         // formData.append('imgValues', imgValues)
         for (let i = 0; i < fileList.length; i++) {
           console.log(fileList[i].thumbUrl);
@@ -72,8 +72,11 @@ export default function Projects({ projectName }) {
         if (response?.success) {
           formRef.current?.resetFields();
           alert("progress sent to your project manager");
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000);
         } else {
-
+          alert(response?.error)
         }
       } catch (error) {
         console.log(error);
@@ -434,12 +437,15 @@ export default function Projects({ projectName }) {
               fontSize: "2.3vh",
             }}
           >
-            <p style={{ color: "rgb(0, 0, 55)" }}>
-              Starting Date : {project.assignedDate}
+            <p style={{ color: "green" }}>
+              <b>Starting Date : {project.assignedDate}</b>
             </p>
-            <p style={{ color: "rgb(116, 0, 0)" }}>
-              Estimated Date : {project.estimatedDate}
+            <p style={{ color: "red" }}>
+              <b>Estimated Date : {project.estimatedDate}</b>
             </p>
+          </div>
+          <div className="manager">
+            <b style={{ color: "rgb(12, 1, 62)" }}> Assigned by : {project.manager}</b>
           </div>
         </div>
         <div className="task">

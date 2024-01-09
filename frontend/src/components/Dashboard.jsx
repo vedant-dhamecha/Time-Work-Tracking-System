@@ -18,7 +18,8 @@ import Profile from "./Profile";
 import Projects from "./Projects";
 import CreateProject from './CreateProject';
 import ManageProjects from "./ManageProjects";
-import AnalysisProject from "./AnalysisProject";
+import AnalysisProjectVsTime from "./AnalysisProjectVsTime";
+import AnalysisEmpVsTime from "./AnalysisEmpVsTime";
 import DeleteProject from "./DeleteProject";
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -165,10 +166,25 @@ export default function Dashboard() {
                 key: "work analysis",
                 icon: <BarChartOutlined />,
                 label: "Work Analysis",
+                children: [
+                  {
+                    key: "p/t",
+                    icon: <UserOutlined />,
+                    label: "Project vs Time",
+                    onClick: () => {
+                      setSliderItem("p/t");
+                    },
+                  },
+                  {
+                    key: "e/t",
+                    icon: <UserOutlined />,
+                    label: "Emp vs Time",
+                    onClick: () => {
+                      setSliderItem("e/t");
+                    },
+                  },
+                ],
 
-                onClick: () => {
-                  setSliderItem("work analysis");
-                },
               },
               {
                 key: 'profile',
@@ -206,7 +222,8 @@ export default function Dashboard() {
             </div>
             {sliderItem === "profile" && <Profile />}
             {sliderItem === "management" && <ManageProjects projectName={projectName} projects={managerProjects} />}
-            {sliderItem === "work analysis" && <AnalysisProject />}
+            {sliderItem === "p/t" && <AnalysisProjectVsTime />}
+            {sliderItem === "e/t" && <AnalysisEmpVsTime />}
             {sliderItem === "projects" && (<Projects projectName={projectName} />)}
             {sliderItem === "add project" && (<CreateProject />)}
             {sliderItem === "delete project" && (<DeleteProject />)}
